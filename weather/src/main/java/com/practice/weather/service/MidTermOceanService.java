@@ -5,8 +5,8 @@ import com.practice.weather.weatherDto.MidTermOceanDto;
 
 public interface MidTermOceanService {
 
-    public MidTermOceanEntity saveData(String id, String data);
+    public MidTermOceanEntity save(MidTermOceanDto midTermOceanDto);
 
-    public MidTermOceanDto buildMidTermOceanDto(String str, String date);
+    public MidTermOceanDto buildMidTermOceanDto(String str);
 
 }

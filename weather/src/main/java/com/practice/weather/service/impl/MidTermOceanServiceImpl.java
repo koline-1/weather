@@ -20,13 +20,14 @@ public class MidTermOceanServiceImpl implements MidTermOceanService {
     MidTermOceanRepository midTermOceanRepository;
 
     @Override
-    public MidTermOceanEntity saveData(String id, String data) {
-        return null;
+    public MidTermOceanEntity save(MidTermOceanDto midTermOceanDto) {
+
+        return midTermOceanRepository.save(midTermOceanDto.toEntity());
     }
 
     // API로 받아온 데이터를 DTO객체로 변환
     @Override
-    public MidTermOceanDto buildMidTermOceanDto(String str, String date) {
+    public MidTermOceanDto buildMidTermOceanDto(String str) {
 
         JSONObject jObject = new JSONObject(str);
 
@@ -90,7 +91,6 @@ public class MidTermOceanServiceImpl implements MidTermOceanService {
         midTermOceanDto.setWh7BPm(map.get("wh7BPm").toString());
         midTermOceanDto.setWh3APm(map.get("wh3APm").toString());
         midTermOceanDto.setWh3BPm(map.get("wh3BPm").toString());
-        midTermOceanDto.setDate(date);
 
         return midTermOceanDto;
     }

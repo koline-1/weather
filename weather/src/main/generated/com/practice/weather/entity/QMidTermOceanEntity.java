@@ -19,7 +19,12 @@ public class QMidTermOceanEntity extends EntityPathBase<MidTermOceanEntity> {
 
     public static final QMidTermOceanEntity midTermOceanEntity = new QMidTermOceanEntity("midTermOceanEntity");
 
-    public final StringPath date = createString("date");
+    public final QBaseEntity _super = new QBaseEntity(this);
+
+    //inherited
+    public final DatePath<java.time.LocalDate> date = _super.date;
+
+    public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final StringPath regId = createString("regId");
 

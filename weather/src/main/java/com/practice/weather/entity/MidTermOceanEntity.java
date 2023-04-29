@@ -2,10 +2,7 @@ package com.practice.weather.entity;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @ToString
 @Getter
@@ -14,9 +11,18 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Table(name = "mid_term_ocean")
 @Entity(name = "MidTermOceanEntity")
-public class MidTermOceanEntity {
+@SequenceGenerator(
+        name = "MID_TERM_OCEAN_ID_GENERATOR",
+        sequenceName = "MID_TERM_OCEAN_ID",
+        initialValue = 1,
+        allocationSize = 1)
+public class MidTermOceanEntity extends BaseEntity {
 
     @Id
+    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MID_TERM_OCEAN_ID_GENERATOR")
+    private Long id;
+
     @Column(name = "REG_ID")
     private String regId;
 
@@ -136,8 +142,5 @@ public class MidTermOceanEntity {
 
     @Column
     private String wh3BPm;
-
-    @Column(name="DATE")
-    private String date;
 
 }

@@ -9,10 +9,7 @@
     <title>기상청 중기 예보</title>
 </head>
 <body>
-    <a href="/mid-term/ocean?time=0600">중기해상예보조회 (06시 기준)</a><br>
-    <c:if test="${time gt 1800}">
-        <a href="/mid-term/ocean?time=1800">중기해상예보조회 (18시 기준)</a><br>
-    </c:if>
+    <a href="/mid-term/ocean/location">중기해상예보조회</a><br>
     <a href="/mid-term/temperature?time=0600">중기기온조회 (06시 기준)</a><br>
     <c:if test="${time gt 1800}">
         <a href="/mid-term/temperature?time=1800">중기기온조회 (18시 기준)</a><br>
@@ -25,6 +22,6 @@
     <c:if test="${time gt 1800}">
         <a href="/mid-term/expectation?time=1800">중기전망조회 (18시 기준)</a><br>
     </c:if>
-    <a href="/">뒤로가기</a>
+    <button onclick="location.href='/'">뒤로</button>
 </body>
 </html>
