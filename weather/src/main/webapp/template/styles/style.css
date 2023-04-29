@@ -1,0 +1,71 @@
+@font-face {
+    font-family: 'photo4';
+    src: url('/template/fonts/a_old_photo_4.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'photo3';
+    src: url('/template/fonts/a_old_photo_3.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'photo2';
+    src: url('/template/fonts/a_old_photo_2.ttf') format('truetype');
+}
+
+* {
+    font-family: 'photo4';
+}
+
+body {
+    background-image: url("/template/images/main/weatherMain.png");
+    background-size: 100%;
+}
+
+.real-time-status {
+    position: relative;
+    text-align: center;
+}
+
+.real-time-status > img {
+    width: 5%;
+}
+
+.real-time-status > h1 {
+    color: white;
+    margin-top: 200px;
+}
+
+.real-time-status > p {
+    color: lightgrey;
+    font-family: photo3;
+}
+
+.container-main {
+    position: relative;
+    text-align: center;
+    color: white;
+    margin-top: 200px;
+    margin-inline: 200px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.container-main > div {
+    position: relative;
+}
+
+.container-main > div > img {
+    width: 250px;
+    height: 125px;
+}
+
+.container-main > div > a {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 22px;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-decoration: none;
+}
