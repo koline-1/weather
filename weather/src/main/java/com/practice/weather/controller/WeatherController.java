@@ -1,5 +1,7 @@
 package com.practice.weather.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.weather.entity.MidTermOceanEntity;
 import com.practice.weather.service.MidTermOceanService;
 import com.practice.weather.weatherDto.MidTermOceanDto;
@@ -30,8 +32,11 @@ public class WeatherController {
     @Autowired
     MidTermOceanService midTermOceanService;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     String serviceKey = "MURd%2Fv%2F0Sx9wcaIQJYwwnVC%2FQngp6H1j40ewDO6IBk8LO6E2XQsFkzPkrxFcVchzfHDrdXzXxVyamCeQphkq0Q%3D%3D";
 
+    // TODO: 초단기 실황 데이터 말고 초단기 예보로 변경
     // 메인페이지
     @GetMapping("/")
     public String mainController(Model model) {
@@ -39,7 +44,9 @@ public class WeatherController {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HHmm");
 
+        // 30분이전 데이터 이용가능
         Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MINUTE, -30);
 
         String url = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst" +
                 "?serviceKey=" + serviceKey + "&pageNo=1&numOfRows=1000&dataType=JSON&base_date=" +
@@ -63,50 +70,71 @@ public class WeatherController {
         return "midTermList";
     }
 
-    // 중기해상예보조회
-    @GetMapping("/mid-term/ocean")
-    public String midTermOceanController(
-            @RequestParam("time") String time,
+    @GetMapping("/mid-term/ocean/location")
+    public String midTermOceanLocationController (
             Model model
-        ) throws IOException {
+        ) {
+        return "midTermOceanLocation";
+    }
+
+    // 중기해상예보조회
+    @GetMapping("/mid-term/ocean/data")
+    public String midTermOceanController(
+            @RequestParam(value = "location", required = false) String location,
+            Model model
+        ) throws JsonProcessingException {
 
         // API 날짜 설정 위해 오늘 날짜 가지고옴(최근 24시간 데이터만 접근 가능)
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
-        SimpleDateFormat sdf2 = new SimpleDateFormat("HHmm");
-
         Calendar cal = Calendar.getInstance();
 
-        // 오전 6시 이전일 경우 전날 18시 데이터 호출
-        int clock = Integer.parseInt(sdf2.format(Calendar.getInstance().getTime()));
+        String time = "";
 
-        if (clock <= 600) {
+        if (cal.get(Calendar.HOUR_OF_DAY) < 6) {
             cal.add(Calendar.DATE, -1);
+            time = "1800";
+        } else if (6 <= cal.get(Calendar.HOUR_OF_DAY) && cal.get(Calendar.HOUR_OF_DAY) < 18) {
+            time = "0600";
+        } else {
             time = "1800";
         }
 
-        String today = sdf.format(cal.getTime());
-
         // 서비스 URL
         String urlStr = "http://apis.data.go.kr/1360000/MidFcstInfoService/getMidSeaFcst" +
-                "?serviceKey=" + serviceKey + "&numOfRows=10&pageNo=1&dataType=JSON" +
-                "&regId=12A10000&tmFc=" + today + time;
+                "?serviceKey=" + serviceKey + "&numOfRows=10&pageNo=1&dataType=JSON&regId=" +
+                (location != null && !location.equals("") ? location : "12A20000") + "&tmFc=" + sdf.format(cal.getTime()) + time;
 
         String data = connectUrl(urlStr);
 
-        if (data != null && !data.equals("")) {
-            MidTermOceanDto midTermOceanDto = midTermOceanService.buildMidTermOceanDto(data, today);
+        MidTermOceanDto midTermOceanDto = midTermOceanService.buildMidTermOceanDto(data);
 
+        if (data != null && !data.equals("")) {
             model.addAttribute("midTermOceanDto", midTermOceanDto);
+            model.addAttribute("midTermOceanDtoJson", objectMapper.writeValueAsString(midTermOceanDto));
         } else {
             model.addAttribute("midTermOceanDto", null);
+            model.addAttribute("midTermOceanDtoJson", null);
         }
 
-        return "midTermOceanView";
+        return "midTermOceanData";
+    }
+
+    @ResponseBody
+    @PostMapping("/mid-term/ocean/data")
+    public String saveMidTermOcean (@RequestBody String data) throws JsonProcessingException {
+
+        JSONObject jObject = new JSONObject(data);
+
+        MidTermOceanDto midTermOceanDto = objectMapper.readValue(jObject.get("data").toString(), MidTermOceanDto.class);
+
+        midTermOceanService.save(midTermOceanDto);
+
+        return "";
     }
 
     // URL 연결 메소드
-    public String connectUrl(String urlStr) throws IOException {
+    public String connectUrl(String urlStr) {
 
         try {
             // API url 연결
