@@ -1,4 +1,4 @@
-package com.practice.weather.entity;
+package com.practice.weather.midTerm.ocean.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,14 +15,14 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QMidTermOceanEntity extends EntityPathBase<MidTermOceanEntity> {
 
-    private static final long serialVersionUID = -1674887112L;
+    private static final long serialVersionUID = 885929006L;
 
     public static final QMidTermOceanEntity midTermOceanEntity = new QMidTermOceanEntity("midTermOceanEntity");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
+    public final com.practice.weather.main.entity.QBaseEntity _super = new com.practice.weather.main.entity.QBaseEntity(this);
 
     //inherited
-    public final DatePath<java.time.LocalDate> date = _super.date;
+    public final DateTimePath<java.time.LocalDateTime> date = _super.date;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 

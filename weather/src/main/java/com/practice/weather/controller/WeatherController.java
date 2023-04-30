@@ -1,11 +1,7 @@
 package com.practice.weather.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.practice.weather.entity.MidTermOceanEntity;
-import com.practice.weather.service.MidTermOceanService;
-import com.practice.weather.weatherDto.MidTermOceanDto;
-import com.practice.weather.weatherDto.WeatherRequestDto;
+import com.practice.weather.midTerm.ocean.service.MidTermOceanService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -36,136 +32,7 @@ public class WeatherController {
 
     String serviceKey = "MURd%2Fv%2F0Sx9wcaIQJYwwnVC%2FQngp6H1j40ewDO6IBk8LO6E2XQsFkzPkrxFcVchzfHDrdXzXxVyamCeQphkq0Q%3D%3D";
 
-    // TODO: 초단기 실황 데이터 말고 초단기 예보로 변경
-    // 메인페이지
-    @GetMapping("/")
-    public String mainController(Model model) {
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HHmm");
-
-        // 30분이전 데이터 이용가능
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.MINUTE, -30);
-
-        String url = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst" +
-                "?serviceKey=" + serviceKey + "&pageNo=1&numOfRows=1000&dataType=JSON&base_date=" +
-                dateFormat.format(cal.getTime()) + "&base_time=" + timeFormat.format(cal.getTime()) +"&nx=61&ny=120";
-
-        model.addAttribute("url", url);
-
-        return "mainView";
-    }
-
-    // 중기예보조회 List
-    @GetMapping("/mid-term")
-    public String midTermController(Model model) {
-
-        SimpleDateFormat sdf = new SimpleDateFormat("HHmm");
-
-        String time = sdf.format(Calendar.getInstance().getTime());
-
-        model.addAttribute("time", time);
-
-        return "midTermList";
-    }
-
-    @GetMapping("/mid-term/ocean/location")
-    public String midTermOceanLocationController (
-            Model model
-        ) {
-        return "midTermOceanLocation";
-    }
-
-    // 중기해상예보조회
-    @GetMapping("/mid-term/ocean/data")
-    public String midTermOceanController(
-            @RequestParam(value = "location", required = false) String location,
-            Model model
-        ) throws JsonProcessingException {
-
-        // API 날짜 설정 위해 오늘 날짜 가지고옴(최근 24시간 데이터만 접근 가능)
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-
-        Calendar cal = Calendar.getInstance();
-
-        String time = "";
-
-        if (cal.get(Calendar.HOUR_OF_DAY) < 6) {
-            cal.add(Calendar.DATE, -1);
-            time = "1800";
-        } else if (6 <= cal.get(Calendar.HOUR_OF_DAY) && cal.get(Calendar.HOUR_OF_DAY) < 18) {
-            time = "0600";
-        } else {
-            time = "1800";
-        }
-
-        // 서비스 URL
-        String urlStr = "http://apis.data.go.kr/1360000/MidFcstInfoService/getMidSeaFcst" +
-                "?serviceKey=" + serviceKey + "&numOfRows=10&pageNo=1&dataType=JSON&regId=" +
-                (location != null && !location.equals("") ? location : "12A20000") + "&tmFc=" + sdf.format(cal.getTime()) + time;
-
-        String data = connectUrl(urlStr);
-
-        MidTermOceanDto midTermOceanDto = midTermOceanService.buildMidTermOceanDto(data);
-
-        if (data != null && !data.equals("")) {
-            model.addAttribute("midTermOceanDto", midTermOceanDto);
-            model.addAttribute("midTermOceanDtoJson", objectMapper.writeValueAsString(midTermOceanDto));
-        } else {
-            model.addAttribute("midTermOceanDto", null);
-            model.addAttribute("midTermOceanDtoJson", null);
-        }
-
-        return "midTermOceanData";
-    }
-
-    @ResponseBody
-    @PostMapping("/mid-term/ocean/data")
-    public String saveMidTermOcean (@RequestBody String data) throws JsonProcessingException {
-
-        JSONObject jObject = new JSONObject(data);
-
-        MidTermOceanDto midTermOceanDto = objectMapper.readValue(jObject.get("data").toString(), MidTermOceanDto.class);
-
-        midTermOceanService.save(midTermOceanDto);
-
-        return "";
-    }
-
-    // URL 연결 메소드
-    public String connectUrl(String urlStr) {
-
-        try {
-            // API url 연결
-            URL url = new URL(urlStr);
-
-            URLConnection connection = url.openConnection();
-            connection.setDoOutput(true);
-
-            // 타입 설정
-            connection.setRequestProperty("CONTENT-TYPE", "application/json");
-
-            //openStream() : URL페이지 정보를 읽어온다.
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "utf-8"));
-
-            String inputLine;
-            String buffer = "";
-
-            // 페이지의 정보를 저장한다.
-            while ((inputLine = in.readLine()) != null){
-                buffer += inputLine.trim();
-            }
-
-            in.close();
-
-            return buffer;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     // 중기기온조회
     @GetMapping("/mid-term/temperature")
@@ -278,12 +145,6 @@ public class WeatherController {
 
 
         return "resultView";
-    }
-
-    // 단기 예보 조회 List
-    @GetMapping("/short-term")
-    public String shortTermController() {
-        return "shortTermList";
     }
 
     // 초단기실황조회
@@ -455,8 +316,6 @@ public class WeatherController {
         jObject = (JSONObject) jObject.get("body");
         jObject = (JSONObject) jObject.get("items");
 
-        int abc = Integer.parseInt(jObject.toString());
-
         JSONArray jArray = (JSONArray) jObject.get("item");
 
         // DB에 입력
@@ -480,11 +339,6 @@ public class WeatherController {
         in.close();
 
         return resultList;
-    }
-
-    public MidTermOceanDto connect(@RequestBody WeatherRequestDto weatherRequestDto) {
-
-        return null;
     }
 
 }

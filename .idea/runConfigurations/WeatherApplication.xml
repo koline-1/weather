@@ -6,7 +6,7 @@
     <module name="weather.weather.main" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="com.practice.weather.weatherDto.*" />
+        <option name="PATTERN" value="com.practice.weather.midTerm.ocean.dto.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

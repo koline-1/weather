@@ -10,10 +10,7 @@
 </head>
 <body>
     <a href="/mid-term/ocean/location">중기해상예보조회</a><br>
-    <a href="/mid-term/temperature?time=0600">중기기온조회 (06시 기준)</a><br>
-    <c:if test="${time gt 1800}">
-        <a href="/mid-term/temperature?time=1800">중기기온조회 (18시 기준)</a><br>
-    </c:if>
+    <a href="/mid-term/temperature/location">중기기온조회</a><br>
     <a href="/mid-term/land?time=0600">중기육상예보조회 (06시 기준)</a><br>
     <c:if test="${time gt 1800}">
         <a href="/mid-term/land?time=1800">중기육상예보조회 (18시 기준)</a><br>

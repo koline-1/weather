@@ -183,7 +183,7 @@
         function saveData() {
             const jsonData = '${midTermOceanDtoJson}';
             if (jsonData) {
-                fetch("/mid-term/ocean", {
+                fetch("/mid-term/ocean/data", {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json; charset=utf-8"
@@ -191,7 +191,16 @@
                   body: JSON.stringify({
                     data : jsonData
                   }),
-                }).then((response) => alert("데이터를 성공적으로 저장하였습니다."))
+                }).then((response) => response.text())
+                .then((response) => {
+                    if (response === "saved") {
+                        alert("데이터를 성공적으로 저장하였습니다.");
+                    } else if (response === "exists") {
+                        alert("이미 저장한 데이터 입니다.");
+                    } else {
+                        alert("알 수 없는 오류가 발생했습니다.");
+                    }
+                })
                 .catch((error) => console.log("error:", error));
             } else {
                 alert("데이터를 확인하여 주세요.");
