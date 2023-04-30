@@ -1,15 +1,15 @@
-package com.practice.weather.service.impl;
+package com.practice.weather.midTerm.ocean.service.impl;
 
-import com.practice.weather.entity.MidTermOceanEntity;
-import com.practice.weather.entity.WeatherEntity;
-import com.practice.weather.service.MidTermOceanService;
-import com.practice.weather.weatherDto.MidTermOceanDto;
-import com.practice.weather.weatherRepository.MidTermOceanRepository;
+import com.practice.weather.midTerm.ocean.entity.MidTermOceanEntity;
+import com.practice.weather.midTerm.ocean.service.MidTermOceanService;
+import com.practice.weather.midTerm.ocean.dto.MidTermOceanDto;
+import com.practice.weather.midTerm.ocean.repository.MidTermOceanRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -18,6 +18,11 @@ public class MidTermOceanServiceImpl implements MidTermOceanService {
 
     @Autowired
     MidTermOceanRepository midTermOceanRepository;
+
+    @Override
+    public boolean existCheck(String regId, LocalDateTime localDateTime) {
+        return midTermOceanRepository.existCheck(regId, localDateTime);
+    }
 
     @Override
     public MidTermOceanEntity save(MidTermOceanDto midTermOceanDto) {
