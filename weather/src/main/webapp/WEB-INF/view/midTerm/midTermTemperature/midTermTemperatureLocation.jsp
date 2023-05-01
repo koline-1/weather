@@ -6,7 +6,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>기상청 중기 해상 예보</title>
+    <title>기상청 중기 기온 예보</title>
 </head>
 <body>
     <div class="mid-term-location-div">
