@@ -21,88 +21,59 @@ public class MidTermTemperatureServiceImpl implements MidTermTemperatureService 
 
 
     @Override
-    public boolean existCheck(String regId, LocalDateTime localDateTime) {
-        return midTermTemperatureRepository.existCheck(regId, localDateTime);
-    }
-
-    @Override
-    public MidTermTemperatureEntity save(MidTermTemperatureDto midTermTemperatureDto) {
-        return midTermTemperatureRepository.save(midTermTemperatureDto.toEntity());
-    }
-
-    @Override
-    public MidTermTemperatureDto buildMidTermTemperatureDto(String str) {
-        JSONObject jObject = new JSONObject(str);
-
-        jObject = (JSONObject) jObject.get("response");
-        jObject = (JSONObject) jObject.get("body");
-        jObject = (JSONObject) jObject.get("items");
-
-        JSONArray jArray = (JSONArray) jObject.get("item");
-
-        HashMap<String, Object> map = new HashMap<String, Object>();
-
-        // 데이터 hashmap으로 처리
-        for (int i = 0; i < jArray.length(); i++) {
-            JSONObject j = (JSONObject) jArray.get(i);
-            Set<String> keySet = j.keySet();
-
-            for (String s : keySet) {
-                map.put(s, j.get(s));
-            }
-        }
+    public MidTermTemperatureDto parseMapToMidTermTemperatureDto(HashMap<String, String> map) {
 
         MidTermTemperatureDto midTermTemperatureDto = new MidTermTemperatureDto();
 
-        midTermTemperatureDto.setRegId(map.get("regId").toString());
-        midTermTemperatureDto.setTaMin3(map.get("taMin3").toString());
-        midTermTemperatureDto.setTaMin3Low(map.get("taMin3Low").toString());
-        midTermTemperatureDto.setTaMin3High(map.get("taMin3High").toString());
-        midTermTemperatureDto.setTaMax3(map.get("taMax3").toString());
-        midTermTemperatureDto.setTaMax3Low(map.get("taMax3Low").toString());
-        midTermTemperatureDto.setTaMax3High(map.get("taMax3High").toString());
-        midTermTemperatureDto.setTaMin4(map.get("taMin4").toString());
-        midTermTemperatureDto.setTaMin4Low(map.get("taMin4Low").toString());
-        midTermTemperatureDto.setTaMin4High(map.get("taMin4High").toString());
-        midTermTemperatureDto.setTaMax4(map.get("taMax4").toString());
-        midTermTemperatureDto.setTaMax4Low(map.get("taMax4Low").toString());
-        midTermTemperatureDto.setTaMax4High(map.get("taMax4High").toString());
-        midTermTemperatureDto.setTaMin5(map.get("taMin5").toString());
-        midTermTemperatureDto.setTaMin5Low(map.get("taMin5Low").toString());
-        midTermTemperatureDto.setTaMin5High(map.get("taMin5High").toString());
-        midTermTemperatureDto.setTaMax5(map.get("taMax5").toString());
-        midTermTemperatureDto.setTaMax5Low(map.get("taMax5Low").toString());
-        midTermTemperatureDto.setTaMax5High(map.get("taMax5High").toString());
-        midTermTemperatureDto.setTaMin6(map.get("taMin6").toString());
-        midTermTemperatureDto.setTaMin6Low(map.get("taMin6Low").toString());
-        midTermTemperatureDto.setTaMin6High(map.get("taMin6High").toString());
-        midTermTemperatureDto.setTaMax6(map.get("taMax6").toString());
-        midTermTemperatureDto.setTaMax6Low(map.get("taMax6Low").toString());
-        midTermTemperatureDto.setTaMax6High(map.get("taMax6High").toString());
-        midTermTemperatureDto.setTaMin7(map.get("taMin7").toString());
-        midTermTemperatureDto.setTaMin7Low(map.get("taMin7Low").toString());
-        midTermTemperatureDto.setTaMin7High(map.get("taMin7High").toString());
-        midTermTemperatureDto.setTaMax7(map.get("taMax7").toString());
-        midTermTemperatureDto.setTaMax7Low(map.get("taMax7Low").toString());
-        midTermTemperatureDto.setTaMax7High(map.get("taMax7High").toString());
-        midTermTemperatureDto.setTaMin8(map.get("taMin8").toString());
-        midTermTemperatureDto.setTaMin8Low(map.get("taMin8Low").toString());
-        midTermTemperatureDto.setTaMin8High(map.get("taMin8High").toString());
-        midTermTemperatureDto.setTaMax8(map.get("taMax8").toString());
-        midTermTemperatureDto.setTaMax8Low(map.get("taMax8Low").toString());
-        midTermTemperatureDto.setTaMax8High(map.get("taMax8High").toString());
-        midTermTemperatureDto.setTaMin9(map.get("taMin9").toString());
-        midTermTemperatureDto.setTaMin9Low(map.get("taMin9Low").toString());
-        midTermTemperatureDto.setTaMin9High(map.get("taMin9High").toString());
-        midTermTemperatureDto.setTaMax9(map.get("taMax9").toString());
-        midTermTemperatureDto.setTaMax9Low(map.get("taMax9Low").toString());
-        midTermTemperatureDto.setTaMax9High(map.get("taMax9High").toString());
-        midTermTemperatureDto.setTaMin10(map.get("taMin10").toString());
-        midTermTemperatureDto.setTaMin10Low(map.get("taMin10Low").toString());
-        midTermTemperatureDto.setTaMin10High(map.get("taMin10High").toString());
-        midTermTemperatureDto.setTaMax10(map.get("taMax10").toString());
-        midTermTemperatureDto.setTaMax10Low(map.get("taMax10Low").toString());
-        midTermTemperatureDto.setTaMax10High(map.get("taMax10High").toString());
+        midTermTemperatureDto.setRegId(map.get("regId"));
+        midTermTemperatureDto.setTaMin3(map.get("taMin3"));
+        midTermTemperatureDto.setTaMin3Low(map.get("taMin3Low"));
+        midTermTemperatureDto.setTaMin3High(map.get("taMin3High"));
+        midTermTemperatureDto.setTaMax3(map.get("taMax3"));
+        midTermTemperatureDto.setTaMax3Low(map.get("taMax3Low"));
+        midTermTemperatureDto.setTaMax3High(map.get("taMax3High"));
+        midTermTemperatureDto.setTaMin4(map.get("taMin4"));
+        midTermTemperatureDto.setTaMin4Low(map.get("taMin4Low"));
+        midTermTemperatureDto.setTaMin4High(map.get("taMin4High"));
+        midTermTemperatureDto.setTaMax4(map.get("taMax4"));
+        midTermTemperatureDto.setTaMax4Low(map.get("taMax4Low"));
+        midTermTemperatureDto.setTaMax4High(map.get("taMax4High"));
+        midTermTemperatureDto.setTaMin5(map.get("taMin5"));
+        midTermTemperatureDto.setTaMin5Low(map.get("taMin5Low"));
+        midTermTemperatureDto.setTaMin5High(map.get("taMin5High"));
+        midTermTemperatureDto.setTaMax5(map.get("taMax5"));
+        midTermTemperatureDto.setTaMax5Low(map.get("taMax5Low"));
+        midTermTemperatureDto.setTaMax5High(map.get("taMax5High"));
+        midTermTemperatureDto.setTaMin6(map.get("taMin6"));
+        midTermTemperatureDto.setTaMin6Low(map.get("taMin6Low"));
+        midTermTemperatureDto.setTaMin6High(map.get("taMin6High"));
+        midTermTemperatureDto.setTaMax6(map.get("taMax6"));
+        midTermTemperatureDto.setTaMax6Low(map.get("taMax6Low"));
+        midTermTemperatureDto.setTaMax6High(map.get("taMax6High"));
+        midTermTemperatureDto.setTaMin7(map.get("taMin7"));
+        midTermTemperatureDto.setTaMin7Low(map.get("taMin7Low"));
+        midTermTemperatureDto.setTaMin7High(map.get("taMin7High"));
+        midTermTemperatureDto.setTaMax7(map.get("taMax7"));
+        midTermTemperatureDto.setTaMax7Low(map.get("taMax7Low"));
+        midTermTemperatureDto.setTaMax7High(map.get("taMax7High"));
+        midTermTemperatureDto.setTaMin8(map.get("taMin8"));
+        midTermTemperatureDto.setTaMin8Low(map.get("taMin8Low"));
+        midTermTemperatureDto.setTaMin8High(map.get("taMin8High"));
+        midTermTemperatureDto.setTaMax8(map.get("taMax8"));
+        midTermTemperatureDto.setTaMax8Low(map.get("taMax8Low"));
+        midTermTemperatureDto.setTaMax8High(map.get("taMax8High"));
+        midTermTemperatureDto.setTaMin9(map.get("taMin9"));
+        midTermTemperatureDto.setTaMin9Low(map.get("taMin9Low"));
+        midTermTemperatureDto.setTaMin9High(map.get("taMin9High"));
+        midTermTemperatureDto.setTaMax9(map.get("taMax9"));
+        midTermTemperatureDto.setTaMax9Low(map.get("taMax9Low"));
+        midTermTemperatureDto.setTaMax9High(map.get("taMax9High"));
+        midTermTemperatureDto.setTaMin10(map.get("taMin10"));
+        midTermTemperatureDto.setTaMin10Low(map.get("taMin10Low"));
+        midTermTemperatureDto.setTaMin10High(map.get("taMin10High"));
+        midTermTemperatureDto.setTaMax10(map.get("taMax10"));
+        midTermTemperatureDto.setTaMax10Low(map.get("taMax10Low"));
+        midTermTemperatureDto.setTaMax10High(map.get("taMax10High"));
 
         return midTermTemperatureDto;
 

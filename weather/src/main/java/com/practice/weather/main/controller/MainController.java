@@ -1,5 +1,6 @@
 package com.practice.weather.main.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,11 +11,17 @@ import java.util.Calendar;
 @Controller
 public class MainController {
 
-    public static String serviceKey = "MURd%2Fv%2F0Sx9wcaIQJYwwnVC%2FQngp6H1j40ewDO6IBk8LO6E2XQsFkzPkrxFcVchzfHDrdXzXxVyamCeQphkq0Q%3D%3D";
+    @Value("${service.key}")
+    private String serviceKey;
+
+    @GetMapping("/")
+    public String mainRedirect() {
+        return "redirect:/mainView";
+    }
 
     // TODO: 초단기 실황 데이터 말고 초단기 예보로 변경
     // 메인페이지
-    @GetMapping("/")
+    @GetMapping("/mainView")
     public String mainController(Model model) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -35,14 +42,7 @@ public class MainController {
 
     // 중기예보조회 List
     @GetMapping("/mid-term")
-    public String midTermController(Model model) {
-
-        SimpleDateFormat sdf = new SimpleDateFormat("HHmm");
-
-        String time = sdf.format(Calendar.getInstance().getTime());
-
-        model.addAttribute("time", time);
-
+    public String midTermController() {
         return "/midTerm/midTermList";
     }
 
@@ -50,6 +50,12 @@ public class MainController {
     @GetMapping("/short-term")
     public String shortTermController() {
         return "/shortTerm/shortTermList";
+    }
+
+    // 단기 예보 조회 위치 설정
+    @GetMapping("/short-term/location")
+    public String shortTermLocationController() {
+        return "/shortTerm/shortTermLocation";
     }
 
 }

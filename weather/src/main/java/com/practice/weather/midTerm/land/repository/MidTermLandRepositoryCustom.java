@@ -4,6 +4,6 @@ import java.time.LocalDateTime;
 
 public interface MidTermLandRepositoryCustom {
 
-    public boolean existCheck(String regId, LocalDateTime localDateTime);
+    public boolean isExist(String regId, LocalDateTime localDateTime);
 
 }

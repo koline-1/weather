@@ -21,41 +21,12 @@ public class MidTermExpectationServiceImpl implements MidTermExpectationService 
 
 
     @Override
-    public boolean existCheck(String stnId, LocalDateTime localDateTime) {
-        return midTermExpectationRepository.existCheck(stnId, localDateTime);
-    }
-
-    @Override
-    public MidTermExpectationEntity save(MidTermExpectationDto midTermExpectationDto) {
-        return midTermExpectationRepository.save(midTermExpectationDto.toEntity());
-    }
-
-    @Override
-    public MidTermExpectationDto buildMidTermExpectationDto(String str, String stnId) {
-        JSONObject jObject = new JSONObject(str);
-
-        jObject = (JSONObject) jObject.get("response");
-        jObject = (JSONObject) jObject.get("body");
-        jObject = (JSONObject) jObject.get("items");
-
-        JSONArray jArray = (JSONArray) jObject.get("item");
-
-        HashMap<String, Object> map = new HashMap<String, Object>();
-
-        // 데이터 hashmap으로 처리
-        for (int i = 0; i < jArray.length(); i++) {
-            JSONObject j = (JSONObject) jArray.get(i);
-            Set<String> keySet = j.keySet();
-
-            for (String s : keySet) {
-                map.put(s, j.get(s));
-            }
-        }
+    public MidTermExpectationDto parseMapToMidTermExpectationDto(HashMap<String, String> map, String stnId) {
 
         MidTermExpectationDto midTermExpectationDto = new MidTermExpectationDto();
 
         midTermExpectationDto.setStnId(stnId);
-        midTermExpectationDto.setWfSv(map.get("wfSv").toString());
+        midTermExpectationDto.setWfSv(map.get("wfSv"));
 
         return midTermExpectationDto;
 

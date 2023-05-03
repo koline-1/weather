@@ -14,7 +14,7 @@ public class MidTermExpectationRepositoryCustomImpl implements MidTermExpectatio
 
     private final JPAQueryFactory queryFactory;
 
-    public boolean existCheck(String stnId, LocalDateTime localDateTime) {
+    public boolean isExist(String stnId, LocalDateTime localDateTime) {
 
         return queryFactory
                 .select(midTermExpectationEntity.id).from(midTermExpectationEntity)
