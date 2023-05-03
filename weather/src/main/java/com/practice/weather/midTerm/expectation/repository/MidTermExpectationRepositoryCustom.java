@@ -4,6 +4,6 @@ import java.time.LocalDateTime;
 
 public interface MidTermExpectationRepositoryCustom {
 
-    public boolean existCheck(String stnId, LocalDateTime localDateTime);
+    public boolean isExist(String stnId, LocalDateTime localDateTime);
 
 }

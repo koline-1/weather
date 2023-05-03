@@ -4,12 +4,10 @@ import com.practice.weather.midTerm.expectation.dto.MidTermExpectationDto;
 import com.practice.weather.midTerm.expectation.entity.MidTermExpectationEntity;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 public interface MidTermExpectationService {
 
-    public boolean existCheck(String stnId, LocalDateTime localDateTime);
+    public MidTermExpectationDto parseMapToMidTermExpectationDto(HashMap<String, String> map, String stnId);
 
-    public MidTermExpectationEntity save(MidTermExpectationDto midTermExpectationDto);
-
-    public MidTermExpectationDto buildMidTermExpectationDto(String str, String stnId);
 }

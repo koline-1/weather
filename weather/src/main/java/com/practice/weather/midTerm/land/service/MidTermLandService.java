@@ -4,12 +4,10 @@ import com.practice.weather.midTerm.land.dto.MidTermLandDto;
 import com.practice.weather.midTerm.land.entity.MidTermLandEntity;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 public interface MidTermLandService {
-    
-    public boolean existCheck(String regId, LocalDateTime localDateTime);
 
-    public MidTermLandEntity save(MidTermLandDto midTermLandDto);
+    public MidTermLandDto parseMapToMidTermLandDto(HashMap<String, String> data);
 
-    public MidTermLandDto buildMidTermLandDto(String str);
 }

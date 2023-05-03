@@ -14,7 +14,7 @@ public class MidTermOceanRepositoryCustomImpl implements MidTermOceanRepositoryC
 
     private final JPAQueryFactory queryFactory;
 
-    public boolean existCheck(String regId, LocalDateTime localDateTime) {
+    public boolean isExist(String regId, LocalDateTime localDateTime) {
 
         return queryFactory
                 .select(midTermOceanEntity.id).from(midTermOceanEntity)

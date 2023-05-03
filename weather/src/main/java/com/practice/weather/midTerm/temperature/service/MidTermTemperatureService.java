@@ -4,13 +4,10 @@ import com.practice.weather.midTerm.temperature.dto.MidTermTemperatureDto;
 import com.practice.weather.midTerm.temperature.entity.MidTermTemperatureEntity;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 public interface MidTermTemperatureService {
 
-    public boolean existCheck(String regId, LocalDateTime localDateTime);
-
-    public MidTermTemperatureEntity save(MidTermTemperatureDto midTermTemperatureDto);
-
-    public MidTermTemperatureDto buildMidTermTemperatureDto(String str);
+    public MidTermTemperatureDto parseMapToMidTermTemperatureDto(HashMap<String, String> map);
 
 }

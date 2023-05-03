@@ -16,6 +16,10 @@
         let url = '${url}';
         let id = '${id}';
 
+        url = url.replaceAll("base_date=20230501", "base_date=20230501");
+        url = url.replaceAll("base_time=0500", "base_time=1400");
+        console.log(url);
+
         fetch(url)
           .then(response => response.json())
           .then(data => {
