@@ -84,4 +84,7 @@ public class ShortTermExpectationEntity extends BaseEntity {
     @Column
     private String maximumTemperature;
 
+    @Column
+    private String version;
+
 }

@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ShortTermExpectationService {
 
-    public List<ShortTermExpectationDto> parseMapToShortTermExpectationDto(JSONArray jArray);
+    public List<ShortTermExpectationDto> parseJsonArrayToShortTermExpectationDto(JSONArray jArray, String version);
     
 }

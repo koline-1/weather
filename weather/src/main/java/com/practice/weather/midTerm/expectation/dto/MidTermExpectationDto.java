@@ -23,7 +23,7 @@ public class MidTermExpectationDto {
     private LocalDateTime date;
 
     public MidTermExpectationEntity toEntity() {
-        return MidTermExpectationEntity.builder().stnId(stnId).wfSv(wfSv).build();
+        return MidTermExpectationEntity.builder().id(id).stnId(stnId).wfSv(wfSv).build();
     }
     
 }

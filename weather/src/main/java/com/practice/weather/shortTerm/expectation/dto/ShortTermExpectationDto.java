@@ -56,16 +56,18 @@ public class ShortTermExpectationDto {
 
     private String maximumTemperature;
 
+    private String version;
+
     private LocalDateTime date;
 
 
     public ShortTermExpectationEntity toEntity() {
-        return ShortTermExpectationEntity.builder().baseDate(baseDate).baseTime(baseTime).forecastDate(forecastDate)
+        return ShortTermExpectationEntity.builder().id(id).baseDate(baseDate).baseTime(baseTime).forecastDate(forecastDate)
                 .forecastTime(forecastTime).nxValue(nxValue).nyValue(nyValue).hourTemperature(hourTemperature).humidity(humidity)
                 .horizontalWind(horizontalWind).verticalWind(verticalWind).windDirection(windDirection).windSpeed(windSpeed)
                 .skyStatus(skyStatus).rainType(rainType).rainPossibility(rainPossibility).waveHeight(waveHeight)
                 .hourPrecipitation(hourPrecipitation).snowDepth(snowDepth).minimumTemperature(minimumTemperature)
-                .maximumTemperature(maximumTemperature).build();
+                .maximumTemperature(maximumTemperature).version(version).build();
     }
 
 }

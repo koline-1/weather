@@ -9,8 +9,9 @@
     <title>기상청 단기 예보</title>
 </head>
 <body>
-    <a href="/short-term/location">위치 및 서비스 설정</a><br>
-    <a href="/short-term/version">예보 버전 조회</a><br>
+    <a href="/short-term/location?serviceId=expectation">단기 예보 조회</a><br>
+    <a href="/short-term/location?serviceId=extraExpectation">초단기 예보 조회</a><br>
+    <a href="/short-term/location?serviceId=status">초단기 실황 조회</a><br>
     <button onclick="location.href='/'">뒤로</button>
 </body>
 </html>

@@ -15,13 +15,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 @Controller
 public class ShortTermExpectationController {
-
 
     @Autowired
     ShortTermExpectationService shortTermExpectationService;
@@ -46,7 +43,7 @@ public class ShortTermExpectationController {
             Model model
     ) throws JsonProcessingException {
 
-        String[] dateTime = getBaseDateTime();
+        String[] dateTime = utility.getShortTermBaseDateTime("expectation");
 
         // 서비스 URL
         String urlStr = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?" +
@@ -58,7 +55,8 @@ public class ShortTermExpectationController {
         JSONArray jArray = utility.getDataAsJsonArray(urlStr);
 
         if (!jArray.isEmpty()) {
-            List<ShortTermExpectationDto> shortTermExpectationDtoList = shortTermExpectationService.parseMapToShortTermExpectationDto(jArray);
+            List<ShortTermExpectationDto> shortTermExpectationDtoList =
+                    shortTermExpectationService.parseJsonArrayToShortTermExpectationDto(jArray, utility.getShortTermVersion("SHRT", dateTime[0]+dateTime[1]));
             model.addAttribute("shortTermExpectationDtoList", shortTermExpectationDtoList);
             model.addAttribute("shortTermExpectationDtoListJson", objectMapper.writeValueAsString(shortTermExpectationDtoList));
         }else {
@@ -71,52 +69,23 @@ public class ShortTermExpectationController {
 
     @ResponseBody
     @PostMapping("/short-term/expectation/data")
-    public String saveShortTermExpectation (@RequestBody String data) throws JsonProcessingException {
+    public int saveShortTermExpectation (@RequestBody String data) throws JsonProcessingException {
 
         JSONObject jObject = new JSONObject(data);
 
         List<ShortTermExpectationDto> shortTermExpectationDtoList = objectMapper.readValue(jObject.get("data").toString(), new TypeReference<List<ShortTermExpectationDto>>() {});
 
-        String[] dateTime = getBaseDateTime();
+        int saveCount = 0;
 
-        if (!shortTermExpectationRepository.isExist(dateTime[0], dateTime[1])) {
-            for (ShortTermExpectationDto dto : shortTermExpectationDtoList) {
+        for (ShortTermExpectationDto dto : shortTermExpectationDtoList) {
+            if (!shortTermExpectationRepository.isExist(dto)) {
                 shortTermExpectationRepository.save(dto.toEntity());
+                saveCount++;
             }
-            return "saved";
         }
 
-        return "exists";
-    }
+        return saveCount;
 
-    private String[] getBaseDateTime() {
-
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
-        SimpleDateFormat sdfTime = new SimpleDateFormat("HH");
-
-        Calendar current = Calendar.getInstance();
-
-        int[] releaseTimeArray = {2,5,8,11,14,17,20,23};
-
-        int hour = current.get(Calendar.HOUR_OF_DAY);
-        int minute = current.get(Calendar.MINUTE);
-
-        int quotient = (hour-2)/3;
-
-        int remainder = (hour-2)%3;
-
-        if (remainder < 0 || (remainder == 0 && quotient == 0 && minute < 11)) {
-            current.add(Calendar.DATE, -1);
-            current.set(Calendar.HOUR_OF_DAY, 23);
-        } else if (remainder >= 0 && (quotient != 0 && minute < 11)) {
-            current.set(Calendar.HOUR_OF_DAY, releaseTimeArray[quotient - 1]);
-        } else if (quotient == 0 && ((remainder == 0 && minute >= 11) || (remainder > 0 && minute < 11))) {
-            current.set(Calendar.HOUR_OF_DAY, 2);
-        } else {
-            current.set(Calendar.HOUR_OF_DAY, releaseTimeArray[quotient]);
-        }
-
-        return new String[]{sdfDate.format(current.getTime()), sdfTime.format(current.getTime()) + "00"};
     }
 
 }

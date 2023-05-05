@@ -22,7 +22,7 @@ public class ShortTermExpectationServiceImpl implements ShortTermExpectationServ
 
 
     @Override
-    public List<ShortTermExpectationDto> parseMapToShortTermExpectationDto(JSONArray jArray) {
+    public List<ShortTermExpectationDto> parseJsonArrayToShortTermExpectationDto(JSONArray jArray, String version) {
 
         List<ShortTermExpectationDto> shortTermExpectationDtoList = new ArrayList<>();
         ShortTermExpectationDto tmpDto = new ShortTermExpectationDto();
@@ -32,6 +32,7 @@ public class ShortTermExpectationServiceImpl implements ShortTermExpectationServ
 
             if (j.get("category").equals("TMP")) {
                 if (i != 0) {
+                    tmpDto.setVersion(version);
                     shortTermExpectationDtoList.add(tmpDto);
                     tmpDto = new ShortTermExpectationDto();
                 }
@@ -70,6 +71,8 @@ public class ShortTermExpectationServiceImpl implements ShortTermExpectationServ
                 tmpDto.setMaximumTemperature(j.get("fcstValue").toString());
             }
         }
+        tmpDto.setVersion(version);
+        shortTermExpectationDtoList.add(tmpDto);
 
         return shortTermExpectationDtoList;
 

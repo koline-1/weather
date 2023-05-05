@@ -2,6 +2,7 @@ package com.practice.weather.utility;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -18,6 +19,10 @@ import java.util.Set;
 
 @Component
 public class Utility {
+
+    @Value("${service.key}")
+    private String serviceKey;
+
     // URL 연결 메소드
     public JSONArray getDataAsJsonArray(String urlStr) {
 
@@ -104,5 +109,97 @@ public class Utility {
         cal.set(Calendar.MINUTE, 0);
 
         return cal;
+    }
+
+    public String[] getShortTermBaseDateTime(String serviceId) {
+
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat sdfTime = new SimpleDateFormat("HHmm");
+
+        Calendar current = Calendar.getInstance();
+
+        if (serviceId.equals("extraExpectation")) {
+            if (current.get(Calendar.MINUTE) <= 45 ) {
+                current.add(Calendar.HOUR_OF_DAY, -1);
+            }
+        } else if (serviceId.equals("status")) {
+            if (current.get(Calendar.MINUTE) <= 40 ) {
+                current.add(Calendar.HOUR_OF_DAY, -1);
+            }
+        } else if (serviceId.equals("expectation")) {
+            int[] releaseTimeArray = {2, 5, 8, 11, 14, 17, 20, 23};
+
+            int hour = current.get(Calendar.HOUR_OF_DAY);
+            int minute = current.get(Calendar.MINUTE);
+            int quotient = (hour - 2) / 3;
+            int remainder = (hour - 2) % 3;
+
+            if (remainder < 0 || (remainder == 0 && quotient == 0 && minute < 11)) {
+                current.add(Calendar.DATE, -1);
+                current.set(Calendar.HOUR_OF_DAY, 23);
+            } else if (remainder >= 0 && (quotient != 0 && minute < 11)) {
+                current.set(Calendar.HOUR_OF_DAY, releaseTimeArray[quotient - 1]);
+            } else if (quotient == 0 && ((remainder == 0 && minute >= 11) || (remainder > 0 && minute < 11))) {
+                current.set(Calendar.HOUR_OF_DAY, 2);
+            } else {
+                current.set(Calendar.HOUR_OF_DAY, releaseTimeArray[quotient]);
+            }
+        }
+
+
+
+        return new String[]{sdfDate.format(current.getTime()), sdfTime.format(current.getTime())};
+    }
+
+    public String getShortTermVersion (String serviceId, String dateTime) {
+
+        String urlStr = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getFcstVersion?" +
+                "serviceKey=" + serviceKey + "&pageNo=1&numOfRows=1000&dataType=JSON" +
+                "&ftype=" + serviceId + "&basedatetime=" + dateTime;
+
+        try {
+            // API url 연결
+            URL url = new URL(urlStr);
+
+            URLConnection connection = url.openConnection();
+            connection.setDoOutput(true);
+
+            // 타입 설정
+            connection.setRequestProperty("CONTENT-TYPE", "application/json");
+
+            //openStream() : URL페이지 정보를 읽어온다.
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "utf-8"));
+
+            String inputLine;
+            String buffer = "";
+
+            // 페이지의 정보를 저장한다.
+            while ((inputLine = in.readLine()) != null){
+                buffer += inputLine.trim();
+            }
+
+            in.close();
+
+            JSONObject jObject = new JSONObject(buffer);
+
+            jObject = (JSONObject) jObject.get("response");
+            jObject = (JSONObject) jObject.get("body");
+            jObject = (JSONObject) jObject.get("items");
+
+            JSONArray jArray = (JSONArray) jObject.get("item");
+
+            String version = "";
+
+            for (int i = 0; i < jArray.length(); i++) {
+                JSONObject j = (JSONObject) jArray.get(i);
+                version = j.get("version").toString();
+            }
+
+            return version;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

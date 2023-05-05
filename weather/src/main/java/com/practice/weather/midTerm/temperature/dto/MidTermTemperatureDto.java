@@ -117,7 +117,7 @@ public class MidTermTemperatureDto {
     private LocalDateTime date;
 
     public MidTermTemperatureEntity toEntity() {
-        return MidTermTemperatureEntity.builder().regId(regId).taMin3(taMin3).taMin3Low(taMin3Low).taMin3High(taMin3High)
+        return MidTermTemperatureEntity.builder().id(id).regId(regId).taMin3(taMin3).taMin3Low(taMin3Low).taMin3High(taMin3High)
                 .taMax3(taMax3).taMax3Low(taMax3Low).taMax3High(taMax3High).taMin4(taMin4).taMin4Low(taMin4Low).taMin4High(taMin4High)
                 .taMax4(taMax4).taMax4Low(taMax4Low).taMax4High(taMax4High).taMin5(taMin5).taMin5Low(taMin5Low).taMin5High(taMin5High)
                 .taMax5(taMax5).taMax5Low(taMax5Low).taMax5High(taMax5High).taMin6(taMin6).taMin6Low(taMin6Low).taMin6High(taMin6High)
