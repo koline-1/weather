@@ -7,10 +7,10 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script type="text/javascript" src="/template/js/jquery-3.6.4.js"></script>
-    <title>기상청 단기 예보 조회</title>
+    <title>기상청 초단기 예보 조회</title>
 </head>
 <body>
-    <c:forEach var="item" items="${shortTermExpectationDtoList}">
+    <c:forEach var="item" items="${shortTermExtraExpectationDtoList}">
         <div>
             <ul>
                 <li>
@@ -33,7 +33,13 @@
                     y값 : ${item.nyValue}
                 </li>
                 <li>
-                    1시간 기온 : ${item.hourTemperature}
+                    기온 : ${item.temperature}
+                </li>
+                <li>
+                    1시간 강수량 : ${item.hourPrecipitation}
+                </li>
+                <li>
+                    하늘상태 : ${item.skyStatus}
                 </li>
                 <li>
                     풍속(동서성분) : ${item.horizontalWind}
@@ -42,42 +48,20 @@
                     풍속(남북성분) : ${item.verticalWind}
                 </li>
                 <li>
-                    풍향 : ${item.windDirection}
-                </li>
-                <li>
-                    풍속 : ${item.windSpeed}
-                </li>
-                <li>
-                    하늘상태 : ${item.skyStatus}
-                </li>
-                <li>
-                    강수확률 : ${item.rainPossibility}
+                    습도 : ${item.humidity}
                 </li>
                 <li>
                     강수형태 : ${item.rainType}
                 </li>
                 <li>
-                    파고 : ${item.waveHeight}
+                    낙뢰 : ${item.lightning}
                 </li>
                 <li>
-                    1시간 강수량 : ${item.hourPrecipitation}
+                    풍향 : ${item.windDirection}
                 </li>
                 <li>
-                    1시간 신적설 : ${item.snowDepth}
+                    풍속 : ${item.windSpeed}
                 </li>
-                <li>
-                    습도 : ${item.humidity}
-                </li>
-                <c:if test="${not empty item.minimumTemperature}">
-                    <li>
-                        일 최저기온 : ${item.minimumTemperature}
-                    </li>
-                </c:if>
-                <c:if test="${not empty item.maximumTemperature}">
-                    <li>
-                        일 최고기온 : ${item.maximumTemperature}
-                    </li>
-                </c:if>
                 <li>
                     버전 : ${item.version}
                 </li>
@@ -90,9 +74,9 @@
 
     <script type="text/javascript">
         function save() {
-            const jsonData = '${shortTermExpectationDtoListJson}';
+            const jsonData = '${shortTermExtraExpectationDtoListJson}';
             if (jsonData) {
-                fetch('/short-term/expectation/data', {
+                fetch('/short-term/extraExpectation/data', {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json; charset=utf-8"

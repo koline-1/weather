@@ -1,4 +1,4 @@
-package com.practice.weather.shortTerm.expectation.entity;
+package com.practice.weather.shortTerm.status.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -10,14 +10,14 @@ import com.querydsl.core.types.Path;
 
 
 /**
- * QShortTermExpectationEntity is a Querydsl query type for ShortTermExpectationEntity
+ * QShortTermStatusEntity is a Querydsl query type for ShortTermStatusEntity
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QShortTermExpectationEntity extends EntityPathBase<ShortTermExpectationEntity> {
+public class QShortTermStatusEntity extends EntityPathBase<ShortTermStatusEntity> {
 
-    private static final long serialVersionUID = -786215510L;
+    private static final long serialVersionUID = -2022949016L;
 
-    public static final QShortTermExpectationEntity shortTermExpectationEntity = new QShortTermExpectationEntity("shortTermExpectationEntity");
+    public static final QShortTermStatusEntity shortTermStatusEntity = new QShortTermStatusEntity("shortTermStatusEntity");
 
     public final com.practice.weather.main.entity.QBaseEntity _super = new com.practice.weather.main.entity.QBaseEntity(this);
 
@@ -28,56 +28,40 @@ public class QShortTermExpectationEntity extends EntityPathBase<ShortTermExpecta
     //inherited
     public final DateTimePath<java.time.LocalDateTime> date = _super.date;
 
-    public final StringPath forecastDate = createString("forecastDate");
-
-    public final StringPath forecastTime = createString("forecastTime");
-
     public final StringPath horizontalWind = createString("horizontalWind");
 
     public final StringPath hourPrecipitation = createString("hourPrecipitation");
-
-    public final StringPath hourTemperature = createString("hourTemperature");
 
     public final StringPath humidity = createString("humidity");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath maximumTemperature = createString("maximumTemperature");
-
-    public final StringPath minimumTemperature = createString("minimumTemperature");
-
     public final StringPath nxValue = createString("nxValue");
 
     public final StringPath nyValue = createString("nyValue");
 
-    public final StringPath rainPossibility = createString("rainPossibility");
-
     public final StringPath rainType = createString("rainType");
 
-    public final StringPath skyStatus = createString("skyStatus");
-
-    public final StringPath snowDepth = createString("snowDepth");
+    public final StringPath temperature = createString("temperature");
 
     public final StringPath version = createString("version");
 
     public final StringPath verticalWind = createString("verticalWind");
 
-    public final StringPath waveHeight = createString("waveHeight");
-
     public final StringPath windDirection = createString("windDirection");
 
     public final StringPath windSpeed = createString("windSpeed");
 
-    public QShortTermExpectationEntity(String variable) {
-        super(ShortTermExpectationEntity.class, forVariable(variable));
+    public QShortTermStatusEntity(String variable) {
+        super(ShortTermStatusEntity.class, forVariable(variable));
     }
 
-    public QShortTermExpectationEntity(Path<? extends ShortTermExpectationEntity> path) {
+    public QShortTermStatusEntity(Path<? extends ShortTermStatusEntity> path) {
         super(path.getType(), path.getMetadata());
     }
 
-    public QShortTermExpectationEntity(PathMetadata metadata) {
-        super(ShortTermExpectationEntity.class, metadata);
+    public QShortTermStatusEntity(PathMetadata metadata) {
+        super(ShortTermStatusEntity.class, metadata);
     }
 
 }

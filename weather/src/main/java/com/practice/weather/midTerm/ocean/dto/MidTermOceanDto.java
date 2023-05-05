@@ -99,7 +99,7 @@ public class MidTermOceanDto {
     private LocalDateTime date;
 
     public MidTermOceanEntity toEntity() {
-        return MidTermOceanEntity.builder().regId(regId).wf8(wf8).wh4AAm(wh4AAm).wh4BAm(wh4BAm).wh6BAm(wh6BAm)
+        return MidTermOceanEntity.builder().id(id).regId(regId).wf8(wf8).wh4AAm(wh4AAm).wh4BAm(wh4BAm).wh6BAm(wh6BAm)
                 .wf9(wf9).wh6AAm(wh6AAm).wh9B(wh9B).wh9A(wh9A).wf6Pm(wf6Pm).wf7Pm(wf7Pm).wf10(wf10).wh4APm(wh4APm)
                 .wh6BPm(wh6BPm).wh6APm(wh6APm).wf3Pm(wf3Pm).wf4Pm(wf4Pm).wh4BPm(wh4BPm).wf5Pm(wf5Pm).wh7AAm(wh7AAm)
                 .wf7Am(wh7AAm).wh3AAm(wh3AAm).wh5BAm(wh5BAm).wh5AAm(wh5AAm).wf3Am(wf3Am).wh7BAm(wh7BAm).wh8B(wh8B)
