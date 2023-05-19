@@ -43,7 +43,7 @@ public class MidTermExpectationController {
 
     // 중기해상예보조회
     @GetMapping("/mid-term/expectation/data")
-    public String midTermExpectationController(
+    public String midTermExpectationDataController(
             @RequestParam(value = "location", required = false) String location,
             Model model
     ) throws JsonProcessingException {
