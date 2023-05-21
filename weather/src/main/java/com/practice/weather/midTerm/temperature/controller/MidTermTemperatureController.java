@@ -3,6 +3,7 @@ package com.practice.weather.midTerm.temperature.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.weather.midTerm.temperature.dto.MidTermTemperatureDto;
+import com.practice.weather.midTerm.temperature.entity.MidTermTemperatureEntity;
 import com.practice.weather.midTerm.temperature.repository.MidTermTemperatureRepository;
 import com.practice.weather.midTerm.temperature.service.MidTermTemperatureService;
 import com.practice.weather.utility.Utility;
@@ -72,17 +73,16 @@ public class MidTermTemperatureController {
 
     @ResponseBody
     @PostMapping("/mid-term/temperature/data")
-    public String saveMidTermTemperature (@RequestBody String data) throws JsonProcessingException {
+    public MidTermTemperatureEntity saveMidTermTemperature (@RequestBody String data) throws JsonProcessingException {
 
         JSONObject jObject = new JSONObject(data);
 
         MidTermTemperatureDto midTermTemperatureDto = objectMapper.readValue(jObject.get("data").toString(), MidTermTemperatureDto.class);
 
         if (!midTermTemperatureRepository.isExist(midTermTemperatureDto.getRegId(), utility.getMidTermBaseDateTimeAsLocalDateTime())) {
-            midTermTemperatureRepository.save(midTermTemperatureDto.toEntity());
-            return "saved";
+            return midTermTemperatureRepository.save(midTermTemperatureDto.toEntity());
         }
 
-        return "exists";
+        return MidTermTemperatureEntity.builder().regId("").build();
     }
 }

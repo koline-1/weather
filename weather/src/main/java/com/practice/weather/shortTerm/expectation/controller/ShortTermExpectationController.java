@@ -69,7 +69,7 @@ public class ShortTermExpectationController {
 
     @ResponseBody
     @PostMapping("/short-term/expectation/data")
-    public int saveShortTermExpectation (@RequestBody String data) throws JsonProcessingException {
+    public String saveShortTermExpectation (@RequestBody String data) throws JsonProcessingException {
 
         JSONObject jObject = new JSONObject(data);
 
@@ -84,7 +84,7 @@ public class ShortTermExpectationController {
             }
         }
 
-        return saveCount;
+        return "{ \"count\": \"" + String.valueOf(saveCount) + "\"}";
 
     }
 

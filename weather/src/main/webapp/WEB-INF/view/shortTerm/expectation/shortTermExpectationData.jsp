@@ -100,13 +100,12 @@
                   body: JSON.stringify({
                     data : jsonData
                   }),
-                }).then((response) => response.text())
+                }).then((response) => response.json())
                 .then((response) => {
-                    response *= 1;
-                    if (response === 0) {
+                    if (response.count == 0) {
                         alert("이미 저장한 데이터 입니다.");
-                    } else if (response > 0) {
-                        alert(response+"개의 데이터를 성공적으로 저장하였습니다.");
+                    } else if (response.count > 0) {
+                        alert(response.count+"개의 데이터를 성공적으로 저장하였습니다.");
                     } else {
                         alert("알 수 없는 오류가 발생했습니다.");
                     }

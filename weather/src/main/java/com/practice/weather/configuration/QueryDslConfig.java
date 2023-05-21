@@ -1,4 +1,4 @@
-package com.practice.weather.dslConfig;
+package com.practice.weather.configuration;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;

@@ -1,23 +1,28 @@
-package com.practice.weather.midTerm;
+package com.practice.weather.midTerm.expectation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.practice.weather.midTerm.expectation.controller.MidTermExpectationController;
 import com.practice.weather.midTerm.expectation.entity.MidTermExpectationEntity;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.HashMap;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -30,6 +35,9 @@ public class MidTermExpectationControllerTest {
 
     @Mock
     private MidTermExpectationEntity midTermExpectationEntity;
+
+    @MockBean
+    private MidTermExpectationController midTermExpectationController;
 
     @Autowired
     private MockMvc mockMvc;
@@ -61,21 +69,34 @@ public class MidTermExpectationControllerTest {
     @DisplayName("midTermExpectation data DB save 테스트")
     public void saveMidTermExpectationTest() throws Exception {
 
-        midTermExpectationEntity = MidTermExpectationEntity.builder().stnId("testId").wfSv("testWfSv").build();
+        midTermExpectationEntity = MidTermExpectationEntity.builder()
+                .stnId("testId")
+                .wfSv("testWfSv")
+                .build();
+
+        // given
+        given(midTermExpectationController.saveMidTermExpectation(any()))
+                .willReturn(
+                        midTermExpectationEntity
+                );
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("data", midTermExpectationEntity);
 
         JSONObject jObject = new JSONObject(map);
-        System.out.println(">>>>>>>>>"+ jObject);
 
-        mockMvc.perform(post("/mid-term/expectation/data")
+        // when
+        final ResultActions actions = mockMvc.perform(post("/mid-term/expectation/data")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
                         .content(objectMapper.writeValueAsString(jObject))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-                // 추후에 추가하기
-//                .andExpect(jsonPath("$.stnId").value("testId"))
-//                .andExpect(jsonPath("$.wfSv").value("testWfSv"));
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        actions
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.stnId").value("testId"))
+            .andExpect(jsonPath("$.wfSv").value("testWfSv"));
     }
 
 }

@@ -68,11 +68,11 @@
                   body: JSON.stringify({
                     data : jsonData
                   }),
-                }).then((response) => response.text())
+                }).then((response) => response.json())
                 .then((response) => {
-                    if (response === "saved") {
+                    if (Number(response.stnId) > 0) {
                         alert("데이터를 성공적으로 저장하였습니다.");
-                    } else if (response === "exists") {
+                    } else if (Number(response.stnId) === 0) {
                         alert("이미 저장한 데이터 입니다.");
                     } else {
                         alert("알 수 없는 오류가 발생했습니다.");

@@ -3,6 +3,7 @@ package com.practice.weather.shortTerm.status.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.weather.shortTerm.status.dto.ShortTermStatusDto;
+import com.practice.weather.shortTerm.status.entity.ShortTermStatusEntity;
 import com.practice.weather.shortTerm.status.repository.ShortTermStatusRepository;
 import com.practice.weather.shortTerm.status.service.ShortTermStatusService;
 import com.practice.weather.utility.Utility;
@@ -66,18 +67,17 @@ public class ShortTermStatusController {
 
     @ResponseBody
     @PostMapping("/short-term/status/data")
-    public String saveShortTermStatus (@RequestBody String data) throws JsonProcessingException {
+    public ShortTermStatusEntity saveShortTermStatus (@RequestBody String data) throws JsonProcessingException {
 
         JSONObject jObject = new JSONObject(data);
 
         ShortTermStatusDto shortTermStatusDto = objectMapper.readValue(jObject.get("data").toString(), ShortTermStatusDto.class);
 
         if (!shortTermStatusRepository.isExist(shortTermStatusDto)) {
-            shortTermStatusRepository.save(shortTermStatusDto.toEntity());
-            return "saved";
+            return shortTermStatusRepository.save(shortTermStatusDto.toEntity());
         }
 
-        return "exists";
+        return ShortTermStatusEntity.builder().baseDate("").build();
 
     }
     

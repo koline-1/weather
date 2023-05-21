@@ -2,6 +2,7 @@ package com.practice.weather.midTerm.ocean.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.practice.weather.midTerm.ocean.entity.MidTermOceanEntity;
 import com.practice.weather.midTerm.ocean.repository.MidTermOceanRepository;
 import com.practice.weather.midTerm.ocean.service.MidTermOceanService;
 import com.practice.weather.utility.Utility;
@@ -72,17 +73,16 @@ public class MidTermOceanController {
 
     @ResponseBody
     @PostMapping("/mid-term/ocean/data")
-    public String saveMidTermOcean (@RequestBody String data) throws JsonProcessingException {
+    public MidTermOceanEntity saveMidTermOcean (@RequestBody String data) throws JsonProcessingException {
 
         JSONObject jObject = new JSONObject(data);
 
         MidTermOceanDto midTermOceanDto = objectMapper.readValue(jObject.get("data").toString(), MidTermOceanDto.class);
 
         if (!midTermOceanRepository.isExist(midTermOceanDto.getRegId(), utility.getMidTermBaseDateTimeAsLocalDateTime())) {
-            midTermOceanRepository.save(midTermOceanDto.toEntity());
-            return "saved";
+            return midTermOceanRepository.save(midTermOceanDto.toEntity());
         }
 
-        return "exists";
+        return MidTermOceanEntity.builder().regId("").build();
     }
 }

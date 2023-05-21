@@ -3,6 +3,7 @@ package com.practice.weather.midTerm.land.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.weather.midTerm.land.dto.MidTermLandDto;
+import com.practice.weather.midTerm.land.entity.MidTermLandEntity;
 import com.practice.weather.midTerm.land.repository.MidTermLandRepository;
 import com.practice.weather.midTerm.land.service.MidTermLandService;
 import com.practice.weather.utility.Utility;
@@ -72,18 +73,17 @@ public class MidTermLandController {
 
     @ResponseBody
     @PostMapping("/mid-term/land/data")
-    public String saveMidTermLand (@RequestBody String data) throws JsonProcessingException {
+    public MidTermLandEntity saveMidTermLand (@RequestBody String data) throws JsonProcessingException {
 
         JSONObject jObject = new JSONObject(data);
 
         MidTermLandDto midTermLandDto = objectMapper.readValue(jObject.get("data").toString(), MidTermLandDto.class);
 
         if (!midTermLandRepository.isExist(midTermLandDto.getRegId(), utility.getMidTermBaseDateTimeAsLocalDateTime())) {
-            midTermLandRepository.save(midTermLandDto.toEntity());
-            return "saved";
+            return midTermLandRepository.save(midTermLandDto.toEntity());
         }
 
-        return "exists";
+        return MidTermLandEntity.builder().regId("").build();
     }
     
 }
