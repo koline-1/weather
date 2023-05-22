@@ -18,8 +18,7 @@ public class ShortTermExpectationRepositoryCustomImpl implements ShortTermExpect
         return queryFactory
                 .select(shortTermExpectationEntity.id).from(shortTermExpectationEntity)
                 .where(
-                        shortTermExpectationEntity.baseDate.eq(dto.getBaseDate())
-                        .and(shortTermExpectationEntity.baseTime.eq(dto.getBaseTime()))
+                        shortTermExpectationEntity.version.eq(dto.getVersion())
                         .and(shortTermExpectationEntity.forecastDate.eq(dto.getForecastDate()))
                         .and(shortTermExpectationEntity.forecastTime.eq(dto.getForecastTime()))
                         .and(shortTermExpectationEntity.nxValue.eq(dto.getNxValue()))

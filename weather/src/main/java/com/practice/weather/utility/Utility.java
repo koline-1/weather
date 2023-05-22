@@ -1,5 +1,6 @@
 package com.practice.weather.utility;
 
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,9 +18,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Set;
 
+@Slf4j
 @Component
 public class Utility {
 
+    // 기상청 API 서비스키
     @Value("${service.key}")
     private String serviceKey;
 
@@ -60,11 +63,12 @@ public class Utility {
             return jArray;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("[EXCEPTION] Utility.getDataAsJsonArray : {}", e);
             return null;
         }
     }
 
+    // JSONArray > Map 파싱
     public HashMap<String, String> parseJsonArrayToMap (JSONArray jArray) {
 
         HashMap<String, String> map = new HashMap<>();
@@ -81,6 +85,7 @@ public class Utility {
         return map;
     }
 
+    // 중기예보 BaseDate, BaseTime String Type 으로 return
     public String getMidTermBaseDateTimeAsString() {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
@@ -88,11 +93,13 @@ public class Utility {
         return sdf.format(getMidTermBaseDateTimeAsCalendar().getTime());
     }
 
+    // 중기예보 BaseDate, BaseTime LocalDateTime Type 으로 return
     public LocalDateTime getMidTermBaseDateTimeAsLocalDateTime() {
 
         return getMidTermBaseDateTimeAsCalendar().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
+    // 중기예보 BaseDate, BaseTime Calendar Type 으로 return
     public Calendar getMidTermBaseDateTimeAsCalendar() {
 
         Calendar cal = Calendar.getInstance();
@@ -111,6 +118,7 @@ public class Utility {
         return cal;
     }
 
+    // 단기예보 BaseDate, BaseTime String[] Type 으로 return
     public String[] getShortTermBaseDateTime(String serviceId) {
 
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
@@ -146,60 +154,19 @@ public class Utility {
             }
         }
 
-
-
         return new String[]{sdfDate.format(current.getTime()), sdfTime.format(current.getTime())};
     }
 
+    // 단기예보 버전 조회
     public String getShortTermVersion (String serviceId, String dateTime) {
 
         String urlStr = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getFcstVersion?" +
                 "serviceKey=" + serviceKey + "&pageNo=1&numOfRows=1000&dataType=JSON" +
                 "&ftype=" + serviceId + "&basedatetime=" + dateTime;
 
-        try {
-            // API url 연결
-            URL url = new URL(urlStr);
+        JSONArray jArray = getDataAsJsonArray(urlStr);
 
-            URLConnection connection = url.openConnection();
-            connection.setDoOutput(true);
+        return ((JSONObject) jArray.get(0)).get("version").toString();
 
-            // 타입 설정
-            connection.setRequestProperty("CONTENT-TYPE", "application/json");
-
-            //openStream() : URL페이지 정보를 읽어온다.
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "utf-8"));
-
-            String inputLine;
-            String buffer = "";
-
-            // 페이지의 정보를 저장한다.
-            while ((inputLine = in.readLine()) != null){
-                buffer += inputLine.trim();
-            }
-
-            in.close();
-
-            JSONObject jObject = new JSONObject(buffer);
-
-            jObject = (JSONObject) jObject.get("response");
-            jObject = (JSONObject) jObject.get("body");
-            jObject = (JSONObject) jObject.get("items");
-
-            JSONArray jArray = (JSONArray) jObject.get("item");
-
-            String version = "";
-
-            for (int i = 0; i < jArray.length(); i++) {
-                JSONObject j = (JSONObject) jArray.get(i);
-                version = j.get("version").toString();
-            }
-
-            return version;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }

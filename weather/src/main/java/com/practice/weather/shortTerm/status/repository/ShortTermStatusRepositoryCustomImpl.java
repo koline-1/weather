@@ -18,8 +18,7 @@ public class ShortTermStatusRepositoryCustomImpl implements ShortTermStatusRepos
         return queryFactory
                 .select(shortTermStatusEntity.id).from(shortTermStatusEntity)
                 .where(
-                        shortTermStatusEntity.baseDate.eq(dto.getBaseDate())
-                        .and(shortTermStatusEntity.baseTime.eq(dto.getBaseTime()))
+                        shortTermStatusEntity.version.eq(dto.getVersion())
                         .and(shortTermStatusEntity.nxValue.eq(dto.getNxValue()))
                         .and(shortTermStatusEntity.nyValue.eq(dto.getNyValue()))
                 ).fetch().size() > 0;

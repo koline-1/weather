@@ -56,7 +56,7 @@
     </c:if>
 
     <button onclick="save();">데이터 저장</button>
-    <button onclick="location.href='/short-term/location'">뒤로</button>
+    <button onclick="location.href='/short-term/location?serviceId=status'">뒤로</button>
 
     <script type="text/javascript">
         function save() {
@@ -70,11 +70,11 @@
                   body: JSON.stringify({
                     data : jsonData
                   }),
-                }).then((response) => response.text())
+                }).then((response) => response.json())
                 .then((response) => {
-                    if (response === "saved") {
+                    if (response.baseDate !== "") {
                         alert("데이터를 성공적으로 저장하였습니다.");
-                    } else if (response === "exists") {
+                    } else if (response.baseDate === "") {
                         alert("이미 저장한 데이터 입니다.");
                     } else {
                         alert("알 수 없는 오류가 발생했습니다.");
