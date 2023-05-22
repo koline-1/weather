@@ -56,7 +56,7 @@
     </c:if>
 
     <button onclick="save();">데이터 저장</button>
-    <button onclick="location.href='/short-term/location'">뒤로</button>
+    <button onclick="location.href='/short-term/location?serviceId=status'">뒤로</button>
 
     <script type="text/javascript">
         function save() {

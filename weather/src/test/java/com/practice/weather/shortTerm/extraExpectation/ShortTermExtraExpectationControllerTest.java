@@ -1,8 +1,8 @@
-package com.practice.weather.shortTerm.Expectation;
+package com.practice.weather.shortTerm.extraExpectation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.practice.weather.shortTerm.expectation.controller.ShortTermExpectationController;
-import com.practice.weather.shortTerm.expectation.entity.ShortTermExpectationEntity;
+import com.practice.weather.shortTerm.extraExpectation.controller.ShortTermExtraExpectationController;
+import com.practice.weather.shortTerm.extraExpectation.entity.ShortTermExtraExpectationEntity;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,13 +32,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ShortTermExpectationControllerTest {
+public class ShortTermExtraExpectationControllerTest {
 
     @Mock
-    private ShortTermExpectationEntity shortTermExpectationEntity;
+    private ShortTermExtraExpectationEntity shortTermExtraExpectationEntity;
 
     @MockBean
-    private ShortTermExpectationController shortTermExpectationController;
+    private ShortTermExtraExpectationController shortTermExtraExpectationController;
 
     @Autowired
     private MockMvc mockMvc;
@@ -48,41 +48,41 @@ public class ShortTermExpectationControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    public void setupExpectation() {
+    public void setupExtraExpectation() {
         openMocks = MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    @DisplayName("shortTermExpectation data 화면 테스트")
-    public void shortTermExpectationControllerTest() throws Exception {
-        mockMvc.perform(get("/short-term/expectation/data"))
+    @DisplayName("shortTermExtraExpectation data 화면 테스트")
+    public void shortTermExtraExpectationControllerTest() throws Exception {
+        mockMvc.perform(get("/short-term/extraExpectation/data"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("shortTermExpectation data DB save 테스트")
-    public void saveShortTermExpectationTest() throws Exception {
+    @DisplayName("shortTermExtraExpectation data DB save 테스트")
+    public void saveShortTermExtraExpectationTest() throws Exception {
 
-        shortTermExpectationEntity = ShortTermExpectationEntity.builder().baseDate("baseDate").build();
+        shortTermExtraExpectationEntity = ShortTermExtraExpectationEntity.builder().baseDate("baseDate").build();
 
         HashMap<String, String> expectedResult = new HashMap<>();
 
         expectedResult.put("count", "1");
 
         // given
-        given(shortTermExpectationController.saveShortTermExpectation(any()))
+        given(shortTermExtraExpectationController.saveShortTermExtraExpectation(any()))
                 .willReturn(
                         objectMapper.writeValueAsString(expectedResult)
                 );
 
         HashMap<String, Object> map = new HashMap<>();
 
-        map.put("data", shortTermExpectationEntity);
+        map.put("data", shortTermExtraExpectationEntity);
 
         JSONObject jObject = new JSONObject(map);
 
         // when
-        final ResultActions actions = mockMvc.perform(post("/short-term/expectation/data")
+        final ResultActions actions = mockMvc.perform(post("/short-term/extraExpectation/data")
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .content(objectMapper.writeValueAsString(jObject))

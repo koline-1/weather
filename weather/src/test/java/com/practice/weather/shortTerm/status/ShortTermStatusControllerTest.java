@@ -1,4 +1,4 @@
-package com.practice.weather.shortTerm.Status;
+package com.practice.weather.shortTerm.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.weather.shortTerm.status.controller.ShortTermStatusController;
