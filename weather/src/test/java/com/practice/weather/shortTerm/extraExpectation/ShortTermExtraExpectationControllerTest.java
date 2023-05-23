@@ -55,7 +55,7 @@ public class ShortTermExtraExpectationControllerTest {
     @Test
     @DisplayName("shortTermExtraExpectation data 화면 테스트")
     public void shortTermExtraExpectationControllerTest() throws Exception {
-        mockMvc.perform(get("/short-term/extraExpectation/data"))
+        mockMvc.perform(get("/short-term/extraExpectation/current"))
                 .andExpect(status().isOk());
     }
 
@@ -82,7 +82,7 @@ public class ShortTermExtraExpectationControllerTest {
         JSONObject jObject = new JSONObject(map);
 
         // when
-        final ResultActions actions = mockMvc.perform(post("/short-term/extraExpectation/data")
+        final ResultActions actions = mockMvc.perform(post("/short-term/extraExpectation/current")
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .content(objectMapper.writeValueAsString(jObject))

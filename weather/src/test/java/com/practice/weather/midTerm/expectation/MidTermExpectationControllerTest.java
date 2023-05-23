@@ -51,17 +51,11 @@ public class MidTermExpectationControllerTest {
         openMocks = MockitoAnnotations.openMocks(this);
    }
 
-    @Test
-    @DisplayName("midTermExpectation location 화면 테스트")
-    public void midTermExpectationLocationControllerTest() throws Exception {
-        mockMvc.perform(get("/mid-term/expectation/location"))
-                .andExpect(status().isOk());
-    }
 
     @Test
     @DisplayName("midTermExpectation data 화면 테스트")
-    public void midTermExpectationDataControllerTest() throws Exception {
-        mockMvc.perform(get("/mid-term/expectation/data"))
+    public void midTermExpectationCurrentTest() throws Exception {
+        mockMvc.perform(get("/mid-term/expectation/current"))
                 .andExpect(status().isOk());
     }
 
@@ -86,7 +80,7 @@ public class MidTermExpectationControllerTest {
         JSONObject jObject = new JSONObject(map);
 
         // when
-        final ResultActions actions = mockMvc.perform(post("/mid-term/expectation/data")
+        final ResultActions actions = mockMvc.perform(post("/mid-term/expectation/current")
                         .accept(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
                         .content(objectMapper.writeValueAsString(jObject))

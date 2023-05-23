@@ -11,11 +11,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 public class ShortTermStatusController {
 
     @Autowired
@@ -34,7 +33,7 @@ public class ShortTermStatusController {
 
 
     // 초단기실황조회
-    @GetMapping("/short-term/status/data")
+    @GetMapping("/short-term/status/current")
     public String shortTermStatusController(
             @RequestParam(value = "nxValue", required = false) String nxValue,
             @RequestParam(value = "nyValue", required = false) String nyValue,
@@ -50,23 +49,12 @@ public class ShortTermStatusController {
                 "&nx=" + (nxValue != null && !nxValue.equals("") ? nxValue : "55") +
                 "&ny=" + (nyValue != null && !nyValue.equals("") ? nyValue : "127");
 
-        JSONArray jArray = utility.getDataAsJsonArray(urlStr);
-
-        if (!jArray.isEmpty()) {
-            ShortTermStatusDto shortTermStatusDto =
-                    shortTermStatusService.parseJsonArrayToShortTermStatusDto(jArray, utility.getShortTermVersion("ODAM", dateTime[0]+dateTime[1]));
-            model.addAttribute("shortTermStatusDto", shortTermStatusDto);
-            model.addAttribute("shortTermStatusDtoJson", objectMapper.writeValueAsString(shortTermStatusDto));
-        }else {
-            model.addAttribute("shortTermStatusDtoList", null);
-            model.addAttribute("shortTermStatusDtoListJson", null);
-        }
-
-        return "/shortTerm/status/shortTermStatusData";
+        return objectMapper.writeValueAsString(shortTermStatusService.parseJsonArrayToShortTermStatusDto(
+                utility.getDataAsJsonArray(urlStr), utility.getShortTermVersion("ODAM", dateTime[0]+dateTime[1])));
     }
 
     @ResponseBody
-    @PostMapping("/short-term/status/data")
+    @PostMapping("/short-term/status/current")
     public ShortTermStatusEntity saveShortTermStatus (@RequestBody String data) throws JsonProcessingException {
 
         JSONObject jObject = new JSONObject(data);

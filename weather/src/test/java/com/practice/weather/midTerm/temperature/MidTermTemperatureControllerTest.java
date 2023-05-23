@@ -52,16 +52,9 @@ public class MidTermTemperatureControllerTest {
     }
 
     @Test
-    @DisplayName("midTermTemperature location 화면 테스트")
-    public void midTermTemperatureLocationControllerTest() throws Exception {
-        mockMvc.perform(get("/mid-term/temperature/location"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     @DisplayName("midTermTemperature data 화면 테스트")
     public void midTermTemperatureDataControllerTest() throws Exception {
-        mockMvc.perform(get("/mid-term/temperature/data"))
+        mockMvc.perform(get("/mid-term/temperature/current"))
                 .andExpect(status().isOk());
     }
 
@@ -91,7 +84,7 @@ public class MidTermTemperatureControllerTest {
         JSONObject jObject = new JSONObject(map);
 
         // when
-        final ResultActions actions = mockMvc.perform(post("/mid-term/temperature/data")
+        final ResultActions actions = mockMvc.perform(post("/mid-term/temperature/current")
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .content(objectMapper.writeValueAsString(jObject))

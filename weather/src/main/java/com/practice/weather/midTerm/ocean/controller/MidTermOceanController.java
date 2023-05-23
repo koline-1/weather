@@ -10,16 +10,12 @@ import com.practice.weather.midTerm.ocean.dto.MidTermOceanDto;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.HashMap;
 
-@Controller
+@RestController
 public class MidTermOceanController {
 
     @Autowired
@@ -37,13 +33,8 @@ public class MidTermOceanController {
     private ObjectMapper objectMapper = new ObjectMapper();
 
 
-    @GetMapping("/mid-term/ocean/location")
-    public String midTermOceanLocationController () {
-        return "/midTerm/ocean/midTermOceanLocation";
-    }
-
     // 중기해상예보조회
-    @GetMapping("/mid-term/ocean/data")
+    @GetMapping("/mid-term/ocean/current")
     public String midTermOceanController(
             @RequestParam(value = "location", required = false) String location,
             Model model
@@ -59,20 +50,12 @@ public class MidTermOceanController {
 
         HashMap<String, String> map = utility.parseJsonArrayToMap(utility.getDataAsJsonArray(urlStr));
 
-        if (!map.isEmpty()) {
-            MidTermOceanDto midTermOceanDto = midTermOceanService.parseMapToMidTermOceanDto(map);
-            model.addAttribute("midTermOceanDto", midTermOceanDto);
-            model.addAttribute("midTermOceanDtoJson", objectMapper.writeValueAsString(midTermOceanDto));
-        } else {
-            model.addAttribute("midTermOceanDto", null);
-            model.addAttribute("midTermOceanDtoJson", null);
-        }
 
-        return "/midTerm/ocean/midTermOceanData";
+        return objectMapper.writeValueAsString(midTermOceanService.parseMapToMidTermOceanDto(map));
     }
 
-    @ResponseBody
-    @PostMapping("/mid-term/ocean/data")
+
+    @PostMapping("/mid-term/ocean/current")
     public MidTermOceanEntity saveMidTermOcean (@RequestBody String data) throws JsonProcessingException {
 
         JSONObject jObject = new JSONObject(data);

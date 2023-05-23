@@ -51,17 +51,11 @@ public class MidTermOceanControllerTest {
         openMocks = MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    @DisplayName("midTermOcean location 화면 테스트")
-    public void midTermOceanLocationControllerTest() throws Exception {
-        mockMvc.perform(get("/mid-term/ocean/location"))
-                .andExpect(status().isOk());
-    }
 
     @Test
     @DisplayName("midTermOcean data 화면 테스트")
     public void midTermOceanDataControllerTest() throws Exception {
-        mockMvc.perform(get("/mid-term/ocean/data"))
+        mockMvc.perform(get("/mid-term/ocean/current"))
                 .andExpect(status().isOk());
     }
 
@@ -88,7 +82,7 @@ public class MidTermOceanControllerTest {
         JSONObject jObject = new JSONObject(map);
 
         // when
-        final ResultActions actions = mockMvc.perform(post("/mid-term/ocean/data")
+        final ResultActions actions = mockMvc.perform(post("/mid-term/ocean/current")
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .content(objectMapper.writeValueAsString(jObject))

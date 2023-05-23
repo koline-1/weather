@@ -10,13 +10,12 @@ import com.practice.weather.utility.Utility;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 
-@Controller
+@RestController
 public class MidTermExpectationController {
 
     @Autowired
@@ -34,16 +33,9 @@ public class MidTermExpectationController {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     
-    // 중기 전망 조회 위치 설정
-    @GetMapping("/mid-term/expectation/location")
-    public String midTermExpectationLocationController () {
-        return "/midTerm/expectation/midTermExpectationLocation";
-    }
-
-    
     // 중기 전망 조회 데이터 조회
-    @GetMapping("/mid-term/expectation/data")
-    public String midTermExpectationDataController(
+    @GetMapping("/mid-term/expectation/current")
+    public String midTermExpectationCurrent (
             @RequestParam(value = "location", required = false) String location,
             Model model
     ) throws JsonProcessingException {
@@ -59,24 +51,13 @@ public class MidTermExpectationController {
         // 데이터 받아와서 HashMap 형태로 저장
         HashMap<String, String> map = utility.parseJsonArrayToMap(utility.getDataAsJsonArray(urlStr));
 
-        if (!map.isEmpty()) {
-            // TODO: 추후에 RESTController로 변경하여 JSON형태로 데이터 리턴 보내기
-            // map에 데이터가 있을 경우 map을 DTO로 파싱하여 리턴
-            MidTermExpectationDto midTermExpectationDto = midTermExpectationService.parseMapToMidTermExpectationDto(map, location);
-            model.addAttribute("midTermExpectationDto", midTermExpectationDto);
-            model.addAttribute("midTermExpectationDtoJson", objectMapper.writeValueAsString(midTermExpectationDto));
-        } else {
-            model.addAttribute("midTermExpectationDto", null);
-            model.addAttribute("midTermExpectationDtoJson", null);
-        }
 
-        return "/midTerm/expectation/midTermExpectationData";
+        return objectMapper.writeValueAsString(midTermExpectationService.parseMapToMidTermExpectationDto(map, location));
     }
 
     
     // 중기 전망 조회 데이터 DB 저장
-    @ResponseBody
-    @PostMapping("/mid-term/expectation/data")
+    @PostMapping("/mid-term/expectation/current")
     public MidTermExpectationEntity saveMidTermExpectation (@RequestBody String data) throws JsonProcessingException {
 
         // 받아온 data JSONObject로 파싱
@@ -92,6 +73,11 @@ public class MidTermExpectationController {
 
         // 중복된 데이터일 경우 빈 Entity return
         return MidTermExpectationEntity.builder().stnId("0").build();
+    }
+
+    @GetMapping("/mid-term/expectation/data")
+    public String midTermExpectationAllData () {
+        return null;
     }
 
 }

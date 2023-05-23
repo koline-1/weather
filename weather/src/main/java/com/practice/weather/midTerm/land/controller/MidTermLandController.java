@@ -10,16 +10,12 @@ import com.practice.weather.utility.Utility;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.HashMap;
 
-@Controller
+@RestController
 public class MidTermLandController {
 
     @Autowired
@@ -37,13 +33,8 @@ public class MidTermLandController {
     private ObjectMapper objectMapper = new ObjectMapper();
 
 
-    @GetMapping("/mid-term/land/location")
-    public String midTermLandLocationController () {
-        return "/midTerm/land/midTermLandLocation";
-    }
-
     // 중기해상예보조회
-    @GetMapping("/mid-term/land/data")
+    @GetMapping("/mid-term/land/current")
     public String midTermLandController(
             @RequestParam(value = "location", required = false) String location,
             Model model
@@ -59,20 +50,12 @@ public class MidTermLandController {
 
         HashMap<String, String> map = utility.parseJsonArrayToMap(utility.getDataAsJsonArray(urlStr));
 
-        if (!map.isEmpty()) {
-            MidTermLandDto midTermLandDto = midTermLandService.parseMapToMidTermLandDto(map);
-            model.addAttribute("midTermLandDto", midTermLandDto);
-            model.addAttribute("midTermLandDtoJson", objectMapper.writeValueAsString(midTermLandDto));
-        } else {
-            model.addAttribute("midTermLandDto", null);
-            model.addAttribute("midTermLandDtoJson", null);
-        }
 
-        return "/midTerm/land/midTermLandData";
+        return objectMapper.writeValueAsString(midTermLandService.parseMapToMidTermLandDto(map));
     }
 
-    @ResponseBody
-    @PostMapping("/mid-term/land/data")
+
+    @PostMapping("/mid-term/land/current")
     public MidTermLandEntity saveMidTermLand (@RequestBody String data) throws JsonProcessingException {
 
         JSONObject jObject = new JSONObject(data);
