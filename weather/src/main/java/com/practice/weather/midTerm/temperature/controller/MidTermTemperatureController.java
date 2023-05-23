@@ -10,16 +10,12 @@ import com.practice.weather.utility.Utility;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.HashMap;
 
-@Controller
+@RestController
 public class MidTermTemperatureController {
 
     @Autowired
@@ -37,13 +33,8 @@ public class MidTermTemperatureController {
     private ObjectMapper objectMapper = new ObjectMapper();
 
 
-    @GetMapping("/mid-term/temperature/location")
-    public String midTermTemperatureLocationController () {
-        return "/midTerm/temperature/midTermTemperatureLocation";
-    }
-
     // 중기해상예보조회
-    @GetMapping("/mid-term/temperature/data")
+    @GetMapping("/mid-term/temperature/current")
     public String midTermTemperatureController(
             @RequestParam(value = "location", required = false) String location,
             Model model
@@ -59,20 +50,12 @@ public class MidTermTemperatureController {
 
         HashMap<String, String> map = utility.parseJsonArrayToMap(utility.getDataAsJsonArray(urlStr));
 
-        if (!map.isEmpty()) {
-            MidTermTemperatureDto midTermTemperatureDto = midTermTemperatureService.parseMapToMidTermTemperatureDto(map);
-            model.addAttribute("midTermTemperatureDto", midTermTemperatureDto);
-            model.addAttribute("midTermTemperatureDtoJson", objectMapper.writeValueAsString(midTermTemperatureDto));
-        } else {
-            model.addAttribute("midTermTemperatureDto", null);
-            model.addAttribute("midTermTemperatureDtoJson", null);
-        }
 
-        return "/midTerm/temperature/midTermTemperatureData";
+        return objectMapper.writeValueAsString(midTermTemperatureService.parseMapToMidTermTemperatureDto(map));
     }
 
-    @ResponseBody
-    @PostMapping("/mid-term/temperature/data")
+
+    @PostMapping("/mid-term/temperature/current")
     public MidTermTemperatureEntity saveMidTermTemperature (@RequestBody String data) throws JsonProcessingException {
 
         JSONObject jObject = new JSONObject(data);

@@ -37,26 +37,4 @@ public class MainControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    @DisplayName("midTermList 화면 테스트")
-    public void midTermListViewTest() throws Exception {
-        mockMvc.perform(get("/mid-term"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("shortTermList 화면 테스트")
-    public void shortTermListViewTest() throws Exception {
-        mockMvc.perform(get("/short-term"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("shortTermLocation 화면 테스트")
-    public void shortTermLocationTest() throws Exception {
-        mockMvc.perform(get("/short-term/location"))
-                .andExpect(status().isOk());
-    }
-
-
 }

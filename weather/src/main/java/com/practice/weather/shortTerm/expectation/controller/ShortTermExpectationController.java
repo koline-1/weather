@@ -11,13 +11,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 public class ShortTermExpectationController {
 
     @Autowired
@@ -36,7 +35,7 @@ public class ShortTermExpectationController {
 
 
     // 중기해상예보조회
-    @GetMapping("/short-term/expectation/data")
+    @GetMapping("/short-term/expectation/current")
     public String shortTermExpectationController(
             @RequestParam(value = "nxValue", required = false) String nxValue,
             @RequestParam(value = "nyValue", required = false) String nyValue,
@@ -52,23 +51,12 @@ public class ShortTermExpectationController {
                 "&nx=" + (nxValue != null && !nxValue.equals("") ? nxValue : "55") +
                 "&ny=" + (nyValue != null && !nyValue.equals("") ? nyValue : "127");
 
-        JSONArray jArray = utility.getDataAsJsonArray(urlStr);
-
-        if (!jArray.isEmpty()) {
-            List<ShortTermExpectationDto> shortTermExpectationDtoList =
-                    shortTermExpectationService.parseJsonArrayToShortTermExpectationDto(jArray, utility.getShortTermVersion("SHRT", dateTime[0]+dateTime[1]));
-            model.addAttribute("shortTermExpectationDtoList", shortTermExpectationDtoList);
-            model.addAttribute("shortTermExpectationDtoListJson", objectMapper.writeValueAsString(shortTermExpectationDtoList));
-        }else {
-            model.addAttribute("shortTermExpectationDtoList", null);
-            model.addAttribute("shortTermExpectationDtoListJson", null);
-        }
-
-        return "/shortTerm/expectation/shortTermExpectationData";
+        return objectMapper.writeValueAsString(shortTermExpectationService.parseJsonArrayToShortTermExpectationDto(
+                utility.getDataAsJsonArray(urlStr), utility.getShortTermVersion("SHRT", dateTime[0]+dateTime[1])));
     }
 
-    @ResponseBody
-    @PostMapping("/short-term/expectation/data")
+
+    @PostMapping("/short-term/expectation/current")
     public String saveShortTermExpectation (@RequestBody String data) throws JsonProcessingException {
 
         JSONObject jObject = new JSONObject(data);

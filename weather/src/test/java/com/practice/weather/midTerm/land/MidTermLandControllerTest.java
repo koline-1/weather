@@ -52,16 +52,9 @@ public class MidTermLandControllerTest {
     }
 
     @Test
-    @DisplayName("midTermLand location 화면 테스트")
-    public void midTermLandLocationControllerTest() throws Exception {
-        mockMvc.perform(get("/mid-term/land/location"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     @DisplayName("midTermLand data 화면 테스트")
     public void midTermLandDataControllerTest() throws Exception {
-        mockMvc.perform(get("/mid-term/land/data"))
+        mockMvc.perform(get("/mid-term/land/current"))
                 .andExpect(status().isOk());
     }
 
@@ -86,7 +79,7 @@ public class MidTermLandControllerTest {
         JSONObject jObject = new JSONObject(map);
 
         // when
-        final ResultActions actions = mockMvc.perform(post("/mid-term/land/data")
+        final ResultActions actions = mockMvc.perform(post("/mid-term/land/current")
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .content(objectMapper.writeValueAsString(jObject))
