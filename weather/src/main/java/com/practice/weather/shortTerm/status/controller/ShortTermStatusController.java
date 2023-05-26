@@ -2,44 +2,52 @@ package com.practice.weather.shortTerm.status.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.practice.weather.shortTerm.status.dto.ShortTermStatusDto;
 import com.practice.weather.shortTerm.status.entity.ShortTermStatusEntity;
 import com.practice.weather.shortTerm.status.repository.ShortTermStatusRepository;
 import com.practice.weather.shortTerm.status.service.ShortTermStatusService;
 import com.practice.weather.utility.Utility;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ShortTermStatusController {
+    
+    private final ShortTermStatusService shortTermStatusService;
 
-    @Autowired
-    ShortTermStatusService shortTermStatusService;
+    private final ShortTermStatusRepository shortTermStatusRepository;
 
-    @Autowired
-    ShortTermStatusRepository shortTermStatusRepository;
-
-    @Autowired
-    private Utility utility;
+    private final Utility utility;
 
     @Value("${service.key}")
     private String serviceKey;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    // Dependency Injection - 생성자 주입
+    @Autowired
+    public ShortTermStatusController(
+            ShortTermStatusService shortTermStatusService,
+            ShortTermStatusRepository shortTermStatusRepository,
+            Utility utility
+        ) {
+        this.shortTermStatusService = shortTermStatusService;
+        this.shortTermStatusRepository = shortTermStatusRepository;
+        this.utility = utility;
+    }
 
 
-    // 초단기실황조회
-    @GetMapping("/short-term/status/current")
+    // 초단기 실황 조회 실시간
+    @GetMapping("/short-term/status/current/{nxValue}/{nyValue}")
     public String shortTermStatusController(
-            @RequestParam(value = "nxValue", required = false) String nxValue,
-            @RequestParam(value = "nyValue", required = false) String nyValue,
-            Model model
-    ) throws JsonProcessingException {
+            @PathVariable String nxValue,
+            @PathVariable String nyValue
+        ) throws JsonProcessingException {
 
+        // 현재 시간 기준 baseDate 와 baseTime 값 받아오기
         String[] dateTime = utility.getShortTermBaseDateTime("status");
 
         // 서비스 URL
@@ -49,24 +57,42 @@ public class ShortTermStatusController {
                 "&nx=" + (nxValue != null && !nxValue.equals("") ? nxValue : "55") +
                 "&ny=" + (nyValue != null && !nyValue.equals("") ? nyValue : "127");
 
+        // DTO 객체로 변환후 String 으로 파싱하여 return
         return objectMapper.writeValueAsString(shortTermStatusService.parseJsonArrayToShortTermStatusDto(
                 utility.getDataAsJsonArray(urlStr), utility.getShortTermVersion("ODAM", dateTime[0]+dateTime[1])));
     }
 
+    // 초단기 실황 조회 데이터 DB 저장
     @ResponseBody
     @PostMapping("/short-term/status/current")
     public ShortTermStatusEntity saveShortTermStatus (@RequestBody String data) throws JsonProcessingException {
 
+        // 받아온 data JSONObject 로 파싱
         JSONObject jObject = new JSONObject(data);
 
+        // 필요한 data 부분만 추출하여 DTO 로 파싱
         ShortTermStatusDto shortTermStatusDto = objectMapper.readValue(jObject.get("data").toString(), ShortTermStatusDto.class);
 
+        // 중복 확인후 저장 & return
         if (!shortTermStatusRepository.isExist(shortTermStatusDto)) {
             return shortTermStatusRepository.save(shortTermStatusDto.toEntity());
         }
 
+        // 중복된 데이터일 경우 빈 Entity return
         return ShortTermStatusEntity.builder().baseDate("").build();
 
+    }
+
+
+    // 아이디로 데이터 조회
+    @GetMapping("/short-term/status/{id}")
+    public String shortTermStatusAllData (
+            @PathVariable Long id
+    ) throws JsonProcessingException {
+
+        objectMapper.registerModule(new JavaTimeModule());
+
+        return objectMapper.writeValueAsString(shortTermStatusRepository.selectById(id));
     }
     
 }

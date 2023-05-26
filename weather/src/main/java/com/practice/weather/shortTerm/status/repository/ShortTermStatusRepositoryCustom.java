@@ -4,6 +4,7 @@ import com.practice.weather.shortTerm.status.dto.ShortTermStatusDto;
 
 public interface ShortTermStatusRepositoryCustom {
 
+    // 데이터 중복 확인
     public boolean isExist(ShortTermStatusDto dto);
 
 }

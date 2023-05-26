@@ -1,6 +1,7 @@
 package com.practice.weather.midTerm.expectation.entity;
 
 import com.practice.weather.main.entity.BaseEntity;
+import com.practice.weather.midTerm.expectation.dto.MidTermExpectationDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,5 +30,9 @@ public class MidTermExpectationEntity extends BaseEntity {
 
     @Column
     private String wfSv;
+
+    public MidTermExpectationDto toDto() {
+        return MidTermExpectationDto.builder().id(id).stnId(stnId).wfSv(wfSv).build();
+    }
 
 }

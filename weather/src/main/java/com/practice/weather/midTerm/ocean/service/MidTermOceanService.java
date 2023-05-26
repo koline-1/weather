@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 public interface MidTermOceanService {
 
+    // Map형태의 데이터를 DTO 객체로 변환
     public MidTermOceanDto parseMapToMidTermOceanDto(HashMap<String, String> map);
 
 }

@@ -4,5 +4,6 @@ import java.time.LocalDateTime;
 
 public interface MidTermOceanRepositoryCustom {
 
+    // 데이터 중복 확인
     public boolean isExist(String regId, LocalDateTime localDateTime);
 }
