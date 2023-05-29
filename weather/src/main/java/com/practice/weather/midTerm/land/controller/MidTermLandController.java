@@ -11,6 +11,7 @@ import com.practice.weather.utility.Utility;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,18 +26,20 @@ public class MidTermLandController {
     @Value("${service.key}")
     private String serviceKey;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper;
 
     // Dependency Injection - 생성자 주입
     @Autowired
     public MidTermLandController(
             MidTermLandService midTermLandService,
             MidTermLandRepository midTermLandRepository,
+            ObjectMapper objectMapper,
             Utility utility
-        ) {
+    ) {
         this.midTermLandService = midTermLandService;
         this.midTermLandRepository = midTermLandRepository;
         this.utility = utility;
+        this.objectMapper = objectMapper.registerModule(new JavaTimeModule());
     }
 
 
@@ -44,7 +47,7 @@ public class MidTermLandController {
     @GetMapping("/mid-term/land/current/{location}")
     public String midTermLandController(
             @PathVariable String location
-        ) throws JsonProcessingException {
+    ) throws JsonProcessingException {
 
         // 현재 시간 기준 baseDate 와 baseTime 값 받아오기
         String baseDateTime = utility.getMidTermBaseDateTimeAsString();
@@ -61,7 +64,9 @@ public class MidTermLandController {
 
     // 중기 육상 예보 조회 데이터 DB 저장
     @PostMapping("/mid-term/land/current")
-    public MidTermLandEntity saveMidTermLand (@RequestBody String data) throws JsonProcessingException {
+    public MidTermLandEntity saveMidTermLand (
+            @RequestBody String data
+    ) throws JsonProcessingException {
 
         // 받아온 data JSONObject 로 파싱
         JSONObject jObject = new JSONObject(data);
@@ -78,12 +83,35 @@ public class MidTermLandController {
         return MidTermLandEntity.builder().regId("").build();
     }
 
+    
+    // MidTermLandEntity 의 list 를  return
+    // location 이 파라미터로 전달될경우 location 별 데이터 return
+    @GetMapping("/mid-term/land/list")
+    public String midTermLandList (
+            final Pageable pageable,
+            @RequestParam(name = "location", required = false) String location
+    ) throws JsonProcessingException {
+
+        if (location == null || location.equals("")) {
+            return objectMapper.writeValueAsString(midTermLandRepository.selectList(pageable));
+        } else {
+            return objectMapper.writeValueAsString(midTermLandRepository.selectListByLocation(pageable, location));
+        }
+    }
+
+
+    // MidTermLand 의 총 갯수를 return
+    @GetMapping("/mid-term/land/count")
+    public String midTermLandCount () {
+
+        return "{\"count\": \"" + midTermLandRepository.count()+"\"}";
+    }
+
+
     @GetMapping("/mid-term/land/{id}")
     public String midTermLandAllData (
             @PathVariable Long id
     ) throws JsonProcessingException {
-
-        objectMapper.registerModule(new JavaTimeModule());
 
         return objectMapper.writeValueAsString(midTermLandRepository.selectById(id));
     }

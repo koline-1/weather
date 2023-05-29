@@ -11,6 +11,7 @@ import com.practice.weather.utility.Utility;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,18 +26,20 @@ public class MidTermTemperatureController {
     @Value("${service.key}")
     private String serviceKey;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper;
 
     // Dependency Injection - 생성자 주입
     @Autowired
     public MidTermTemperatureController(
             MidTermTemperatureService midTermTemperatureService,
             MidTermTemperatureRepository midTermTemperatureRepository,
+            ObjectMapper objectMapper,
             Utility utility
-        ) {
+    ) {
         this.midTermTemperatureService = midTermTemperatureService;
         this.midTermTemperatureRepository = midTermTemperatureRepository;
         this.utility = utility;
+        this.objectMapper = objectMapper.registerModule(new JavaTimeModule());
     }
 
 
@@ -44,7 +47,7 @@ public class MidTermTemperatureController {
     @GetMapping("/mid-term/temperature/current/{location}")
     public String midTermTemperatureController(
             @PathVariable String location
-        ) throws JsonProcessingException {
+    ) throws JsonProcessingException {
 
         // 현재 시간 기준 baseDate 와 baseTime 값 받아오기
         String baseDateTime = utility.getMidTermBaseDateTimeAsString();
@@ -62,7 +65,9 @@ public class MidTermTemperatureController {
 
     // 중기 기온 조회 데이터 DB 저장
     @PostMapping("/mid-term/temperature/current")
-    public MidTermTemperatureEntity saveMidTermTemperature (@RequestBody String data) throws JsonProcessingException {
+    public MidTermTemperatureEntity saveMidTermTemperature (
+            @RequestBody String data
+    ) throws JsonProcessingException {
 
         // 받아온 data JSONObject 로 파싱
         JSONObject jObject = new JSONObject(data);
@@ -78,6 +83,33 @@ public class MidTermTemperatureController {
         // 중복된 데이터일 경우 빈 Entity return
         return MidTermTemperatureEntity.builder().regId("").build();
     }
+
+
+    // MidTermTemperatureEntity 의 list 를  return
+    // location 이 파라미터로 전달될경우 location 별 데이터 return
+    @GetMapping("/mid-term/temperature/list")
+    public String midTermTemperatureList (
+            final Pageable pageable,
+            @RequestParam(name = "location", required = false) String location
+    ) throws JsonProcessingException {
+
+        objectMapper.registerModule(new JavaTimeModule());
+
+        if (location == null || location.equals("")) {
+            return objectMapper.writeValueAsString(midTermTemperatureRepository.selectList(pageable));
+        } else {
+            return objectMapper.writeValueAsString(midTermTemperatureRepository.selectListByLocation(pageable, location));
+        }
+    }
+
+    
+    // MidTermTemperature 의 총 갯수를 return
+    @GetMapping("/mid-term/temperature/count")
+    public String midTermTemperatureCount () {
+
+        return "{\"count\": \"" + midTermTemperatureRepository.count()+"\"}";
+    }
+    
 
     // 아이디로 데이터 조회
     @GetMapping("/mid-term/temperature/{id}")

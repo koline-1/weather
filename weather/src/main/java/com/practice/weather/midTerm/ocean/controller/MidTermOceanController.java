@@ -11,6 +11,7 @@ import com.practice.weather.midTerm.ocean.dto.MidTermOceanDto;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,18 +26,20 @@ public class MidTermOceanController {
     @Value("${service.key}")
     private String serviceKey;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper;
 
     // Dependency Injection - 생성자 주입
     @Autowired
     public MidTermOceanController(
             MidTermOceanService midTermOceanService,
             MidTermOceanRepository midTermOceanRepository,
+            ObjectMapper objectMapper,
             Utility utility
-        ) {
+    ) {
         this.midTermOceanService = midTermOceanService;
         this.midTermOceanRepository = midTermOceanRepository;
         this.utility = utility;
+        this.objectMapper = objectMapper.registerModule(new JavaTimeModule());
     }
 
 
@@ -44,7 +47,7 @@ public class MidTermOceanController {
     @GetMapping("/mid-term/ocean/current/{location}")
     public String midTermOceanController(
             @PathVariable String location
-        ) throws JsonProcessingException {
+    ) throws JsonProcessingException {
 
         // 현재 시간 기준 baseDate 와 baseTime 값 받아오기
         String baseDateTime = utility.getMidTermBaseDateTimeAsString();
@@ -62,7 +65,9 @@ public class MidTermOceanController {
 
     // 중기 해상 예보 조회 데이터 DB 저장
     @PostMapping("/mid-term/ocean/current")
-    public MidTermOceanEntity saveMidTermOcean (@RequestBody String data) throws JsonProcessingException {
+    public MidTermOceanEntity saveMidTermOcean (
+            @RequestBody String data
+    ) throws JsonProcessingException {
 
         // 받아온 data JSONObject 로 파싱
         JSONObject jObject = new JSONObject(data);
@@ -79,13 +84,36 @@ public class MidTermOceanController {
         return MidTermOceanEntity.builder().regId("").build();
     }
 
+
+    // MidTermOceanEntity 의 list 를  return
+    // location 이 파라미터로 전달될경우 location 별 데이터 return
+    @GetMapping("/mid-term/ocean/list")
+    public String midTermOceanList (
+            final Pageable pageable,
+            @RequestParam(name = "location", required = false) String location
+    ) throws JsonProcessingException {
+
+        if (location == null || location.equals("")) {
+            return objectMapper.writeValueAsString(midTermOceanRepository.selectList(pageable));
+        } else {
+            return objectMapper.writeValueAsString(midTermOceanRepository.selectListByLocation(pageable, location));
+        }
+    }
+
+
+    // MidTermOcean 의 총 갯수를 return
+    @GetMapping("/mid-term/ocean/count")
+    public String midTermOceanCount () {
+
+        return "{\"count\": \"" + midTermOceanRepository.count()+"\"}";
+    }
+
+
     // 아이디로 데이터 조회
     @GetMapping("/mid-term/ocean/{id}")
     public String midTermOceanAllData (
             @PathVariable Long id
     ) throws JsonProcessingException {
-
-        objectMapper.registerModule(new JavaTimeModule());
 
         return objectMapper.writeValueAsString(midTermOceanRepository.selectById(id));
     }

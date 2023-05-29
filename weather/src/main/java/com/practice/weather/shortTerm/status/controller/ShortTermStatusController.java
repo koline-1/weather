@@ -11,6 +11,7 @@ import com.practice.weather.utility.Utility;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,18 +26,20 @@ public class ShortTermStatusController {
     @Value("${service.key}")
     private String serviceKey;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper;
 
     // Dependency Injection - 생성자 주입
     @Autowired
     public ShortTermStatusController(
             ShortTermStatusService shortTermStatusService,
             ShortTermStatusRepository shortTermStatusRepository,
+            ObjectMapper objectMapper,
             Utility utility
-        ) {
+    ) {
         this.shortTermStatusService = shortTermStatusService;
         this.shortTermStatusRepository = shortTermStatusRepository;
         this.utility = utility;
+        this.objectMapper = objectMapper.registerModule(new JavaTimeModule());
     }
 
 
@@ -45,7 +48,7 @@ public class ShortTermStatusController {
     public String shortTermStatusController(
             @PathVariable String nxValue,
             @PathVariable String nyValue
-        ) throws JsonProcessingException {
+    ) throws JsonProcessingException {
 
         // 현재 시간 기준 baseDate 와 baseTime 값 받아오기
         String[] dateTime = utility.getShortTermBaseDateTime("status");
@@ -65,7 +68,9 @@ public class ShortTermStatusController {
     // 초단기 실황 조회 데이터 DB 저장
     @ResponseBody
     @PostMapping("/short-term/status/current")
-    public ShortTermStatusEntity saveShortTermStatus (@RequestBody String data) throws JsonProcessingException {
+    public ShortTermStatusEntity saveShortTermStatus (
+            @RequestBody String data
+    ) throws JsonProcessingException {
 
         // 받아온 data JSONObject 로 파싱
         JSONObject jObject = new JSONObject(data);
@@ -81,6 +86,33 @@ public class ShortTermStatusController {
         // 중복된 데이터일 경우 빈 Entity return
         return ShortTermStatusEntity.builder().baseDate("").build();
 
+    }
+
+
+    // ShortTermStatusEntity 의 list 를  return
+    // location 이 파라미터로 전달될경우 location 별 데이터 return
+    @GetMapping("/short-term/status/list")
+    public String shortTermStatusList (
+            final Pageable pageable,
+            @RequestParam(name = "nxValue", required = false) String nxValue,
+            @RequestParam(name = "nyValue", required = false) String nyValue
+    ) throws JsonProcessingException {
+
+        objectMapper.registerModule(new JavaTimeModule());
+
+        if ((nxValue == null || nxValue.equals("")) || (nyValue == null || nyValue.equals(""))) {
+            return objectMapper.writeValueAsString(shortTermStatusRepository.selectList(pageable));
+        } else {
+            return objectMapper.writeValueAsString(shortTermStatusRepository.selectListByLocation(pageable, nxValue, nyValue));
+        }
+    }
+
+
+    // ShortTermStatus 의 총 갯수를 return
+    @GetMapping("/short-term/status/count")
+    public String shortTermStatusCount () {
+
+        return "{\"count\": \"" + shortTermStatusRepository.count()+"\"}";
     }
 
 

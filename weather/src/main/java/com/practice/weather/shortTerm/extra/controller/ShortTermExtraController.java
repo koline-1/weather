@@ -11,6 +11,7 @@ import com.practice.weather.utility.Utility;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,18 +29,20 @@ public class ShortTermExtraController {
     @Value("${service.key}")
     private String serviceKey;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper;
 
     // Dependency Injection - 생성자 주입
     @Autowired
     public ShortTermExtraController(
             ShortTermExtraService shortTermExtraService,
             ShortTermExtraRepository shortTermExtraRepository,
+            ObjectMapper objectMapper,
             Utility utility
     ) {
         this.shortTermExtraService = shortTermExtraService;
         this.shortTermExtraRepository = shortTermExtraRepository;
         this.utility = utility;
+        this.objectMapper = objectMapper.registerModule(new JavaTimeModule());
     }
 
 
@@ -48,7 +51,7 @@ public class ShortTermExtraController {
     public String shortTermExtraController(
             @PathVariable String nxValue,
             @PathVariable String nyValue
-        ) throws JsonProcessingException {
+    ) throws JsonProcessingException {
 
         // 현재 시간 기준 baseDate 와 baseTime 값 받아오기
         String[] dateTime = utility.getShortTermBaseDateTime("extra");
@@ -68,7 +71,9 @@ public class ShortTermExtraController {
 
     // 초단기 예보 조회 데이터 DB 저장
     @PostMapping("/short-term/extra/current")
-    public String saveShortTermExtra (@RequestBody String data) throws JsonProcessingException {
+    public String saveShortTermExtra (
+            @RequestBody String data
+    ) throws JsonProcessingException {
 
         // 받아온 data JSONObject 로 파싱
         JSONObject jObject = new JSONObject(data);
@@ -92,13 +97,36 @@ public class ShortTermExtraController {
     }
 
 
+    // ShortTermExtraEntity 의 list 를  return
+    // location 이 파라미터로 전달될경우 location 별 데이터 return
+    @GetMapping("/short-term/extra/list")
+    public String shortTermExtraList (
+            final Pageable pageable,
+            @RequestParam(name = "nxValue", required = false) String nxValue,
+            @RequestParam(name = "nyValue", required = false) String nyValue
+    ) throws JsonProcessingException {
+
+        if ((nxValue == null || nxValue.equals("")) || (nyValue == null || nyValue.equals(""))) {
+            return objectMapper.writeValueAsString(shortTermExtraRepository.selectList(pageable));
+        } else {
+            return objectMapper.writeValueAsString(shortTermExtraRepository.selectListByLocation(pageable, nxValue, nyValue));
+        }
+    }
+
+    
+    // ShortTermExtra 의 총 갯수를 return
+    @GetMapping("/short-term/extra/count")
+    public String shortTermExtraCount () {
+
+        return "{\"count\": \"" + shortTermExtraRepository.count()+"\"}";
+    }
+    
+
     // 아이디로 데이터 조회
     @GetMapping("/short-term/extra/{id}")
     public String shortTermExtraAllData (
             @PathVariable Long id
     ) throws JsonProcessingException {
-
-        objectMapper.registerModule(new JavaTimeModule());
 
         return objectMapper.writeValueAsString(shortTermExtraRepository.selectById(id));
     }

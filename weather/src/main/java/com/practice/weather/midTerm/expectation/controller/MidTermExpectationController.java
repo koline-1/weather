@@ -8,10 +8,14 @@ import com.practice.weather.midTerm.expectation.entity.MidTermExpectationEntity;
 import com.practice.weather.midTerm.expectation.repository.MidTermExpectationRepository;
 import com.practice.weather.midTerm.expectation.service.MidTermExpectationService;
 import com.practice.weather.utility.Utility;
+import jdk.nashorn.internal.ir.RuntimeNode;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class MidTermExpectationController {
@@ -25,18 +29,20 @@ public class MidTermExpectationController {
     @Value("${service.key}")
     private String serviceKey;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper;
 
     // Dependency Injection - 생성자 주입
     @Autowired
     public MidTermExpectationController(
             MidTermExpectationService midTermExpectationService,
             MidTermExpectationRepository midTermExpectationRepository,
+            ObjectMapper objectMapper,
             Utility utility
     ) {
         this.midTermExpectationService = midTermExpectationService;
         this.midTermExpectationRepository = midTermExpectationRepository;
         this.utility = utility;
+        this.objectMapper = objectMapper.registerModule(new JavaTimeModule());
     }
 
     
@@ -82,14 +88,27 @@ public class MidTermExpectationController {
     }
 
 
+    // MidTermExpectationEntity 의 list 를  return
+    // location 이 파라미터로 전달될경우 location 별 데이터 return
     @GetMapping("/mid-term/expectation/list")
     public String midTermExpectationList (
-            @RequestParam(name = "page", required = false) int page
-    ) {
+            final Pageable pageable,
+            @RequestParam(name = "location", required = false) String location
+    ) throws JsonProcessingException {
 
-        objectMapper.registerModule(new JavaTimeModule());
+        if (location == null || location.equals("")) {
+            return objectMapper.writeValueAsString(midTermExpectationRepository.selectList(pageable));
+        } else {
+            return objectMapper.writeValueAsString(midTermExpectationRepository.selectListByLocation(pageable, location));
+        }
+    }
 
-        return "";
+
+    // MidTermExpectation 의 총 갯수를 return
+    @GetMapping("/mid-term/expectation/count")
+    public String midTermExpectationCount () {
+
+        return "{\"count\": \"" + midTermExpectationRepository.count()+"\"}";
     }
 
 
@@ -98,8 +117,6 @@ public class MidTermExpectationController {
     public String midTermExpectationData (
             @PathVariable Long id
     ) throws JsonProcessingException {
-
-        objectMapper.registerModule(new JavaTimeModule());
 
         return objectMapper.writeValueAsString(midTermExpectationRepository.selectById(id));
     }

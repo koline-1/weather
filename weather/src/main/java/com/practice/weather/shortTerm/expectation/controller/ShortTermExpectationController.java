@@ -11,6 +11,7 @@ import com.practice.weather.utility.Utility;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,18 +29,20 @@ public class ShortTermExpectationController {
     @Value("${service.key}")
     private String serviceKey;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper;
 
     // Dependency Injection - 생성자 주입
     @Autowired
     public ShortTermExpectationController(
             ShortTermExpectationService shortTermExpectationService,
             ShortTermExpectationRepository shortTermExpectationRepository,
+            ObjectMapper objectMapper,
             Utility utility
-        ) {
+    ) {
         this.shortTermExpectationService = shortTermExpectationService;
         this.shortTermExpectationRepository = shortTermExpectationRepository;
         this.utility = utility;
+        this.objectMapper = objectMapper.registerModule(new JavaTimeModule());
     }
 
 
@@ -48,7 +51,7 @@ public class ShortTermExpectationController {
     public String shortTermExpectationController(
             @PathVariable String nxValue,
             @PathVariable String nyValue
-        ) throws JsonProcessingException {
+    ) throws JsonProcessingException {
 
         // 현재 시간 기준 baseDate 와 baseTime 값 받아오기
         String[] dateTime = utility.getShortTermBaseDateTime("expectation");
@@ -68,7 +71,9 @@ public class ShortTermExpectationController {
 
     // 단기 예보 조회 데이터 DB 저장
     @PostMapping("/short-term/expectation/current")
-    public String saveShortTermExpectation (@RequestBody String data) throws JsonProcessingException {
+    public String saveShortTermExpectation (
+            @RequestBody String data
+    ) throws JsonProcessingException {
 
         // 받아온 data JSONObject 로 파싱
         JSONObject jObject = new JSONObject(data);
@@ -90,14 +95,37 @@ public class ShortTermExpectationController {
         return "{ \"count\": \"" + saveCount + "\"}";
     }
 
+
+    // ShortTermExpectationEntity 의 list 를  return
+    // location 이 파라미터로 전달될경우 location 별 데이터 return
+    @GetMapping("/short-term/expectation/list")
+    public String shortTermExpectationList (
+            final Pageable pageable,
+            @RequestParam(name = "nxValue", required = false) String nxValue,
+            @RequestParam(name = "nyValue", required = false) String nyValue
+    ) throws JsonProcessingException {
+
+        if ((nxValue == null || nxValue.equals("")) || (nyValue == null || nyValue.equals(""))) {
+            return objectMapper.writeValueAsString(shortTermExpectationRepository.selectList(pageable));
+        } else {
+            return objectMapper.writeValueAsString(shortTermExpectationRepository.selectListByLocation(pageable, nxValue, nyValue));
+        }
+    }
+
+
+    // ShortTermExpectation 의 총 갯수를 return
+    @GetMapping("/short-term/expectation/count")
+    public String shortTermExpectationCount () {
+
+        return "{\"count\": \"" + shortTermExpectationRepository.count()+"\"}";
+    }
+
     
     // 아이디로 데이터 조회
     @GetMapping("/short-term/expectation/{id}")
     public String shortTermExpectationAllData (
             @PathVariable Long id
     ) throws JsonProcessingException {
-
-        objectMapper.registerModule(new JavaTimeModule());
 
         return objectMapper.writeValueAsString(shortTermExpectationRepository.selectById(id));
     }
