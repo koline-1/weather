@@ -17,5 +17,8 @@ public interface ShortTermExtraRepository extends JpaRepository<ShortTermExtraEn
 
     @Query("SELECT e FROM ShortTermExtraEntity e WHERE e.nxValue = :nxValue AND e.nyValue = :nyValue ORDER BY e.id DESC")
     List<ShortTermExtraEntity> selectListByLocation(Pageable pageable, String nxValue, String nyValue);
+
+    @Query(value = "SELECT COUNT(1) FROM SHORT_TERM_EXTRA WHERE NX_VALUE = :nxValue AND NY_VALUE = :nyValue", nativeQuery = true)
+    int countByLocation(String nxValue, String nyValue);
     
 }

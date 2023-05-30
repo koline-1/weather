@@ -115,9 +115,16 @@ public class ShortTermExpectationController {
 
     // ShortTermExpectation 의 총 갯수를 return
     @GetMapping("/short-term/expectation/count")
-    public String shortTermExpectationCount () {
+    public String shortTermExpectationCount (
+            @RequestParam(name = "nxValue", required = false) String nxValue,
+            @RequestParam(name = "nyValue", required = false) String nyValue
+    ) {
 
-        return "{\"count\": \"" + shortTermExpectationRepository.count()+"\"}";
+        if ((nxValue == null || nxValue.equals("")) || (nyValue == null || nyValue.equals(""))) {
+            return "{\"count\": \"" + shortTermExpectationRepository.count()+"\"}";
+        } else {
+            return "{\"count\": \"" + shortTermExpectationRepository.countByLocation(nxValue, nyValue)+"\"}";
+        }
     }
 
     

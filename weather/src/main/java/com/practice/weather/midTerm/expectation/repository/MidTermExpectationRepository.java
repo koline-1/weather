@@ -20,4 +20,7 @@ public interface MidTermExpectationRepository extends JpaRepository<MidTermExpec
     @Query("SELECT e FROM MidTermExpectationEntity e WHERE e.stnId = :location ORDER BY e.id DESC")
     List<MidTermExpectationEntity> selectListByLocation(Pageable pageable, String location);
 
+    @Query(value = "SELECT COUNT(1) FROM MID_TERM_EXPECTATION WHERE STN_ID = :location", nativeQuery = true)
+    int countByLocation(String location);
+
 }

@@ -103,9 +103,15 @@ public class MidTermOceanController {
 
     // MidTermOcean 의 총 갯수를 return
     @GetMapping("/mid-term/ocean/count")
-    public String midTermOceanCount () {
+    public String midTermOceanCount (
+            @RequestParam(name = "location", required = false) String location
+    ) {
 
-        return "{\"count\": \"" + midTermOceanRepository.count()+"\"}";
+        if (location == null || location.equals("")) {
+            return "{\"count\": \"" + midTermOceanRepository.count()+"\"}";
+        } else {
+            return "{\"count\": \"" + midTermOceanRepository.countByLocation(location)+"\"}";
+        }
     }
 
 

@@ -106,9 +106,15 @@ public class MidTermExpectationController {
 
     // MidTermExpectation 의 총 갯수를 return
     @GetMapping("/mid-term/expectation/count")
-    public String midTermExpectationCount () {
+    public String midTermExpectationCount (
+            @RequestParam(name = "location", required = false) String location
+    ) {
 
-        return "{\"count\": \"" + midTermExpectationRepository.count()+"\"}";
+        if (location == null || location.equals("")) {
+            return "{\"count\": \"" + midTermExpectationRepository.count()+"\"}";
+        } else {
+            return "{\"count\": \"" + midTermExpectationRepository.countByLocation(location)+"\"}";
+        }
     }
 
 

@@ -93,8 +93,6 @@ public class MidTermTemperatureController {
             @RequestParam(name = "location", required = false) String location
     ) throws JsonProcessingException {
 
-        objectMapper.registerModule(new JavaTimeModule());
-
         if (location == null || location.equals("")) {
             return objectMapper.writeValueAsString(midTermTemperatureRepository.selectList(pageable));
         } else {
@@ -102,12 +100,18 @@ public class MidTermTemperatureController {
         }
     }
 
-    
+
     // MidTermTemperature 의 총 갯수를 return
     @GetMapping("/mid-term/temperature/count")
-    public String midTermTemperatureCount () {
+    public String midTermTemperatureCount (
+            @RequestParam(name = "location", required = false) String location
+    ) {
 
-        return "{\"count\": \"" + midTermTemperatureRepository.count()+"\"}";
+        if (location == null || location.equals("")) {
+            return "{\"count\": \"" + midTermTemperatureRepository.count()+"\"}";
+        } else {
+            return "{\"count\": \"" + midTermTemperatureRepository.countByLocation(location)+"\"}";
+        }
     }
     
 
@@ -116,8 +120,6 @@ public class MidTermTemperatureController {
     public String midTermTemperatureAllData (
             @PathVariable Long id
     ) throws JsonProcessingException {
-
-        objectMapper.registerModule(new JavaTimeModule());
 
         return objectMapper.writeValueAsString(midTermTemperatureRepository.selectById(id));
     }

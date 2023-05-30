@@ -19,4 +19,8 @@ public interface MidTermLandRepository extends JpaRepository<MidTermLandEntity, 
 
     @Query("SELECT e FROM MidTermLandEntity e WHERE e.regId = :location ORDER BY e.id DESC")
     List<MidTermLandEntity> selectListByLocation(Pageable pageable, String location);
+
+    @Query(value = "SELECT COUNT(1) FROM MID_TERM_LAND WHERE REG_ID = :location", nativeQuery = true)
+    int countByLocation(String location);
+    
 }

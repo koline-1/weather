@@ -110,9 +110,16 @@ public class ShortTermStatusController {
 
     // ShortTermStatus 의 총 갯수를 return
     @GetMapping("/short-term/status/count")
-    public String shortTermStatusCount () {
+    public String shortTermStatusCount (
+            @RequestParam(name = "nxValue", required = false) String nxValue,
+            @RequestParam(name = "nyValue", required = false) String nyValue
+    ) {
 
-        return "{\"count\": \"" + shortTermStatusRepository.count()+"\"}";
+        if ((nxValue == null || nxValue.equals("")) || (nyValue == null || nyValue.equals(""))) {
+            return "{\"count\": \"" + shortTermStatusRepository.count()+"\"}";
+        } else {
+            return "{\"count\": \"" + shortTermStatusRepository.countByLocation(nxValue, nyValue)+"\"}";
+        }
     }
 
 

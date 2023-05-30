@@ -19,4 +19,8 @@ public interface MidTermOceanRepository extends JpaRepository<MidTermOceanEntity
 
     @Query("SELECT e FROM MidTermOceanEntity e WHERE e.regId = :location ORDER BY e.id DESC")
     List<MidTermOceanEntity> selectListByLocation(Pageable pageable, String location);
+
+    @Query(value = "SELECT COUNT(1) FROM MID_TERM_OCEAN WHERE REG_ID = :location", nativeQuery = true)
+    int countByLocation(String location);
+    
 }

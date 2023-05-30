@@ -113,12 +113,19 @@ public class ShortTermExtraController {
         }
     }
 
-    
+
     // ShortTermExtra 의 총 갯수를 return
     @GetMapping("/short-term/extra/count")
-    public String shortTermExtraCount () {
+    public String shortTermExtraCount (
+            @RequestParam(name = "nxValue", required = false) String nxValue,
+            @RequestParam(name = "nyValue", required = false) String nyValue
+    ) {
 
-        return "{\"count\": \"" + shortTermExtraRepository.count()+"\"}";
+        if ((nxValue == null || nxValue.equals("")) || (nyValue == null || nyValue.equals(""))) {
+            return "{\"count\": \"" + shortTermExtraRepository.count()+"\"}";
+        } else {
+            return "{\"count\": \"" + shortTermExtraRepository.countByLocation(nxValue, nyValue)+"\"}";
+        }
     }
     
 

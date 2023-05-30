@@ -102,9 +102,15 @@ public class MidTermLandController {
 
     // MidTermLand 의 총 갯수를 return
     @GetMapping("/mid-term/land/count")
-    public String midTermLandCount () {
+    public String midTermLandCount (
+            @RequestParam(name = "location", required = false) String location
+    ) {
 
-        return "{\"count\": \"" + midTermLandRepository.count()+"\"}";
+        if (location == null || location.equals("")) {
+            return "{\"count\": \"" + midTermLandRepository.count()+"\"}";
+        } else {
+            return "{\"count\": \"" + midTermLandRepository.countByLocation(location)+"\"}";
+        }
     }
 
 
