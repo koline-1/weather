@@ -7,5 +7,6 @@ import java.util.HashMap;
 
 public interface ShortTermStatusService {
 
+    // Map형태의 데이터를 DTO 객체로 변환
     public ShortTermStatusDto parseJsonArrayToShortTermStatusDto(JSONArray jArray, String version);
 }

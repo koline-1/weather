@@ -1,6 +1,6 @@
-package com.practice.weather.shortTerm.extraExpectation;
+package com.practice.weather.shortTerm.extra;
 
-import com.practice.weather.shortTerm.extraExpectation.entity.ShortTermExtraExpectationEntity;
+import com.practice.weather.shortTerm.extra.entity.ShortTermExtraEntity;
 import com.practice.weather.utility.Utility;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
-import static com.practice.weather.shortTerm.extraExpectation.entity.QShortTermExtraExpectationEntity.shortTermExtraExpectationEntity;
+import static com.practice.weather.shortTerm.extra.entity.QShortTermExtraExpectationEntity.shortTermExtraExpectationEntity;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -37,7 +37,7 @@ public class ShortTermExtraExpectationRepositoryCustomTest {
     void createTest() {
         queryFactory = new JPAQueryFactory(em);
 
-        ShortTermExtraExpectationEntity entity =   ShortTermExtraExpectationEntity.builder().version("version")
+        ShortTermExtraEntity entity =   ShortTermExtraEntity.builder().version("version")
                 .forecastDate("forecastDate").forecastTime("forecastTime").nxValue("nxValue").nyValue("nyValue").build();
 
         em.persist(entity);

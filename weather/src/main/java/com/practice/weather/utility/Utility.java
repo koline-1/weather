@@ -126,7 +126,7 @@ public class Utility {
 
         Calendar current = Calendar.getInstance();
 
-        if (serviceId.equals("extraExpectation")) {
+        if (serviceId.equals("extra")) {
             if (current.get(Calendar.MINUTE) <= 45 ) {
                 current.add(Calendar.HOUR_OF_DAY, -1);
             }

@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 public interface MidTermLandService {
 
+    // Map형태의 데이터를 DTO 객체로 변환
     public MidTermLandDto parseMapToMidTermLandDto(HashMap<String, String> data);
 
 }

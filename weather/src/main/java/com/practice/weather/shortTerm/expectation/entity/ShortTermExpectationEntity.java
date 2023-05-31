@@ -1,6 +1,7 @@
 package com.practice.weather.shortTerm.expectation.entity;
 
 import com.practice.weather.main.entity.BaseEntity;
+import com.practice.weather.shortTerm.expectation.dto.ShortTermExpectationDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -86,5 +87,14 @@ public class ShortTermExpectationEntity extends BaseEntity {
 
     @Column
     private String version;
+
+    public ShortTermExpectationDto toDto() {
+        return ShortTermExpectationDto.builder().id(id).baseDate(baseDate).baseTime(baseTime).forecastDate(forecastDate)
+                .forecastTime(forecastTime).nxValue(nxValue).nyValue(nyValue).hourTemperature(hourTemperature).humidity(humidity)
+                .horizontalWind(horizontalWind).verticalWind(verticalWind).windDirection(windDirection).windSpeed(windSpeed)
+                .skyStatus(skyStatus).rainType(rainType).rainPossibility(rainPossibility).waveHeight(waveHeight)
+                .hourPrecipitation(hourPrecipitation).snowDepth(snowDepth).minimumTemperature(minimumTemperature)
+                .maximumTemperature(maximumTemperature).version(version).build();
+    }
 
 }

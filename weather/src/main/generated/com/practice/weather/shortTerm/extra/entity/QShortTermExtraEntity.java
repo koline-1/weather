@@ -1,4 +1,4 @@
-package com.practice.weather.shortTerm.extraExpectation.entity;
+package com.practice.weather.shortTerm.extra.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -10,14 +10,14 @@ import com.querydsl.core.types.Path;
 
 
 /**
- * QShortTermExtraExpectationEntity is a Querydsl query type for ShortTermExtraExpectationEntity
+ * QShortTermExtraEntity is a Querydsl query type for ShortTermExtraEntity
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QShortTermExtraExpectationEntity extends EntityPathBase<ShortTermExtraExpectationEntity> {
+public class QShortTermExtraEntity extends EntityPathBase<ShortTermExtraEntity> {
 
-    private static final long serialVersionUID = -1277802904L;
+    private static final long serialVersionUID = 1248977938L;
 
-    public static final QShortTermExtraExpectationEntity shortTermExtraExpectationEntity = new QShortTermExtraExpectationEntity("shortTermExtraExpectationEntity");
+    public static final QShortTermExtraEntity shortTermExtraEntity = new QShortTermExtraEntity("shortTermExtraEntity");
 
     public final com.practice.weather.main.entity.QBaseEntity _super = new com.practice.weather.main.entity.QBaseEntity(this);
 
@@ -60,16 +60,16 @@ public class QShortTermExtraExpectationEntity extends EntityPathBase<ShortTermEx
 
     public final StringPath windSpeed = createString("windSpeed");
 
-    public QShortTermExtraExpectationEntity(String variable) {
-        super(ShortTermExtraExpectationEntity.class, forVariable(variable));
+    public QShortTermExtraEntity(String variable) {
+        super(ShortTermExtraEntity.class, forVariable(variable));
     }
 
-    public QShortTermExtraExpectationEntity(Path<? extends ShortTermExtraExpectationEntity> path) {
+    public QShortTermExtraEntity(Path<? extends ShortTermExtraEntity> path) {
         super(path.getType(), path.getMetadata());
     }
 
-    public QShortTermExtraExpectationEntity(PathMetadata metadata) {
-        super(ShortTermExtraExpectationEntity.class, metadata);
+    public QShortTermExtraEntity(PathMetadata metadata) {
+        super(ShortTermExtraEntity.class, metadata);
     }
 
 }
