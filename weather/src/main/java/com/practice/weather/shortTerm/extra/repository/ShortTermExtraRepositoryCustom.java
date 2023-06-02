@@ -5,5 +5,5 @@ import com.practice.weather.shortTerm.extra.dto.ShortTermExtraDto;
 public interface ShortTermExtraRepositoryCustom {
 
     // 데이터 중복 확인
-    public boolean isExist(ShortTermExtraDto dto);
+    boolean isExist(ShortTermExtraDto dto);
 }

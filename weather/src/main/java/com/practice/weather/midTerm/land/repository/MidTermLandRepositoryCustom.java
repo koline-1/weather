@@ -5,6 +5,6 @@ import java.time.LocalDateTime;
 public interface MidTermLandRepositoryCustom {
 
     // 데이터 중복 확인
-    public boolean isExist(String regId, LocalDateTime localDateTime);
+    boolean isExist(String regId, LocalDateTime localDateTime);
 
 }

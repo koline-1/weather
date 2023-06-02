@@ -1,11 +1,10 @@
 package com.practice.weather.midTerm.land.entity;
 
-import com.practice.weather.main.entity.BaseEntity;
+import com.practice.weather.baseEntity.BaseEntity;
 import com.practice.weather.midTerm.land.dto.MidTermLandDto;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @ToString
 @Getter

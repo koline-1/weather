@@ -1,6 +1,6 @@
 package com.practice.weather.midTerm.temperature.entity;
 
-import com.practice.weather.main.entity.BaseEntity;
+import com.practice.weather.baseEntity.BaseEntity;
 import com.practice.weather.midTerm.temperature.dto.MidTermTemperatureDto;
 import lombok.*;
 

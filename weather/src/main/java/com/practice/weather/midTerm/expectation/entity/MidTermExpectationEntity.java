@@ -1,6 +1,6 @@
 package com.practice.weather.midTerm.expectation.entity;
 
-import com.practice.weather.main.entity.BaseEntity;
+import com.practice.weather.baseEntity.BaseEntity;
 import com.practice.weather.midTerm.expectation.dto.MidTermExpectationDto;
 import lombok.*;
 

@@ -1,23 +1,13 @@
 package com.practice.weather.midTerm.land.service.impl;
 
 import com.practice.weather.midTerm.land.dto.MidTermLandDto;
-import com.practice.weather.midTerm.land.entity.MidTermLandEntity;
-import com.practice.weather.midTerm.land.repository.MidTermLandRepository;
 import com.practice.weather.midTerm.land.service.MidTermLandService;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.Set;
 
 @Service
 public class MidTermLandServiceImpl implements MidTermLandService {
-
-    @Autowired
-    MidTermLandRepository midTermLandRepository;
 
     @Override
     public MidTermLandDto parseMapToMidTermLandDto(HashMap<String, String> map) {

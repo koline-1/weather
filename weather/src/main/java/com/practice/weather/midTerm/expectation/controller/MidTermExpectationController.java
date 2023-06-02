@@ -8,14 +8,11 @@ import com.practice.weather.midTerm.expectation.entity.MidTermExpectationEntity;
 import com.practice.weather.midTerm.expectation.repository.MidTermExpectationRepository;
 import com.practice.weather.midTerm.expectation.service.MidTermExpectationService;
 import com.practice.weather.utility.Utility;
-import jdk.nashorn.internal.ir.RuntimeNode;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 public class MidTermExpectationController {

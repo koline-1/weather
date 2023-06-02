@@ -1,6 +1,6 @@
 package com.practice.weather.shortTerm.extra.entity;
 
-import com.practice.weather.main.entity.BaseEntity;
+import com.practice.weather.baseEntity.BaseEntity;
 import com.practice.weather.shortTerm.extra.dto.ShortTermExtraDto;
 import lombok.*;
 
