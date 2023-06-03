@@ -55,7 +55,7 @@ public class ShortTermStatusControllerTest {
     @Test
     @DisplayName("shortTermStatus data 화면 테스트")
     public void shortTermStatusControllerTest() throws Exception {
-        mockMvc.perform(get("/short-term/status/data"))
+        mockMvc.perform(get("/short-term/status/current"))
                 .andExpect(status().isOk());
     }
 
@@ -80,7 +80,7 @@ public class ShortTermStatusControllerTest {
         JSONObject jObject = new JSONObject(map);
 
         // when
-        final ResultActions actions = mockMvc.perform(post("/short-term/status/data")
+        final ResultActions actions = mockMvc.perform(post("/short-term/status/current")
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .content(objectMapper.writeValueAsString(jObject))

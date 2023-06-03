@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public interface MidTermTemperatureRepositoryCustom {
 
-    public boolean isExist(String regId, LocalDateTime localDateTime);
+    // 데이터 중복 확인
+    boolean isExist(String regId, LocalDateTime localDateTime);
 
 }

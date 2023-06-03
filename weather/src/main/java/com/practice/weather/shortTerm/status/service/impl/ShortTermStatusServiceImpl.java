@@ -2,17 +2,12 @@ package com.practice.weather.shortTerm.status.service.impl;
 
 import com.practice.weather.shortTerm.status.dto.ShortTermStatusDto;
 import com.practice.weather.shortTerm.status.service.ShortTermStatusService;
-import com.practice.weather.utility.Utility;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ShortTermStatusServiceImpl implements ShortTermStatusService {
-
-    @Autowired
-    private Utility utility;
 
     @Override
     public ShortTermStatusDto parseJsonArrayToShortTermStatusDto(JSONArray jArray, String version) {

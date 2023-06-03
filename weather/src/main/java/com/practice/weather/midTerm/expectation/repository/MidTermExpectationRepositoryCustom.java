@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public interface MidTermExpectationRepositoryCustom {
 
-    public boolean isExist(String stnId, LocalDateTime localDateTime);
+    // 데이터 중복 확인
+    boolean isExist(String stnId, LocalDateTime localDateTime);
 
 }

@@ -3,46 +3,57 @@ package com.practice.weather.shortTerm.expectation.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.practice.weather.shortTerm.expectation.dto.ShortTermExpectationDto;
 import com.practice.weather.shortTerm.expectation.repository.ShortTermExpectationRepository;
 import com.practice.weather.shortTerm.expectation.service.ShortTermExpectationService;
 import com.practice.weather.utility.Utility;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 public class ShortTermExpectationController {
 
-    @Autowired
-    ShortTermExpectationService shortTermExpectationService;
+    private final ShortTermExpectationService shortTermExpectationService;
 
-    @Autowired
-    ShortTermExpectationRepository shortTermExpectationRepository;
+    private final ShortTermExpectationRepository shortTermExpectationRepository;
 
-    @Autowired
-    private Utility utility;
+    private final Utility utility;
+
 
     @Value("${service.key}")
     private String serviceKey;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper;
+
+    // Dependency Injection - 생성자 주입
+    @Autowired
+    public ShortTermExpectationController(
+            ShortTermExpectationService shortTermExpectationService,
+            ShortTermExpectationRepository shortTermExpectationRepository,
+            ObjectMapper objectMapper,
+            Utility utility
+    ) {
+        this.shortTermExpectationService = shortTermExpectationService;
+        this.shortTermExpectationRepository = shortTermExpectationRepository;
+        this.utility = utility;
+        this.objectMapper = objectMapper.registerModule(new JavaTimeModule());
+    }
 
 
-    // 중기해상예보조회
-    @GetMapping("/short-term/expectation/data")
+    // 단기 예보 조회 실시간
+    @GetMapping("/short-term/expectation/current/{nxValue}/{nyValue}")
     public String shortTermExpectationController(
-            @RequestParam(value = "nxValue", required = false) String nxValue,
-            @RequestParam(value = "nyValue", required = false) String nyValue,
-            Model model
+            @PathVariable String nxValue,
+            @PathVariable String nyValue
     ) throws JsonProcessingException {
 
+        // 현재 시간 기준 baseDate 와 baseTime 값 받아오기
         String[] dateTime = utility.getShortTermBaseDateTime("expectation");
 
         // 서비스 URL
@@ -52,31 +63,27 @@ public class ShortTermExpectationController {
                 "&nx=" + (nxValue != null && !nxValue.equals("") ? nxValue : "55") +
                 "&ny=" + (nyValue != null && !nyValue.equals("") ? nyValue : "127");
 
-        JSONArray jArray = utility.getDataAsJsonArray(urlStr);
-
-        if (!jArray.isEmpty()) {
-            List<ShortTermExpectationDto> shortTermExpectationDtoList =
-                    shortTermExpectationService.parseJsonArrayToShortTermExpectationDto(jArray, utility.getShortTermVersion("SHRT", dateTime[0]+dateTime[1]));
-            model.addAttribute("shortTermExpectationDtoList", shortTermExpectationDtoList);
-            model.addAttribute("shortTermExpectationDtoListJson", objectMapper.writeValueAsString(shortTermExpectationDtoList));
-        }else {
-            model.addAttribute("shortTermExpectationDtoList", null);
-            model.addAttribute("shortTermExpectationDtoListJson", null);
-        }
-
-        return "/shortTerm/expectation/shortTermExpectationData";
+        // DTO 객체로 변환후 String 으로 파싱하여 return
+        return objectMapper.writeValueAsString(shortTermExpectationService.parseJsonArrayToShortTermExpectationDto(
+                utility.getDataAsJsonArray(urlStr), utility.getShortTermVersion("SHRT", dateTime[0]+dateTime[1])));
     }
 
-    @ResponseBody
-    @PostMapping("/short-term/expectation/data")
-    public String saveShortTermExpectation (@RequestBody String data) throws JsonProcessingException {
 
+    // 단기 예보 조회 데이터 DB 저장
+    @PostMapping("/short-term/expectation/current")
+    public String saveShortTermExpectation (
+            @RequestBody String data
+    ) throws JsonProcessingException {
+
+        // 받아온 data JSONObject 로 파싱
         JSONObject jObject = new JSONObject(data);
 
+        // 필요한 data 부분만 추출하여 List<DTO>로 파싱
         List<ShortTermExpectationDto> shortTermExpectationDtoList = objectMapper.readValue(jObject.get("data").toString(), new TypeReference<List<ShortTermExpectationDto>>() {});
 
         int saveCount = 0;
 
+        // 각 객체별로 중복 확인후 저장 & 카운트
         for (ShortTermExpectationDto dto : shortTermExpectationDtoList) {
             if (!shortTermExpectationRepository.isExist(dto)) {
                 shortTermExpectationRepository.save(dto.toEntity());
@@ -84,8 +91,50 @@ public class ShortTermExpectationController {
             }
         }
 
-        return "{ \"count\": \"" + String.valueOf(saveCount) + "\"}";
+        // 저장된 객체 수 return
+        return "{ \"count\": \"" + saveCount + "\"}";
+    }
 
+
+    // ShortTermExpectationEntity 의 list 를  return
+    // location 이 파라미터로 전달될경우 location 별 데이터 return
+    @GetMapping("/short-term/expectation/list")
+    public String shortTermExpectationList (
+            final Pageable pageable,
+            @RequestParam(name = "nxValue", required = false) String nxValue,
+            @RequestParam(name = "nyValue", required = false) String nyValue
+    ) throws JsonProcessingException {
+
+        if ((nxValue == null || nxValue.equals("")) || (nyValue == null || nyValue.equals(""))) {
+            return objectMapper.writeValueAsString(shortTermExpectationRepository.selectList(pageable));
+        } else {
+            return objectMapper.writeValueAsString(shortTermExpectationRepository.selectListByLocation(pageable, nxValue, nyValue));
+        }
+    }
+
+
+    // ShortTermExpectation 의 총 갯수를 return
+    @GetMapping("/short-term/expectation/count")
+    public String shortTermExpectationCount (
+            @RequestParam(name = "nxValue", required = false) String nxValue,
+            @RequestParam(name = "nyValue", required = false) String nyValue
+    ) {
+
+        if ((nxValue == null || nxValue.equals("")) || (nyValue == null || nyValue.equals(""))) {
+            return "{\"count\": \"" + shortTermExpectationRepository.count()+"\"}";
+        } else {
+            return "{\"count\": \"" + shortTermExpectationRepository.countByLocation(nxValue, nyValue)+"\"}";
+        }
+    }
+
+    
+    // 아이디로 데이터 조회
+    @GetMapping("/short-term/expectation/{id}")
+    public String shortTermExpectationAllData (
+            @PathVariable Long id
+    ) throws JsonProcessingException {
+
+        return objectMapper.writeValueAsString(shortTermExpectationRepository.selectById(id));
     }
 
 }

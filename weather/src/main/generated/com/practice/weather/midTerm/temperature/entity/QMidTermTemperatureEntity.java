@@ -2,6 +2,7 @@ package com.practice.weather.midTerm.temperature.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
+import com.practice.weather.baseEntity.QBaseEntity;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -19,7 +20,7 @@ public class QMidTermTemperatureEntity extends EntityPathBase<MidTermTemperature
 
     public static final QMidTermTemperatureEntity midTermTemperatureEntity = new QMidTermTemperatureEntity("midTermTemperatureEntity");
 
-    public final com.practice.weather.main.entity.QBaseEntity _super = new com.practice.weather.main.entity.QBaseEntity(this);
+    public final QBaseEntity _super = new QBaseEntity(this);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> date = _super.date;

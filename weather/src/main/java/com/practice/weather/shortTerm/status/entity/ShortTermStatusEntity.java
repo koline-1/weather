@@ -1,6 +1,7 @@
 package com.practice.weather.shortTerm.status.entity;
 
-import com.practice.weather.main.entity.BaseEntity;
+import com.practice.weather.baseEntity.BaseEntity;
+import com.practice.weather.shortTerm.status.dto.ShortTermStatusDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -62,5 +63,11 @@ public class ShortTermStatusEntity extends BaseEntity {
 
     @Column
     private String version;
+
+    public ShortTermStatusDto toDto() {
+        return ShortTermStatusDto.builder().id(id).baseDate(baseDate).baseTime(baseTime).nxValue(nxValue).nyValue(nyValue)
+                .temperature(temperature).hourPrecipitation(hourPrecipitation).horizontalWind(horizontalWind).verticalWind(verticalWind)
+                .humidity(humidity).rainType(rainType).windDirection(windDirection).windSpeed(windSpeed).version(version).build();
+    }
 
 }

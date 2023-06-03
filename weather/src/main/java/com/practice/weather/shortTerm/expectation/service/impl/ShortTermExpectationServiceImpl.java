@@ -1,25 +1,16 @@
 package com.practice.weather.shortTerm.expectation.service.impl;
 
 import com.practice.weather.shortTerm.expectation.dto.ShortTermExpectationDto;
-import com.practice.weather.shortTerm.expectation.entity.ShortTermExpectationEntity;
-import com.practice.weather.shortTerm.expectation.repository.ShortTermExpectationRepository;
 import com.practice.weather.shortTerm.expectation.service.ShortTermExpectationService;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class ShortTermExpectationServiceImpl implements ShortTermExpectationService {
-
-    @Autowired
-    ShortTermExpectationRepository shortTermExpectationRepository;
-
 
     @Override
     public List<ShortTermExpectationDto> parseJsonArrayToShortTermExpectationDto(JSONArray jArray, String version) {

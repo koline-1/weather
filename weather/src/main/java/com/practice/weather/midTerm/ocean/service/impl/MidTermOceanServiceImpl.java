@@ -1,24 +1,13 @@
 package com.practice.weather.midTerm.ocean.service.impl;
 
-import com.practice.weather.midTerm.ocean.entity.MidTermOceanEntity;
-import com.practice.weather.midTerm.ocean.service.MidTermOceanService;
 import com.practice.weather.midTerm.ocean.dto.MidTermOceanDto;
-import com.practice.weather.midTerm.ocean.repository.MidTermOceanRepository;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.practice.weather.midTerm.ocean.service.MidTermOceanService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.Set;
 
 @Service
 public class MidTermOceanServiceImpl implements MidTermOceanService {
-
-    @Autowired
-    MidTermOceanRepository midTermOceanRepository;
-
 
     @Override
     public MidTermOceanDto parseMapToMidTermOceanDto(HashMap<String, String> map) {
