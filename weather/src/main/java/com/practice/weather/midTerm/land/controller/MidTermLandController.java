@@ -44,8 +44,9 @@ public class MidTermLandController {
 
 
     // 중기 육상 예보 조회 실시간
+    @Deprecated
     @GetMapping("/mid-term/land/current/{location}")
-    public String midTermLandController(
+    private String midTermLandController(
             @PathVariable String location
     ) throws JsonProcessingException {
 

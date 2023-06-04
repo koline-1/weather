@@ -12,6 +12,7 @@ import java.util.List;
 @Service
 public class ShortTermExtraServiceImpl implements ShortTermExtraService {
 
+    @Deprecated
     @Override
     public List<ShortTermExtraDto> parseJsonArrayToShortTermExtraDto(JSONArray jArray, String version) {
 

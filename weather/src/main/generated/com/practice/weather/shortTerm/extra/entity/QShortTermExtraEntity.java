@@ -2,7 +2,6 @@ package com.practice.weather.shortTerm.extra.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
-import com.practice.weather.baseEntity.QBaseEntity;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -20,7 +19,7 @@ public class QShortTermExtraEntity extends EntityPathBase<ShortTermExtraEntity> 
 
     public static final QShortTermExtraEntity shortTermExtraEntity = new QShortTermExtraEntity("shortTermExtraEntity");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
+    public final com.practice.weather.baseEntity.QBaseEntity _super = new com.practice.weather.baseEntity.QBaseEntity(this);
 
     public final StringPath baseDate = createString("baseDate");
 

@@ -47,8 +47,9 @@ public class ShortTermExpectationController {
 
 
     // 단기 예보 조회 실시간
+    @Deprecated
     @GetMapping("/short-term/expectation/current/{nxValue}/{nyValue}")
-    public String shortTermExpectationController(
+    private String shortTermExpectationController(
             @PathVariable String nxValue,
             @PathVariable String nyValue
     ) throws JsonProcessingException {

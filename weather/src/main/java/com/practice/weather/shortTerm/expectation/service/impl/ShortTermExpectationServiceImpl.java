@@ -12,6 +12,7 @@ import java.util.List;
 @Service
 public class ShortTermExpectationServiceImpl implements ShortTermExpectationService {
 
+    @Deprecated
     @Override
     public List<ShortTermExpectationDto> parseJsonArrayToShortTermExpectationDto(JSONArray jArray, String version) {
 

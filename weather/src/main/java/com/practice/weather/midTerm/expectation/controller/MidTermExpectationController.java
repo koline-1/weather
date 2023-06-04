@@ -44,8 +44,9 @@ public class MidTermExpectationController {
 
     
     // 중기 전망 예보 조회 실시간
+    @Deprecated
     @GetMapping("/mid-term/expectation/current/{location}")
-    public String midTermExpectationCurrent (
+    private String midTermExpectationCurrent (
             @PathVariable String location
     ) throws JsonProcessingException {
 
