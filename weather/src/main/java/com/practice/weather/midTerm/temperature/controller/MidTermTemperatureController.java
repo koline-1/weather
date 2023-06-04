@@ -44,8 +44,9 @@ public class MidTermTemperatureController {
 
 
     // 중기 기온 조회 실시간
+    @Deprecated
     @GetMapping("/mid-term/temperature/current/{location}")
-    public String midTermTemperatureController(
+    private String midTermTemperatureController(
             @PathVariable String location
     ) throws JsonProcessingException {
 

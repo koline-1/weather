@@ -44,8 +44,9 @@ public class MidTermOceanController {
 
 
     // 중기 해상 예보 조회 실시간
+    @Deprecated
     @GetMapping("/mid-term/ocean/current/{location}")
-    public String midTermOceanController(
+    private String midTermOceanController(
             @PathVariable String location
     ) throws JsonProcessingException {
 

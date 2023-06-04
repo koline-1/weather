@@ -44,8 +44,9 @@ public class ShortTermStatusController {
 
 
     // 초단기 실황 조회 실시간
+    @Deprecated
     @GetMapping("/short-term/status/current/{nxValue}/{nyValue}")
-    public String shortTermStatusController(
+    private String shortTermStatusController(
             @PathVariable String nxValue,
             @PathVariable String nyValue
     ) throws JsonProcessingException {

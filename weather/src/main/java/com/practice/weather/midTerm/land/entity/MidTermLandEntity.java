@@ -13,6 +13,11 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table(name = "mid_term_land")
 @Entity(name = "MidTermLandEntity")
+@SequenceGenerator(
+        name = "MID_TERM_LAND_ID_GENERATOR",
+        sequenceName = "MID_TERM_LAND_ID",
+        initialValue = 1,
+        allocationSize = 1)
 public class MidTermLandEntity extends BaseEntity {
 
     @Id
