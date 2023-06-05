@@ -8,12 +8,14 @@ import com.practice.weather.midTerm.expectation.entity.MidTermExpectationEntity;
 import com.practice.weather.midTerm.expectation.repository.MidTermExpectationRepository;
 import com.practice.weather.midTerm.expectation.service.MidTermExpectationService;
 import com.practice.weather.utility.Utility;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 public class MidTermExpectationController {
 
@@ -123,6 +125,19 @@ public class MidTermExpectationController {
     ) throws JsonProcessingException {
 
         return objectMapper.writeValueAsString(midTermExpectationRepository.selectById(id));
+    }
+
+
+    // 데이터 수정
+    @PatchMapping("/mid-term/expectation/{id}")
+    public String midTermExpectationPatch (
+            @PathVariable Long id,
+            @RequestBody String data
+    ) {
+
+        log.info("id = {}, data = {}", id, data);
+
+        return "success";
     }
 
 }
