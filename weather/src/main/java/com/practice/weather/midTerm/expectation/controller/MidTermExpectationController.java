@@ -133,11 +133,17 @@ public class MidTermExpectationController {
     public String midTermExpectationPatch (
             @PathVariable Long id,
             @RequestBody String data
-    ) {
+    ) throws JsonProcessingException {
 
+        JSONObject jObject = new JSONObject(data);
+
+        MidTermExpectationDto midTermExpectationDto = objectMapper.readValue(jObject.get("data").toString(), MidTermExpectationDto.class);
+        log.info("dto = {}", midTermExpectationDto);
         log.info("id = {}, data = {}", id, data);
 
-        return "success";
+        midTermExpectationRepository.save(midTermExpectationDto.toEntity());
+
+        return "{\"result\": \"success\"}";
     }
 
 }
