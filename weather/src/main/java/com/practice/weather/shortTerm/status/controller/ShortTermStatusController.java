@@ -8,18 +8,12 @@ import com.practice.weather.shortTerm.status.entity.ShortTermStatusEntity;
 import com.practice.weather.shortTerm.status.repository.ShortTermStatusRepository;
 import com.practice.weather.shortTerm.status.service.ShortTermStatusService;
 import com.practice.weather.utility.Utility;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@Slf4j
 @RestController
 public class ShortTermStatusController {
     
@@ -50,12 +44,11 @@ public class ShortTermStatusController {
 
 
     // 초단기 실황 조회 실시간
-    @Deprecated
     @GetMapping("/short-term/status/current/{nxValue}/{nyValue}")
-    private ResponseEntity<ShortTermStatusDto> shortTermStatusController(
+    public String shortTermStatusController(
             @PathVariable String nxValue,
             @PathVariable String nyValue
-    ) {
+    ) throws JsonProcessingException {
 
         // 현재 시간 기준 baseDate 와 baseTime 값 받아오기
         String[] dateTime = utility.getShortTermBaseDateTime("status");
@@ -68,114 +61,77 @@ public class ShortTermStatusController {
                 "&ny=" + (nyValue != null && !nyValue.equals("") ? nyValue : "127");
 
         // DTO 객체로 변환후 String 으로 파싱하여 return
-        return ResponseEntity.ok(shortTermStatusService.parseJsonArrayToShortTermStatusDto(
+        return objectMapper.writeValueAsString(shortTermStatusService.parseJsonArrayToShortTermStatusDto(
                 utility.getDataAsJsonArray(urlStr), utility.getShortTermVersion("ODAM", dateTime[0]+dateTime[1])));
     }
 
     // 초단기 실황 조회 데이터 DB 저장
     @ResponseBody
     @PostMapping("/short-term/status/current")
-    public ResponseEntity<ShortTermStatusEntity> saveShortTermStatus (
+    public ShortTermStatusEntity saveShortTermStatus (
             @RequestBody String data
-    ) {
+    ) throws JsonProcessingException {
 
         // 받아온 data JSONObject 로 파싱
         JSONObject jObject = new JSONObject(data);
 
-        try {
-            // 필요한 data 부분만 추출하여 DTO 로 파싱
-            ShortTermStatusDto shortTermStatusDto = objectMapper.readValue(jObject.get("data").toString(), ShortTermStatusDto.class);
+        // 필요한 data 부분만 추출하여 DTO 로 파싱
+        ShortTermStatusDto shortTermStatusDto = objectMapper.readValue(jObject.get("data").toString(), ShortTermStatusDto.class);
 
-            // 중복 확인후 저장 & return
-            if (!shortTermStatusRepository.isExist(shortTermStatusDto)) {
-                return ResponseEntity.ok(shortTermStatusRepository.save(shortTermStatusDto.toEntity()));
-            }
-
-            // 중복된 데이터일 경우 빈 Entity return
-            return ResponseEntity.ok(ShortTermStatusEntity.builder().baseDate("").build());
-
-        } catch (JsonProcessingException e) {
-            log.error("[saveShortTermStatus]JSON processing failed: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ShortTermStatusEntity());
+        // 중복 확인후 저장 & return
+        if (!shortTermStatusRepository.isExist(shortTermStatusDto)) {
+            return shortTermStatusRepository.save(shortTermStatusDto.toEntity());
         }
+
+        // 중복된 데이터일 경우 빈 Entity return
+        return ShortTermStatusEntity.builder().baseDate("").build();
 
     }
 
 
     // ShortTermStatusEntity 의 list 를  return
+    // location 이 파라미터로 전달될경우 location 별 데이터 return
     @GetMapping("/short-term/status/list")
-    public ResponseEntity<List<ShortTermStatusEntity>> shortTermStatusList (
+    public String shortTermStatusList (
             final Pageable pageable,
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
-    ) {
+    ) throws JsonProcessingException {
 
-        // location 이 파라미터로 전달될경우 location 별 데이터 return
+        objectMapper.registerModule(new JavaTimeModule());
+
         if ((nxValue == null || nxValue.equals("")) || (nyValue == null || nyValue.equals(""))) {
-            return ResponseEntity.ok(shortTermStatusRepository.selectList(pageable));
+            return objectMapper.writeValueAsString(shortTermStatusRepository.selectList(pageable));
         } else {
-            return ResponseEntity.ok(shortTermStatusRepository.selectListByLocation(pageable, nxValue, nyValue));
+            return objectMapper.writeValueAsString(shortTermStatusRepository.selectListByLocation(pageable, nxValue, nyValue));
         }
     }
 
 
     // ShortTermStatus 의 총 갯수를 return
     @GetMapping("/short-term/status/count")
-    public ResponseEntity<String> shortTermStatusCount (
+    public String shortTermStatusCount (
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
     ) {
-        long count;
 
         if ((nxValue == null || nxValue.equals("")) || (nyValue == null || nyValue.equals(""))) {
-            count = shortTermStatusRepository.count();
+            return "{\"count\": \"" + shortTermStatusRepository.count()+"\"}";
         } else {
-            count = shortTermStatusRepository.countByLocation(nxValue, nyValue);
+            return "{\"count\": \"" + shortTermStatusRepository.countByLocation(nxValue, nyValue)+"\"}";
         }
-
-        return ResponseEntity.ok("{\"count\": \"" + count + "\"}");
     }
 
 
     // 아이디로 데이터 조회
     @GetMapping("/short-term/status/{id}")
-    public ResponseEntity<ShortTermStatusEntity> shortTermStatusAllData (
+    public String shortTermStatusAllData (
             @PathVariable Long id
-    ) {
+    ) throws JsonProcessingException {
 
-        return ResponseEntity.ok(shortTermStatusRepository.selectById(id));
-    }
+        objectMapper.registerModule(new JavaTimeModule());
 
-
-    // ShortTermStatus 데이터 수정
-    @PatchMapping("/short-term/status/{id}")
-    public ResponseEntity<ShortTermStatusEntity> shortTermStatusPatch (
-            @PathVariable Long id,
-            @RequestBody String data
-    ) {
-        try {
-
-            //JSONObject 로 받아서 dto 객체로 변환
-            JSONObject jObject = new JSONObject(data);
-
-            ShortTermStatusDto dto = objectMapper.readValue(jObject.get("data").toString(), ShortTermStatusDto.class);
-
-            // 수정 대상에 변경사항 적용
-            ShortTermStatusEntity entityToUpdate = shortTermStatusRepository.selectById(id);
-
-            entityToUpdate.updateFromDto(dto);
-
-            shortTermStatusRepository.save(entityToUpdate);
-
-            return ResponseEntity.ok(entityToUpdate);
-
-        } catch (JsonProcessingException e) {
-            log.error("[shortTermStatusPatch]JSON processing failed: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ShortTermStatusEntity());
-        } catch (Exception e) {
-            log.error("[shortTermStatusPatch]Exception Occurred: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ShortTermStatusEntity());
-        }
+        return objectMapper.writeValueAsString(shortTermStatusRepository.selectById(id));
     }
     
 }

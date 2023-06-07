@@ -3,23 +3,17 @@ package com.practice.weather.midTerm.temperature.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.practice.weather.midTerm.temperature.dto.MidTermTemperatureDto;
-import com.practice.weather.midTerm.temperature.entity.MidTermTemperatureEntity;
 import com.practice.weather.midTerm.temperature.repository.MidTermTemperatureRepository;
 import com.practice.weather.midTerm.temperature.service.MidTermTemperatureService;
+import com.practice.weather.midTerm.temperature.dto.MidTermTemperatureDto;
+import com.practice.weather.midTerm.temperature.entity.MidTermTemperatureEntity;
 import com.practice.weather.utility.Utility;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@Slf4j
 @RestController
 public class MidTermTemperatureController {
 
@@ -50,11 +44,10 @@ public class MidTermTemperatureController {
 
 
     // 중기 기온 조회 실시간
-    @Deprecated
     @GetMapping("/mid-term/temperature/current/{location}")
-    private ResponseEntity<MidTermTemperatureDto> midTermTemperatureController(
+    public String midTermTemperatureController(
             @PathVariable String location
-    ) {
+    ) throws JsonProcessingException {
 
         // 현재 시간 기준 baseDate 와 baseTime 값 받아오기
         String baseDateTime = utility.getMidTermBaseDateTimeAsString();
@@ -65,109 +58,69 @@ public class MidTermTemperatureController {
                 (location != null && !location.equals("") ? location : "11B10101") + "&tmFc=" + baseDateTime;
 
         // DTO 객체로 변환후 String 으로 파싱하여 return
-        return ResponseEntity.ok(midTermTemperatureService.parseMapToMidTermTemperatureDto(
+        return objectMapper.writeValueAsString(midTermTemperatureService.parseMapToMidTermTemperatureDto(
                 utility.parseJsonArrayToMap(utility.getDataAsJsonArray(urlStr))));
     }
 
 
     // 중기 기온 조회 데이터 DB 저장
     @PostMapping("/mid-term/temperature/current")
-    public ResponseEntity<MidTermTemperatureEntity> saveMidTermTemperature (
+    public MidTermTemperatureEntity saveMidTermTemperature (
             @RequestBody String data
-    ) {
+    ) throws JsonProcessingException {
 
         // 받아온 data JSONObject 로 파싱
         JSONObject jObject = new JSONObject(data);
 
-        try {
-            // 필요한 data 부분만 추출하여 DTO 로 파싱
-            MidTermTemperatureDto midTermTemperatureDto = objectMapper.readValue(jObject.get("data").toString(), MidTermTemperatureDto.class);
+        // 필요한 data 부분만 추출하여 DTO 로 파싱
+        MidTermTemperatureDto midTermTemperatureDto = objectMapper.readValue(jObject.get("data").toString(), MidTermTemperatureDto.class);
 
-            // 중복 확인 후 저장 & return
-            if (!midTermTemperatureRepository.isExist(midTermTemperatureDto.getRegId(), utility.getMidTermBaseDateTimeAsLocalDateTime())) {
-                return ResponseEntity.ok(midTermTemperatureRepository.save(midTermTemperatureDto.toEntity()));
-            }
-
-            // 중복된 데이터일 경우 빈 Entity return
-            return ResponseEntity.ok(MidTermTemperatureEntity.builder().regId("").build());
-
-        } catch (JsonProcessingException e) {
-            log.error("[saveMidTermTemperature]JSON processing failed: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MidTermTemperatureEntity());
+        // 중복 확인 후 저장 & return
+        if (!midTermTemperatureRepository.isExist(midTermTemperatureDto.getRegId(), utility.getMidTermBaseDateTimeAsLocalDateTime())) {
+            return midTermTemperatureRepository.save(midTermTemperatureDto.toEntity());
         }
+
+        // 중복된 데이터일 경우 빈 Entity return
+        return MidTermTemperatureEntity.builder().regId("").build();
     }
 
 
     // MidTermTemperatureEntity 의 list 를  return
+    // location 이 파라미터로 전달될경우 location 별 데이터 return
     @GetMapping("/mid-term/temperature/list")
-    public ResponseEntity<List<MidTermTemperatureEntity>> midTermTemperatureList (
+    public String midTermTemperatureList (
             final Pageable pageable,
             @RequestParam(name = "location", required = false) String location
-    )  {
+    ) throws JsonProcessingException {
 
-        // location 이 파라미터로 전달될경우 location 별 데이터 return
         if (location == null || location.equals("")) {
-            return ResponseEntity.ok(midTermTemperatureRepository.selectList(pageable));
+            return objectMapper.writeValueAsString(midTermTemperatureRepository.selectList(pageable));
         } else {
-            return ResponseEntity.ok(midTermTemperatureRepository.selectListByLocation(pageable, location));
+            return objectMapper.writeValueAsString(midTermTemperatureRepository.selectListByLocation(pageable, location));
         }
     }
 
 
     // MidTermTemperature 의 총 갯수를 return
     @GetMapping("/mid-term/temperature/count")
-    public ResponseEntity<String> midTermTemperatureCount (
+    public String midTermTemperatureCount (
             @RequestParam(name = "location", required = false) String location
     ) {
-        long count;
 
         if (location == null || location.equals("")) {
-            count = midTermTemperatureRepository.count();
+            return "{\"count\": \"" + midTermTemperatureRepository.count()+"\"}";
         } else {
-            count = midTermTemperatureRepository.countByLocation(location);
+            return "{\"count\": \"" + midTermTemperatureRepository.countByLocation(location)+"\"}";
         }
-
-        return ResponseEntity.ok("{\"count\": \"" + count + "\"}");
     }
     
 
     // 아이디로 데이터 조회
     @GetMapping("/mid-term/temperature/{id}")
-    public ResponseEntity<MidTermTemperatureEntity> midTermTemperatureAllData (
+    public String midTermTemperatureAllData (
             @PathVariable Long id
-    ) {
-        return ResponseEntity.ok(midTermTemperatureRepository.selectById(id));
-    }
+    ) throws JsonProcessingException {
 
-
-    // MidTermTemperature 데이터 수정
-    @PatchMapping("/mid-term/temperature/{id}")
-    public ResponseEntity<MidTermTemperatureEntity> midTermTemperaturePatch (
-            @PathVariable Long id,
-            @RequestBody String data
-    ) {
-        try {
-
-            //JSONObject 로 받아서 dto 객체로 변환
-            JSONObject jObject = new JSONObject(data);
-
-            MidTermTemperatureDto dto = objectMapper.readValue(jObject.get("data").toString(), MidTermTemperatureDto.class);
-
-            // 수정 대상에 변경사항 적용
-            MidTermTemperatureEntity entityToUpdate = midTermTemperatureRepository.selectById(id);
-
-            entityToUpdate.updateFromDto(dto);
-
-            midTermTemperatureRepository.save(entityToUpdate);
-
-            return ResponseEntity.ok(entityToUpdate);
-
-        } catch (JsonProcessingException e) {
-            log.error("[midTermTemperaturePatch]JSON processing failed: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MidTermTemperatureEntity());
-        } catch (Exception e) {
-            log.error("[midTermTemperaturePatch]Exception Occurred: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MidTermTemperatureEntity());
-        }
+        return objectMapper.writeValueAsString(midTermTemperatureRepository.selectById(id));
     }
 }

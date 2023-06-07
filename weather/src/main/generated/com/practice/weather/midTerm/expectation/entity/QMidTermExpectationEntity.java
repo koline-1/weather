@@ -2,6 +2,7 @@ package com.practice.weather.midTerm.expectation.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
+import com.practice.weather.baseEntity.QBaseEntity;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -19,17 +20,14 @@ public class QMidTermExpectationEntity extends EntityPathBase<MidTermExpectation
 
     public static final QMidTermExpectationEntity midTermExpectationEntity = new QMidTermExpectationEntity("midTermExpectationEntity");
 
-    public final com.practice.weather.baseEntity.QBaseEntity _super = new com.practice.weather.baseEntity.QBaseEntity(this);
+    public final QBaseEntity _super = new QBaseEntity(this);
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> created = _super.created;
+    public final DateTimePath<java.time.LocalDateTime> date = _super.date;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final StringPath stnId = createString("stnId");
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> updated = _super.updated;
 
     public final StringPath wfSv = createString("wfSv");
 

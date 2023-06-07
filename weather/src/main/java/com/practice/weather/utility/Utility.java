@@ -27,7 +27,6 @@ public class Utility {
     private String serviceKey;
 
     // URL 연결 메소드
-    @Deprecated
     public JSONArray getDataAsJsonArray(String urlStr) {
 
         try {
@@ -40,7 +39,7 @@ public class Utility {
             // 타입 설정
             connection.setRequestProperty("CONTENT-TYPE", "application/json");
 
-            //openStream() : URL 페이지 정보를 읽어온다.
+            //openStream() : URL페이지 정보를 읽어온다.
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "utf-8"));
 
             String inputLine;
@@ -70,7 +69,6 @@ public class Utility {
     }
 
     // JSONArray > Map 파싱
-    @Deprecated
     public HashMap<String, String> parseJsonArrayToMap (JSONArray jArray) {
 
         HashMap<String, String> map = new HashMap<>();
@@ -121,7 +119,6 @@ public class Utility {
     }
 
     // 단기예보 BaseDate, BaseTime String[] Type 으로 return
-    @Deprecated
     public String[] getShortTermBaseDateTime(String serviceId) {
 
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
@@ -161,7 +158,6 @@ public class Utility {
     }
 
     // 단기예보 버전 조회
-    @Deprecated
     public String getShortTermVersion (String serviceId, String dateTime) {
 
         String urlStr = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getFcstVersion?" +

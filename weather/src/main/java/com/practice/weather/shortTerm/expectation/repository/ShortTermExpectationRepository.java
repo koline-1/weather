@@ -19,6 +19,6 @@ public interface ShortTermExpectationRepository extends JpaRepository<ShortTermE
     List<ShortTermExpectationEntity> selectListByLocation(Pageable pageable, String nxValue, String nyValue);
 
     @Query(value = "SELECT COUNT(1) FROM SHORT_TERM_EXPECTATION WHERE NX_VALUE = :nxValue AND NY_VALUE = :nyValue", nativeQuery = true)
-    long countByLocation(String nxValue, String nyValue);
+    int countByLocation(String nxValue, String nyValue);
 
 }
