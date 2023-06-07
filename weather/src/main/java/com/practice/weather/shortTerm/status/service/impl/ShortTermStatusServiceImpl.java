@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ShortTermStatusServiceImpl implements ShortTermStatusService {
 
+    @Deprecated
     @Override
     public ShortTermStatusDto parseJsonArrayToShortTermStatusDto(JSONArray jArray, String version) {
 

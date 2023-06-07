@@ -6,5 +6,6 @@ import org.json.JSONArray;
 public interface ShortTermStatusService {
 
     // Map 형태의 데이터를 DTO 객체로 변환
+    @Deprecated
     ShortTermStatusDto parseJsonArrayToShortTermStatusDto(JSONArray jArray, String version);
 }

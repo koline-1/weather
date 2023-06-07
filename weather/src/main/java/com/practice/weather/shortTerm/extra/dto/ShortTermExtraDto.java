@@ -50,7 +50,9 @@ public class ShortTermExtraDto {
 
     private String version;
 
-    private LocalDateTime date;
+    private LocalDateTime created;
+    
+    private LocalDateTime updated;
 
     public ShortTermExtraEntity toEntity() {
         return ShortTermExtraEntity.builder().id(id).baseDate(baseDate).baseTime(baseTime).forecastDate(forecastDate)
