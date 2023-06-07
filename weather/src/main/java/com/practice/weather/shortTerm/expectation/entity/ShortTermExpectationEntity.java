@@ -97,28 +97,4 @@ public class ShortTermExpectationEntity extends BaseEntity {
                 .maximumTemperature(maximumTemperature).version(version).build();
     }
 
-    public void updateFromDto(ShortTermExpectationDto dto) {
-        this.baseDate = dto.getBaseDate();
-        this.baseTime = dto.getBaseTime();
-        this.forecastDate = dto.getForecastDate();
-        this.forecastTime = dto.getForecastTime();
-        this.nxValue = dto.getNxValue();
-        this.nyValue = dto.getNyValue();
-        this.hourTemperature = dto.getHourTemperature();
-        this.horizontalWind = dto.getHorizontalWind();
-        this.verticalWind = dto.getVerticalWind();
-        this.windDirection = dto.getWindDirection();
-        this.windSpeed = dto.getWindSpeed();
-        this.skyStatus = dto.getSkyStatus();
-        this.rainType = dto.getRainType();
-        this.rainPossibility = dto.getRainPossibility();
-        this.waveHeight = dto.getWaveHeight();
-        this.hourPrecipitation = dto.getHourPrecipitation();
-        this.snowDepth = dto.getSnowDepth();
-        this.humidity = dto.getHumidity();
-        this.minimumTemperature = dto.getMinimumTemperature();
-        this.maximumTemperature = dto.getMaximumTemperature();
-        this.version = dto.getVersion();
-    }
-
 }

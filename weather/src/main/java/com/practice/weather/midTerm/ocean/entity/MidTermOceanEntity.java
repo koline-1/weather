@@ -153,48 +153,5 @@ public class MidTermOceanEntity extends BaseEntity {
                 .wf4Am(wf4Am).wh8A(wh8A).wh10A(wh10A).wf5Am(wf5Am).wh3BAm(wh3BAm).wh10B(wh10B).wf6Am(wf6Am).wh5BPm(wh5BPm)
                 .wh5APm(wh5APm).wh7APm(wh7APm).wh7BPm(wh7BPm).wh3APm(wh3APm).wh3BPm(wh3BPm).build();
     }
-    
-    public void updateFromDto(MidTermOceanDto dto) {
-        this.regId = dto.getRegId();
-        this.wf8 = dto.getWf8();
-        this.wh4AAm = dto.getWh4AAm();
-        this.wh4BAm = dto.getWh4BAm();
-        this.wh6BAm = dto.getWh6BAm();
-        this.wf9 = dto.getWf9();
-        this.wh6AAm = dto.getWh6AAm();
-        this.wh9A = dto.getWh9A();
-        this.wh9B = dto.getWh9B();
-        this.wf6Pm = dto.getWf6Pm();
-        this.wf7Pm = dto.getWf7Pm();
-        this.wf10 = dto.getWf10();
-        this.wh4APm = dto.getWh4APm();
-        this.wh6BPm = dto.getWh6BPm();
-        this.wh6APm = dto.getWh6APm();
-        this.wf3Pm = dto.getWf3Pm();
-        this.wf4Pm = dto.getWf4Pm();
-        this.wh4BPm = dto.getWh4BPm();
-        this.wf5Pm = dto.getWf5Pm();
-        this.wh7AAm = dto.getWh7AAm();
-        this.wf7Am = dto.getWf7Am();
-        this.wh3AAm = dto.getWh3AAm();
-        this.wh5BAm = dto.getWh5BAm();
-        this.wh5AAm = dto.getWh5AAm();
-        this.wf3Am = dto.getWf3Am();
-        this.wh7BAm = dto.getWh7BAm();
-        this.wh8B = dto.getWh8B();
-        this.wf4Am = dto.getWf4Am();
-        this.wh8A = dto.getWh8A();
-        this.wh10A = dto.getWh10A();
-        this.wf5Am = dto.getWf5Am();
-        this.wh3BAm = dto.getWh3BAm();
-        this.wh10B = dto.getWh10B();
-        this.wf6Am = dto.getWf6Am();
-        this.wh5BPm = dto.getWh5BPm();
-        this.wh5APm = dto.getWh5APm();
-        this.wh7APm = dto.getWh7APm();
-        this.wh7BPm = dto.getWh7BPm();
-        this.wh3APm = dto.getWh3APm();
-        this.wh3BPm = dto.getWh3BPm();
-    }
 
 }

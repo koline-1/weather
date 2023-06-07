@@ -20,9 +20,7 @@ public class MidTermExpectationDto {
 
     private String wfSv;
 
-    private LocalDateTime created;
-    
-    private LocalDateTime updated;
+    private LocalDateTime date;
 
     public MidTermExpectationEntity toEntity() {
         return MidTermExpectationEntity.builder().id(id).stnId(stnId).wfSv(wfSv).build();

@@ -8,7 +8,6 @@ import java.util.List;
 public interface ShortTermExpectationService {
 
     // Map 형태의 데이터를 DTO 객체 List 로 변환
-    @Deprecated
     List<ShortTermExpectationDto> parseJsonArrayToShortTermExpectationDto(JSONArray jArray, String version);
     
 }
