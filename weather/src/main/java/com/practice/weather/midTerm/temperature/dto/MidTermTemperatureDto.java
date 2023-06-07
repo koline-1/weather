@@ -114,7 +114,9 @@ public class MidTermTemperatureDto {
 
     private String taMax10High;
 
-    private LocalDateTime date;
+    private LocalDateTime created;
+    
+    private LocalDateTime updated;
 
     public MidTermTemperatureEntity toEntity() {
         return MidTermTemperatureEntity.builder().id(id).regId(regId).taMin3(taMin3).taMin3Low(taMin3Low).taMin3High(taMin3High)

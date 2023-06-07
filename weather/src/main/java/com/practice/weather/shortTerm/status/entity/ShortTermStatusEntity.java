@@ -70,4 +70,20 @@ public class ShortTermStatusEntity extends BaseEntity {
                 .humidity(humidity).rainType(rainType).windDirection(windDirection).windSpeed(windSpeed).version(version).build();
     }
 
+    public void updateFromDto (ShortTermStatusDto dto) {
+        this.baseDate = dto.getBaseDate();
+        this.baseTime = dto.getBaseTime();
+        this.nxValue = dto.getNxValue();
+        this.nyValue = dto.getNyValue();
+        this.temperature = dto.getTemperature();
+        this.hourPrecipitation = dto.getHourPrecipitation();
+        this.horizontalWind = dto.getHorizontalWind();
+        this.verticalWind = dto.getVerticalWind();
+        this.humidity = dto.getHumidity();
+        this.rainType = dto.getRainType();
+        this.windDirection = dto.getWindDirection();
+        this.windSpeed = dto.getWindSpeed();
+        this.version = dto.getVersion();
+    }
+
 }

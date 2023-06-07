@@ -22,7 +22,7 @@ public class QMidTermLandEntity extends EntityPathBase<MidTermLandEntity> {
     public final com.practice.weather.baseEntity.QBaseEntity _super = new com.practice.weather.baseEntity.QBaseEntity(this);
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> date = _super.date;
+    public final DateTimePath<java.time.LocalDateTime> created = _super.created;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
@@ -53,6 +53,9 @@ public class QMidTermLandEntity extends EntityPathBase<MidTermLandEntity> {
     public final StringPath rnSt8 = createString("rnSt8");
 
     public final StringPath rnSt9 = createString("rnSt9");
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> updated = _super.updated;
 
     public final StringPath wf10 = createString("wf10");
 

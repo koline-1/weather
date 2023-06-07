@@ -70,7 +70,9 @@ public class MidTermLandDto {
 
     private String wf10;
 
-    private LocalDateTime date;
+    private LocalDateTime created;
+    
+    private LocalDateTime updated;
 
     public MidTermLandEntity toEntity() {
         return MidTermLandEntity.builder().id(id).regId(regId).rnSt3Am(rnSt3Am).rnSt3Pm(rnSt3Pm).rnSt4Am(rnSt4Am).rnSt4Pm(rnSt4Pm)

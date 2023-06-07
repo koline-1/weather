@@ -3,17 +3,23 @@ package com.practice.weather.midTerm.ocean.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.practice.weather.midTerm.ocean.dto.MidTermOceanDto;
+import com.practice.weather.midTerm.ocean.entity.MidTermOceanEntity;
 import com.practice.weather.midTerm.ocean.repository.MidTermOceanRepository;
 import com.practice.weather.midTerm.ocean.service.MidTermOceanService;
-import com.practice.weather.midTerm.ocean.entity.MidTermOceanEntity;
 import com.practice.weather.utility.Utility;
-import com.practice.weather.midTerm.ocean.dto.MidTermOceanDto;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@Slf4j
 @RestController
 public class MidTermOceanController {
 
@@ -46,9 +52,9 @@ public class MidTermOceanController {
     // 중기 해상 예보 조회 실시간
     @Deprecated
     @GetMapping("/mid-term/ocean/current/{location}")
-    private String midTermOceanController(
+    private ResponseEntity<MidTermOceanDto> midTermOceanController(
             @PathVariable String location
-    ) throws JsonProcessingException {
+    ) {
 
         // 현재 시간 기준 baseDate 와 baseTime 값 받아오기
         String baseDateTime = utility.getMidTermBaseDateTimeAsString();
@@ -59,69 +65,110 @@ public class MidTermOceanController {
                 (location != null && !location.equals("") ? location : "12A20000") + "&tmFc=" + baseDateTime;
 
         // DTO 객체로 변환후 String 으로 파싱하여 return
-        return objectMapper.writeValueAsString(midTermOceanService.parseMapToMidTermOceanDto(
+        return ResponseEntity.ok(midTermOceanService.parseMapToMidTermOceanDto(
                 utility.parseJsonArrayToMap(utility.getDataAsJsonArray(urlStr))));
     }
 
 
     // 중기 해상 예보 조회 데이터 DB 저장
     @PostMapping("/mid-term/ocean/current")
-    public MidTermOceanEntity saveMidTermOcean (
+    public ResponseEntity<MidTermOceanEntity> saveMidTermOcean (
             @RequestBody String data
-    ) throws JsonProcessingException {
+    ) {
 
         // 받아온 data JSONObject 로 파싱
         JSONObject jObject = new JSONObject(data);
 
-        // 필요한 data 부분만 추출하여 DTO 로 파싱
-        MidTermOceanDto midTermOceanDto = objectMapper.readValue(jObject.get("data").toString(), MidTermOceanDto.class);
+        try {
+            // 필요한 data 부분만 추출하여 DTO 로 파싱
+            MidTermOceanDto midTermOceanDto = objectMapper.readValue(jObject.get("data").toString(), MidTermOceanDto.class);
 
-        // 중복 확인 후 저장 & return
-        if (!midTermOceanRepository.isExist(midTermOceanDto.getRegId(), utility.getMidTermBaseDateTimeAsLocalDateTime())) {
-            return midTermOceanRepository.save(midTermOceanDto.toEntity());
+            // 중복 확인 후 저장 & return
+            if (!midTermOceanRepository.isExist(midTermOceanDto.getRegId(), utility.getMidTermBaseDateTimeAsLocalDateTime())) {
+                return ResponseEntity.ok(midTermOceanRepository.save(midTermOceanDto.toEntity()));
+            }
+
+            // 중복된 데이터일 경우 빈 Entity return
+            return ResponseEntity.ok(MidTermOceanEntity.builder().regId("").build());
+        } catch (JsonProcessingException e) {
+            log.error("[saveMidTermOcean]JSON processing failed: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MidTermOceanEntity());
         }
-
-        // 중복된 데이터일 경우 빈 Entity return
-        return MidTermOceanEntity.builder().regId("").build();
     }
 
 
     // MidTermOceanEntity 의 list 를  return
-    // location 이 파라미터로 전달될경우 location 별 데이터 return
     @GetMapping("/mid-term/ocean/list")
-    public String midTermOceanList (
+    public ResponseEntity<List<MidTermOceanEntity>> midTermOceanList (
             final Pageable pageable,
             @RequestParam(name = "location", required = false) String location
-    ) throws JsonProcessingException {
+    ) {
 
+        // location 이 파라미터로 전달될경우 location 별 데이터 return
         if (location == null || location.equals("")) {
-            return objectMapper.writeValueAsString(midTermOceanRepository.selectList(pageable));
+            return ResponseEntity.ok(midTermOceanRepository.selectList(pageable));
         } else {
-            return objectMapper.writeValueAsString(midTermOceanRepository.selectListByLocation(pageable, location));
+            return ResponseEntity.ok(midTermOceanRepository.selectListByLocation(pageable, location));
         }
     }
 
 
     // MidTermOcean 의 총 갯수를 return
     @GetMapping("/mid-term/ocean/count")
-    public String midTermOceanCount (
+    public ResponseEntity<String> midTermOceanCount (
             @RequestParam(name = "location", required = false) String location
     ) {
+        long count;
 
         if (location == null || location.equals("")) {
-            return "{\"count\": \"" + midTermOceanRepository.count()+"\"}";
+            count = midTermOceanRepository.count();
         } else {
-            return "{\"count\": \"" + midTermOceanRepository.countByLocation(location)+"\"}";
+            count = midTermOceanRepository.countByLocation(location);
         }
+
+        return ResponseEntity.ok("{\"count\": \"" + count + "\"}");
     }
 
 
     // 아이디로 데이터 조회
     @GetMapping("/mid-term/ocean/{id}")
-    public String midTermOceanAllData (
+    public ResponseEntity<MidTermOceanEntity> midTermOceanAllData (
             @PathVariable Long id
-    ) throws JsonProcessingException {
+    ) {
 
-        return objectMapper.writeValueAsString(midTermOceanRepository.selectById(id));
+        return ResponseEntity.ok(midTermOceanRepository.selectById(id));
+    }
+
+
+    // MidTermOcean 데이터 수정
+    @PatchMapping("/mid-term/ocean/{id}")
+    public ResponseEntity<MidTermOceanEntity> midTermOceanPatch (
+            @PathVariable Long id,
+            @RequestBody String data
+    ) {
+
+        try {
+
+            //JSONObject 로 받아서 dto 객체로 변환
+            JSONObject jObject = new JSONObject(data);
+
+            MidTermOceanDto dto = objectMapper.readValue(jObject.get("data").toString(), MidTermOceanDto.class);
+
+            // 수정 대상에 변경사항 적용
+            MidTermOceanEntity entityToUpdate = midTermOceanRepository.selectById(id);
+
+            entityToUpdate.updateFromDto(dto);
+
+            midTermOceanRepository.save(entityToUpdate);
+
+            return ResponseEntity.ok(entityToUpdate);
+
+        } catch (JsonProcessingException e) {
+            log.error("[midTermOceanPatch]JSON processing failed: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MidTermOceanEntity());
+        } catch (Exception e) {
+            log.error("[midTermOceanPatch]Exception Occurred: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MidTermOceanEntity());
+        }
     }
 }

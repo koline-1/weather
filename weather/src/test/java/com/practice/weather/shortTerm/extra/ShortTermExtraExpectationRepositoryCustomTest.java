@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
-import static com.practice.weather.shortTerm.extra.entity.QShortTermExtraExpectationEntity.shortTermExtraExpectationEntity;
+import static com.practice.weather.shortTerm.extra.entity.QShortTermExtraEntity.shortTermExtraEntity;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -48,13 +48,13 @@ public class ShortTermExtraExpectationRepositoryCustomTest {
     void isExistTest() {
 
         boolean isExistTest =  queryFactory
-                .select(shortTermExtraExpectationEntity.id).from(shortTermExtraExpectationEntity)
+                .select(shortTermExtraEntity.id).from(shortTermExtraEntity)
                 .where(
-                        shortTermExtraExpectationEntity.version.eq("version")
-                                .and(shortTermExtraExpectationEntity.forecastDate.eq("forecastDate"))
-                                .and(shortTermExtraExpectationEntity.forecastTime.eq("forecastTime"))
-                                .and(shortTermExtraExpectationEntity.nxValue.eq("nxValue"))
-                                .and(shortTermExtraExpectationEntity.nyValue.eq("nyValue"))
+                        shortTermExtraEntity.version.eq("version")
+                                .and(shortTermExtraEntity.forecastDate.eq("forecastDate"))
+                                .and(shortTermExtraEntity.forecastTime.eq("forecastTime"))
+                                .and(shortTermExtraEntity.nxValue.eq("nxValue"))
+                                .and(shortTermExtraEntity.nyValue.eq("nyValue"))
                 ).fetch().size() > 0;
 
         assertThat(isExistTest, is(true));

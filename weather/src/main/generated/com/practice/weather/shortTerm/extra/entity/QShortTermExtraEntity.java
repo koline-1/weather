@@ -26,7 +26,7 @@ public class QShortTermExtraEntity extends EntityPathBase<ShortTermExtraEntity> 
     public final StringPath baseTime = createString("baseTime");
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> date = _super.date;
+    public final DateTimePath<java.time.LocalDateTime> created = _super.created;
 
     public final StringPath forecastDate = createString("forecastDate");
 
@@ -51,6 +51,9 @@ public class QShortTermExtraEntity extends EntityPathBase<ShortTermExtraEntity> 
     public final StringPath skyStatus = createString("skyStatus");
 
     public final StringPath temperature = createString("temperature");
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> updated = _super.updated;
 
     public final StringPath version = createString("version");
 
