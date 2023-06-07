@@ -58,7 +58,7 @@ public class MidTermOceanRepositoryCustomTest {
                 .select(midTermOceanEntity.id).from(midTermOceanEntity)
                 .where(
                         midTermOceanEntity.regId.eq(regId)
-                                .and(midTermOceanEntity.date.goe(localDateTime))
+                                .and(midTermOceanEntity.created.goe(localDateTime))
                 ).fetch().size() > 0;
 
         assertThat(isExistTest, is(true));

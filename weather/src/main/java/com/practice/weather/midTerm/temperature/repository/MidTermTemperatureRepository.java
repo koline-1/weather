@@ -21,6 +21,6 @@ public interface MidTermTemperatureRepository extends JpaRepository<MidTermTempe
     List<MidTermTemperatureEntity> selectListByLocation(Pageable pageable, String location);
 
     @Query(value = "SELECT COUNT(1) FROM MID_TERM_TEMPERATURE WHERE REG_ID = :location", nativeQuery = true)
-    int countByLocation(String location);
+    long countByLocation(String location);
 
 }

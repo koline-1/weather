@@ -22,7 +22,7 @@ public class QMidTermTemperatureEntity extends EntityPathBase<MidTermTemperature
     public final com.practice.weather.baseEntity.QBaseEntity _super = new com.practice.weather.baseEntity.QBaseEntity(this);
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> date = _super.date;
+    public final DateTimePath<java.time.LocalDateTime> created = _super.created;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
@@ -123,6 +123,9 @@ public class QMidTermTemperatureEntity extends EntityPathBase<MidTermTemperature
     public final StringPath taMin9High = createString("taMin9High");
 
     public final StringPath taMin9Low = createString("taMin9Low");
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> updated = _super.updated;
 
     public QMidTermTemperatureEntity(String variable) {
         super(MidTermTemperatureEntity.class, forVariable(variable));

@@ -42,7 +42,9 @@ public class ShortTermStatusDto {
 
     private String version;
 
-    private LocalDateTime date;
+    private LocalDateTime created;
+    
+    private LocalDateTime updated;
 
     public ShortTermStatusEntity toEntity() {
         return ShortTermStatusEntity.builder().id(id).baseDate(baseDate).baseTime(baseTime).nxValue(nxValue).nyValue(nyValue)

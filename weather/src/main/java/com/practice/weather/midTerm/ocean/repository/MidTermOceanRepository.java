@@ -21,6 +21,6 @@ public interface MidTermOceanRepository extends JpaRepository<MidTermOceanEntity
     List<MidTermOceanEntity> selectListByLocation(Pageable pageable, String location);
 
     @Query(value = "SELECT COUNT(1) FROM MID_TERM_OCEAN WHERE REG_ID = :location", nativeQuery = true)
-    int countByLocation(String location);
+    long countByLocation(String location);
     
 }
