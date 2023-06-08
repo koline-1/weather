@@ -124,26 +124,4 @@ public class MidTermExpectationController {
         return objectMapper.writeValueAsString(midTermExpectationRepository.selectById(id));
     }
 
-
-    @DeleteMapping("/mid-term/expectation/{id}")
-    public ResponseEntity<String> midTermExpectationDelete (
-        @PathVariable Long id
-    ) {
-
-        // ID로 데이터 조회 안될 시 Not Found return
-        if (!midTermExpectationRepository.existsById(id)) {
-            log.error("[midTermExpectationDelete] Delete failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
-        }
-
-        try {
-            // 삭제 성공시 삭제된 데이터의 id return
-            midTermExpectationRepository.deleteById(id);
-            return ResponseEntity.ok("{\"result\": \"" + id + "\"}");
-        } catch (Exception e) {
-            log.error("[midTermExpectationDelete] Exception occurred: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"result\": \"Exception occurred.\"}");
-        }
-    }
-
 }
