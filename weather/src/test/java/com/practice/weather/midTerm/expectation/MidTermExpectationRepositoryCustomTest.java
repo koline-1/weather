@@ -54,7 +54,7 @@ public class MidTermExpectationRepositoryCustomTest {
                 .select(midTermExpectationEntity.id).from(midTermExpectationEntity)
                 .where(
                         midTermExpectationEntity.stnId.eq(stnId)
-                                .and(midTermExpectationEntity.created.goe(localDateTime))
+                                .and(midTermExpectationEntity.date.goe(localDateTime))
                 ).fetch().size() > 0;
 
         assertThat(isExistTest, is(true));

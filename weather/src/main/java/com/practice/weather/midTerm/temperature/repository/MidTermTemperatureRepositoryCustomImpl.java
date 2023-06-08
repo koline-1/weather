@@ -20,7 +20,7 @@ public class MidTermTemperatureRepositoryCustomImpl implements MidTermTemperatur
                 .select(midTermTemperatureEntity.id).from(midTermTemperatureEntity)
                 .where(
                         midTermTemperatureEntity.regId.eq(regId)
-                        .and(midTermTemperatureEntity.created.goe(localDateTime))
+                        .and(midTermTemperatureEntity.date.goe(localDateTime))
                 ).fetch().size() > 0;
     }
 }

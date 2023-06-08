@@ -96,9 +96,7 @@ public class MidTermOceanDto {
 
     private String wh3BPm;
 
-    private LocalDateTime created;
-    
-    private LocalDateTime updated;
+    private LocalDateTime date;
 
     public MidTermOceanEntity toEntity() {
         return MidTermOceanEntity.builder().id(id).regId(regId).wf8(wf8).wh4AAm(wh4AAm).wh4BAm(wh4BAm).wh6BAm(wh6BAm)

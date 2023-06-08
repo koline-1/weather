@@ -20,7 +20,7 @@ public class MidTermOceanRepositoryCustomImpl implements MidTermOceanRepositoryC
                 .select(midTermOceanEntity.id).from(midTermOceanEntity)
                 .where(
                         midTermOceanEntity.regId.eq(regId)
-                        .and(midTermOceanEntity.created.goe(localDateTime))
+                        .and(midTermOceanEntity.date.goe(localDateTime))
                 ).fetch().size() > 0;
     }
 

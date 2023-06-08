@@ -58,9 +58,7 @@ public class ShortTermExpectationDto {
 
     private String version;
 
-    private LocalDateTime created;
-    
-    private LocalDateTime updated;
+    private LocalDateTime date;
 
 
     public ShortTermExpectationEntity toEntity() {
