@@ -5,17 +5,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.practice.weather.shortTerm.expectation.dto.ShortTermExpectationDto;
+import com.practice.weather.shortTerm.expectation.entity.ShortTermExpectationEntity;
 import com.practice.weather.shortTerm.expectation.repository.ShortTermExpectationRepository;
 import com.practice.weather.shortTerm.expectation.service.ShortTermExpectationService;
 import com.practice.weather.utility.Utility;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 public class ShortTermExpectationController {
 
@@ -47,11 +52,12 @@ public class ShortTermExpectationController {
 
 
     // 단기 예보 조회 실시간
+    @Deprecated
     @GetMapping("/short-term/expectation/current/{nxValue}/{nyValue}")
-    public String shortTermExpectationController(
+    private ResponseEntity<List<ShortTermExpectationDto>> shortTermExpectationController(
             @PathVariable String nxValue,
             @PathVariable String nyValue
-    ) throws JsonProcessingException {
+    ) {
 
         // 현재 시간 기준 baseDate 와 baseTime 값 받아오기
         String[] dateTime = utility.getShortTermBaseDateTime("expectation");
@@ -64,77 +70,119 @@ public class ShortTermExpectationController {
                 "&ny=" + (nyValue != null && !nyValue.equals("") ? nyValue : "127");
 
         // DTO 객체로 변환후 String 으로 파싱하여 return
-        return objectMapper.writeValueAsString(shortTermExpectationService.parseJsonArrayToShortTermExpectationDto(
+        return ResponseEntity.ok(shortTermExpectationService.parseJsonArrayToShortTermExpectationDto(
                 utility.getDataAsJsonArray(urlStr), utility.getShortTermVersion("SHRT", dateTime[0]+dateTime[1])));
     }
 
 
     // 단기 예보 조회 데이터 DB 저장
     @PostMapping("/short-term/expectation/current")
-    public String saveShortTermExpectation (
+    public ResponseEntity<String> saveShortTermExpectation (
             @RequestBody String data
-    ) throws JsonProcessingException {
+    ) {
 
         // 받아온 data JSONObject 로 파싱
         JSONObject jObject = new JSONObject(data);
 
-        // 필요한 data 부분만 추출하여 List<DTO>로 파싱
-        List<ShortTermExpectationDto> shortTermExpectationDtoList = objectMapper.readValue(jObject.get("data").toString(), new TypeReference<List<ShortTermExpectationDto>>() {});
+        try {
+            // 필요한 data 부분만 추출하여 List<DTO>로 파싱
+            List<ShortTermExpectationDto> shortTermExpectationDtoList = objectMapper.readValue(jObject.get("data").toString(), new TypeReference<List<ShortTermExpectationDto>>() {
+            });
 
-        int saveCount = 0;
+            int saveCount = 0;
 
-        // 각 객체별로 중복 확인후 저장 & 카운트
-        for (ShortTermExpectationDto dto : shortTermExpectationDtoList) {
-            if (!shortTermExpectationRepository.isExist(dto)) {
-                shortTermExpectationRepository.save(dto.toEntity());
-                saveCount++;
+            // 각 객체별로 중복 확인후 저장 & 카운트
+            for (ShortTermExpectationDto dto : shortTermExpectationDtoList) {
+                if (!shortTermExpectationRepository.isExist(dto)) {
+                    shortTermExpectationRepository.save(dto.toEntity());
+                    saveCount++;
+                }
             }
-        }
 
-        // 저장된 객체 수 return
-        return "{ \"count\": \"" + saveCount + "\"}";
+            // 저장된 객체 수 return
+            return ResponseEntity.ok("{ \"count\": \"" + saveCount + "\"}");
+
+        } catch (JsonProcessingException e) {
+            log.error("[saveShortTermExpectation]JSON processing failed: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
+        }
     }
 
 
     // ShortTermExpectationEntity 의 list 를  return
-    // location 이 파라미터로 전달될경우 location 별 데이터 return
     @GetMapping("/short-term/expectation/list")
-    public String shortTermExpectationList (
+    public ResponseEntity<List<ShortTermExpectationEntity>> shortTermExpectationList (
             final Pageable pageable,
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
-    ) throws JsonProcessingException {
+    ) {
 
+        // location 이 파라미터로 전달될경우 location 별 데이터 return
         if ((nxValue == null || nxValue.equals("")) || (nyValue == null || nyValue.equals(""))) {
-            return objectMapper.writeValueAsString(shortTermExpectationRepository.selectList(pageable));
+            return ResponseEntity.ok(shortTermExpectationRepository.selectList(pageable));
         } else {
-            return objectMapper.writeValueAsString(shortTermExpectationRepository.selectListByLocation(pageable, nxValue, nyValue));
+            return ResponseEntity.ok(shortTermExpectationRepository.selectListByLocation(pageable, nxValue, nyValue));
         }
     }
 
 
     // ShortTermExpectation 의 총 갯수를 return
     @GetMapping("/short-term/expectation/count")
-    public String shortTermExpectationCount (
+    public ResponseEntity<String> shortTermExpectationCount (
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
     ) {
+        long count;
 
         if ((nxValue == null || nxValue.equals("")) || (nyValue == null || nyValue.equals(""))) {
-            return "{\"count\": \"" + shortTermExpectationRepository.count()+"\"}";
+            count = shortTermExpectationRepository.count();
         } else {
-            return "{\"count\": \"" + shortTermExpectationRepository.countByLocation(nxValue, nyValue)+"\"}";
+            count = shortTermExpectationRepository.countByLocation(nxValue, nyValue);
         }
+
+        return ResponseEntity.ok("{\"count\": \"" + count + "\"}");
     }
 
     
     // 아이디로 데이터 조회
     @GetMapping("/short-term/expectation/{id}")
-    public String shortTermExpectationAllData (
+    public ResponseEntity<ShortTermExpectationEntity> shortTermExpectationAllData (
             @PathVariable Long id
-    ) throws JsonProcessingException {
+    ) {
 
-        return objectMapper.writeValueAsString(shortTermExpectationRepository.selectById(id));
+        return ResponseEntity.ok(shortTermExpectationRepository.selectById(id));
+    }
+
+
+    // ShortTermExpectation 데이터 수정
+    @PatchMapping("/short-term/expectation/{id}")
+    public ResponseEntity<ShortTermExpectationEntity> shortTermExpectationPatch (
+            @PathVariable Long id,
+            @RequestBody String data
+    ) {
+        try {
+
+            //JSONObject 로 받아서 dto 객체로 변환
+            JSONObject jObject = new JSONObject(data);
+
+            ShortTermExpectationDto dto = objectMapper.readValue(jObject.get("data").toString(), ShortTermExpectationDto.class);
+
+            // 수정 대상에 변경사항 적용
+            ShortTermExpectationEntity entityToUpdate = shortTermExpectationRepository.selectById(id);
+
+            entityToUpdate.updateFromDto(dto);
+
+            shortTermExpectationRepository.save(entityToUpdate);
+
+            return ResponseEntity.ok(entityToUpdate);
+
+        } catch (JsonProcessingException e) {
+            log.error("[shortTermExpectationPatch]JSON processing failed: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ShortTermExpectationEntity());
+        } catch (Exception e) {
+            log.error("[shortTermExpectationPatch]Exception Occurred: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ShortTermExpectationEntity());
+        }
     }
 
 }
