@@ -19,6 +19,6 @@ public interface ShortTermStatusRepository extends JpaRepository<ShortTermStatus
     List<ShortTermStatusEntity> selectListByLocation(Pageable pageable, String nxValue, String nyValue);
 
     @Query(value = "SELECT COUNT(1) FROM SHORT_TERM_STATUS WHERE NX_VALUE = :nxValue AND NY_VALUE = :nyValue", nativeQuery = true)
-    int countByLocation(String nxValue, String nyValue);
+    long countByLocation(String nxValue, String nyValue);
 
 }

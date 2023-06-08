@@ -2,7 +2,6 @@ package com.practice.weather.shortTerm.status.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
-import com.practice.weather.baseEntity.QBaseEntity;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -20,14 +19,14 @@ public class QShortTermStatusEntity extends EntityPathBase<ShortTermStatusEntity
 
     public static final QShortTermStatusEntity shortTermStatusEntity = new QShortTermStatusEntity("shortTermStatusEntity");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
+    public final com.practice.weather.baseEntity.QBaseEntity _super = new com.practice.weather.baseEntity.QBaseEntity(this);
 
     public final StringPath baseDate = createString("baseDate");
 
     public final StringPath baseTime = createString("baseTime");
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> date = _super.date;
+    public final DateTimePath<java.time.LocalDateTime> created = _super.created;
 
     public final StringPath horizontalWind = createString("horizontalWind");
 
@@ -44,6 +43,9 @@ public class QShortTermStatusEntity extends EntityPathBase<ShortTermStatusEntity
     public final StringPath rainType = createString("rainType");
 
     public final StringPath temperature = createString("temperature");
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> updated = _super.updated;
 
     public final StringPath version = createString("version");
 

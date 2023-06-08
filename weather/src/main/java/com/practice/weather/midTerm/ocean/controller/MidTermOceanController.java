@@ -171,4 +171,28 @@ public class MidTermOceanController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MidTermOceanEntity());
         }
     }
+
+
+    // MidTermOcean 데이터 삭제
+    @DeleteMapping("/mid-term/ocean/{id}")
+    public ResponseEntity<String> midTermOceanDelete (
+            @PathVariable Long id
+    ) {
+
+        // ID로 데이터 조회 안될 시 Not Found return
+        if (!midTermOceanRepository.existsById(id)) {
+            log.error("[midTermOceanDelete] Delete failed: Data not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
+        }
+
+        try {
+            // 삭제 성공시 삭제된 데이터의 id return
+            midTermOceanRepository.deleteById(id);
+            return ResponseEntity.ok("{\"result\": \"" + id + "\"}");
+        } catch (Exception e) {
+            log.error("[midTermOceanDelete] Exception occurred: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"result\": \"Exception occurred.\"}");
+        }
+    }
+    
 }

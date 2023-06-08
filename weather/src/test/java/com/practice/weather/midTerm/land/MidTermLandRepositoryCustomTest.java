@@ -56,7 +56,7 @@ public class MidTermLandRepositoryCustomTest {
                 .select(midTermLandEntity.id).from(midTermLandEntity)
                 .where(
                         midTermLandEntity.regId.eq(regId)
-                                .and(midTermLandEntity.date.goe(localDateTime))
+                                .and(midTermLandEntity.created.goe(localDateTime))
                 ).fetch().size() > 0;
 
         assertThat(isExistTest, is(true));

@@ -83,4 +83,24 @@ public class ShortTermExtraEntity extends BaseEntity {
                 .lightning(lightning).windDirection(windDirection).windSpeed(windSpeed).version(version).build();
     }
 
+    public void updateFromDto (ShortTermExtraDto dto) {
+        this.baseDate = dto.getBaseDate();
+        this.baseTime = dto.getBaseTime();
+        this.forecastDate = dto.getForecastDate();
+        this.forecastTime = dto.getForecastTime();
+        this.nxValue = dto.getNxValue();
+        this.nyValue = dto.getNyValue();
+        this.temperature = dto.getTemperature();
+        this.hourPrecipitation = dto.getHourPrecipitation();
+        this.skyStatus = dto.getSkyStatus();
+        this.horizontalWind = dto.getHorizontalWind();
+        this.verticalWind = dto.getVerticalWind();
+        this.humidity = dto.getHumidity();
+        this.rainType = dto.getRainType();
+        this.lightning = dto.getLightning();
+        this.windDirection = dto.getWindDirection();
+        this.windSpeed = dto.getWindSpeed();
+        this.version = dto.getVersion();
+    }
+
 }

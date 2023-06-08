@@ -61,7 +61,7 @@ public class MidTermTemperatureRepositoryCustomTest {
                 .select(midTermTemperatureEntity.id).from(midTermTemperatureEntity)
                 .where(
                         midTermTemperatureEntity.regId.eq(regId)
-                                .and(midTermTemperatureEntity.date.goe(localDateTime))
+                                .and(midTermTemperatureEntity.created.goe(localDateTime))
                 ).fetch().size() > 0;
 
         assertThat(isExistTest, is(true));
