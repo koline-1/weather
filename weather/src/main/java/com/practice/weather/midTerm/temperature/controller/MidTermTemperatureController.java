@@ -123,4 +123,27 @@ public class MidTermTemperatureController {
 
         return objectMapper.writeValueAsString(midTermTemperatureRepository.selectById(id));
     }
+
+
+    @DeleteMapping("/mid-term/temperature/{id}")
+    public ResponseEntity<String> midTermTemperatureDelete (
+            @PathVariable Long id
+    ) {
+
+        // ID로 데이터 조회 안될 시 Not Found return
+        if (!midTermTemperatureRepository.existsById(id)) {
+            log.error("[midTermTemperatureDelete] Delete failed: Data not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
+        }
+
+        try {
+            // 삭제 성공시 삭제된 데이터의 id return
+            midTermTemperatureRepository.deleteById(id);
+            return ResponseEntity.ok("{\"result\": \"" + id + "\"}");
+        } catch (Exception e) {
+            log.error("[midTermTemperatureDelete] Exception occurred: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"result\": \"Exception occurred.\"}");
+        }
+    }
+    
 }
