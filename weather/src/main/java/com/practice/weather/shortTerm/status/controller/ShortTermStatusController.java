@@ -133,27 +133,5 @@ public class ShortTermStatusController {
 
         return objectMapper.writeValueAsString(shortTermStatusRepository.selectById(id));
     }
-
-
-    @DeleteMapping("/short-term/status/{id}")
-    public ResponseEntity<String> shortTermStatusDelete (
-            @PathVariable Long id
-    ) {
-
-        // ID로 데이터 조회 안될 시 Not Found return
-        if (!shortTermStatusRepository.existsById(id)) {
-            log.error("[shortTermStatusDelete] Delete failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
-        }
-
-        try {
-            // 삭제 성공시 삭제된 데이터의 id return
-            shortTermStatusRepository.deleteById(id);
-            return ResponseEntity.ok("{\"result\": \"" + id + "\"}");
-        } catch (Exception e) {
-            log.error("[shortTermStatusDelete] Exception occurred: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"result\": \"Exception occurred.\"}");
-        }
-    }
     
 }
