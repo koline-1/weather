@@ -134,16 +134,19 @@ public class MidTermTemperatureController {
 
     // 아이디로 데이터 조회
     @GetMapping("/mid-term/temperature/{id}")
-    public ResponseEntity<Optional<MidTermTemperatureEntity>> midTermTemperatureData (
-            @PathVariable Long id
+    public ResponseEntity<MidTermTemperatureEntity> readMidTermTemperature (
+            @PathVariable("id") Long id
     ) {
 
-        if (!midTermTemperatureRepository.existsById(id)) {
-            log.error("[midTermTemperatureData] Get failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Optional.of(new MidTermTemperatureEntity()));
-        }
+        Optional<MidTermTemperatureEntity> entity = midTermTemperatureRepository.findById(id);
 
-        return ResponseEntity.ok(midTermTemperatureRepository.findById(id));
+        // 조회 대상이 없을 시 NOT_FOUND return
+        if (entity.isPresent()) {
+            return ResponseEntity.ok(entity.get());
+        } else {
+            log.error("[midTermTemperatureData] Data not found: midTermTemperatureRepository.findById({})", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MidTermTemperatureEntity());
+        }
     }
 
 

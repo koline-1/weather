@@ -2,7 +2,6 @@ package com.practice.weather.midTerm.expectation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.weather.midTerm.expectation.controller.MidTermExpectationController;
-import com.practice.weather.midTerm.expectation.dto.MidTermExpectationDto;
 import com.practice.weather.midTerm.expectation.entity.MidTermExpectationEntity;
 import com.practice.weather.midTerm.expectation.repository.MidTermExpectationRepository;
 import org.json.JSONObject;
@@ -62,8 +61,8 @@ public class MidTermExpectationControllerTest {
     public void setupExpectation() {
         openMocks = MockitoAnnotations.openMocks(this);
 
-        for (int i = 0; i < 10; i++) {
-            midTermExpectationEntity = MidTermExpectationDto.builder().id(i+1).stnId("stnId"+i).wfSv("wfSv"+i).build().toEntity();
+        for (int i = 1; i <= 10; i++) {
+            midTermExpectationEntity = MidTermExpectationEntity.builder().id(i).stnId("stnId"+i).wfSv("wfSv"+i).build();
             midTermExpectationRepository.save(midTermExpectationEntity);
         }
 
@@ -73,10 +72,10 @@ public class MidTermExpectationControllerTest {
     @DisplayName("중기 예보 조회 저장 테스트")
     public void saveMidTermExpectationTest() throws Exception {
 
-        midTermExpectationEntity = MidTermExpectationDto.builder()
+        midTermExpectationEntity = MidTermExpectationEntity.builder()
                 .stnId("testId")
                 .wfSv("testWfSv")
-                .build().toEntity();
+                .build();
 
         // given
         given(midTermExpectationController.saveMidTermExpectation(any()))
@@ -110,8 +109,8 @@ public class MidTermExpectationControllerTest {
 
         List<MidTermExpectationEntity> list = new ArrayList<>();
 
-        for (int i = 0; i < 10; i++) {
-            midTermExpectationEntity = MidTermExpectationDto.builder().stnId("stnId"+i).wfSv("wfSv"+i).build().toEntity();
+        for (int i = 1; i <= 10; i++) {
+            midTermExpectationEntity = MidTermExpectationEntity.builder().id(i).stnId("stnId"+i).wfSv("wfSv"+i).build();
             list.add(midTermExpectationEntity);
         }
 
@@ -134,7 +133,9 @@ public class MidTermExpectationControllerTest {
 
         List<MidTermExpectationEntity> list = new ArrayList<>();
 
-        midTermExpectationEntity = MidTermExpectationDto.builder().stnId("stnId0").wfSv("wfSv0").build().toEntity();
+        long id = 4;
+
+        midTermExpectationEntity = MidTermExpectationEntity.builder().id(id).stnId("stnId"+id).wfSv("wfSv"+id).build();
         list.add(midTermExpectationEntity);
 
         //given
@@ -144,7 +145,7 @@ public class MidTermExpectationControllerTest {
                 );
 
         final ResultActions actions = mockMvc.perform(get("/mid-term/expectation/list")
-                .param("location", "stnId0"));
+                .param("location", "stnId"+id));
 
         actions
                 .andExpect(status().isOk())
@@ -198,7 +199,7 @@ public class MidTermExpectationControllerTest {
 
         long id = 8;
 
-        midTermExpectationEntity = MidTermExpectationDto.builder().id(id).stnId("stnId0").wfSv("wfSv0").build().toEntity();
+        midTermExpectationEntity = MidTermExpectationEntity.builder().id(id).stnId("stnId"+id).wfSv("wfSv"+id).build();
 
         //given
         given(midTermExpectationController.readMidTermExpectation(any()))
@@ -211,8 +212,8 @@ public class MidTermExpectationControllerTest {
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value( id))
-                .andExpect(jsonPath("$.stnId").value("stnId0"))
-                .andExpect(jsonPath("$.wfSv").value("wfSv0"));
+                .andExpect(jsonPath("$.stnId").value("stnId"+id))
+                .andExpect(jsonPath("$.wfSv").value("wfSv"+id));
     }
 
     @Test
@@ -221,7 +222,7 @@ public class MidTermExpectationControllerTest {
 
         long id = 3;
 
-        midTermExpectationEntity = MidTermExpectationDto.builder().id(id).stnId("stnId0updated").wfSv("wfSv0updated").build().toEntity();
+        midTermExpectationEntity = MidTermExpectationEntity.builder().id(id).stnId("stnId" + id + "updated").wfSv("wfSv" + id + "updated").build();
 
         //given
         given(midTermExpectationController.patchMidTermExpectation(any(), any()))
@@ -238,8 +239,8 @@ public class MidTermExpectationControllerTest {
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.stnId").value("stnId0updated"))
-                .andExpect(jsonPath("$.wfSv").value("wfSv0updated"));
+                .andExpect(jsonPath("$.stnId").value("stnId" + id + "updated"))
+                .andExpect(jsonPath("$.wfSv").value("wfSv" + id + "updated"));
     }
 
     @Test
@@ -263,7 +264,7 @@ public class MidTermExpectationControllerTest {
 
         actions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value(5L));
+                .andExpect(jsonPath("$.result").value(id));
     }
 
 }

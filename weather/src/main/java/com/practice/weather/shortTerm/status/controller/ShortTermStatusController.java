@@ -140,16 +140,19 @@ public class ShortTermStatusController {
 
     // 아이디로 데이터 조회
     @GetMapping("/short-term/status/{id}")
-    public ResponseEntity<Optional<ShortTermStatusEntity>> shortTermStatusData (
-            @PathVariable Long id
+    public ResponseEntity<ShortTermStatusEntity> readShortTermStatus (
+            @PathVariable("id") Long id
     ) {
 
-        if (!shortTermStatusRepository.existsById(id)) {
-            log.error("[shortTermStatusData] Get failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Optional.of(new ShortTermStatusEntity()));
-        }
+        Optional<ShortTermStatusEntity> entity = shortTermStatusRepository.findById(id);
 
-        return ResponseEntity.ok(shortTermStatusRepository.findById(id));
+        // 조회 대상이 없을 시 NOT_FOUND return
+        if (entity.isPresent()) {
+            return ResponseEntity.ok(entity.get());
+        } else {
+            log.error("[shortTermStatusData] Data not found: shortTermStatusRepository.findById({})", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ShortTermStatusEntity());
+        }
     }
 
 

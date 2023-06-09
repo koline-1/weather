@@ -147,16 +147,19 @@ public class ShortTermExtraController {
 
     // 아이디로 데이터 조회
     @GetMapping("/short-term/extra/{id}")
-    public ResponseEntity<Optional<ShortTermExtraEntity>> shortTermExtraData (
-            @PathVariable Long id
+    public ResponseEntity<ShortTermExtraEntity> readShortTermExtra (
+            @PathVariable("id") Long id
     ) {
 
-        if (!shortTermExtraRepository.existsById(id)) {
-            log.error("[shortTermExtraData] Get failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Optional.of(new ShortTermExtraEntity()));
-        }
+        Optional<ShortTermExtraEntity> entity = shortTermExtraRepository.findById(id);
 
-        return ResponseEntity.ok(shortTermExtraRepository.findById(id));
+        // 조회 대상이 없을 시 NOT_FOUND return
+        if (entity.isPresent()) {
+            return ResponseEntity.ok(entity.get());
+        } else {
+            log.error("[shortTermExtraData] Data not found: shortTermExtraRepository.findById({})", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ShortTermExtraEntity());
+        }
     }
 
 

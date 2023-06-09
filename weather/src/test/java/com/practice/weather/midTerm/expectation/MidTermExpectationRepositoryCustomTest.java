@@ -3,7 +3,6 @@ package com.practice.weather.midTerm.expectation;
 import com.practice.weather.midTerm.expectation.entity.MidTermExpectationEntity;
 import com.practice.weather.utility.Utility;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,6 @@ import static org.hamcrest.Matchers.is;
 
 
 @Transactional
-@Slf4j
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class MidTermExpectationRepositoryCustomTest {
@@ -39,9 +37,13 @@ public class MidTermExpectationRepositoryCustomTest {
     void createTest() {
         queryFactory = new JPAQueryFactory(em);
 
-        MidTermExpectationEntity entity = MidTermExpectationEntity.builder().stnId("testStnId").wfSv("testWfSv").build();
+        MidTermExpectationEntity entity = new MidTermExpectationEntity();
 
-        em.persist(entity);
+        for (int i = 0; i < 10; i++) {
+            entity = MidTermExpectationEntity.builder().id(i+1).stnId("stnId"+i).wfSv("wfSv"+i).build();
+
+            em.persist(entity);
+        }
     }
 
     @Test

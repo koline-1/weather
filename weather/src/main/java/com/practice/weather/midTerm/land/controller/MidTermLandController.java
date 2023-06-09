@@ -100,7 +100,7 @@ public class MidTermLandController {
     
     // MidTermLandEntity 의 list 를  return
     @GetMapping("/mid-term/land/list")
-    public ResponseEntity<List<MidTermLandEntity>> midTermLandList (
+    public ResponseEntity<List<MidTermLandEntity>> getMidTermLandList (
             final Pageable pageable,
             @RequestParam(name = "location", required = false) String location
     ) {
@@ -116,7 +116,7 @@ public class MidTermLandController {
 
     // MidTermLand 의 총 갯수를 return
     @GetMapping("/mid-term/land/count")
-    public ResponseEntity<String> midTermLandCount (
+    public ResponseEntity<String> countMidTermLand (
             @RequestParam(name = "location", required = false) String location
     ) {
         long count;
@@ -133,23 +133,26 @@ public class MidTermLandController {
 
     // 아이디로 데이터 조회
     @GetMapping("/mid-term/land/{id}")
-    public ResponseEntity<Optional<MidTermLandEntity>> midTermLandData (
-            @PathVariable Long id
+    public ResponseEntity<MidTermLandEntity> readMidTermLand (
+            @PathVariable("id") Long id
     ) {
 
-        if (!midTermLandRepository.existsById(id)) {
-            log.error("[midTermLandData] Get failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Optional.of(new MidTermLandEntity()));
-        }
+        Optional<MidTermLandEntity> entity = midTermLandRepository.findById(id);
 
-        return ResponseEntity.ok(midTermLandRepository.findById(id));
+        // 조회 대상이 없을 시 NOT_FOUND return
+        if (entity.isPresent()) {
+            return ResponseEntity.ok(entity.get());
+        } else {
+            log.error("[midTermLandData] Data not found: midTermLandRepository.findById({})", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MidTermLandEntity());
+        }
     }
 
 
     // MidTermLand 데이터 수정
     @PatchMapping("/mid-term/land/{id}")
-    public ResponseEntity<MidTermLandEntity> midTermLandPatch (
-            @PathVariable Long id,
+    public ResponseEntity<MidTermLandEntity> patchMidTermLand (
+            @PathVariable("id") Long id,
             @RequestBody String data
     ) {
         try {
@@ -189,8 +192,8 @@ public class MidTermLandController {
 
     // MidTermLand 데이터 삭제
     @DeleteMapping("/mid-term/land/{id}")
-    public ResponseEntity<String> midTermLandDelete (
-            @PathVariable Long id
+    public ResponseEntity<String> deleteMidTermLand (
+            @PathVariable("id") Long id
     ) {
 
         Optional<MidTermLandEntity> optionalEntity = midTermLandRepository.findById(id);
