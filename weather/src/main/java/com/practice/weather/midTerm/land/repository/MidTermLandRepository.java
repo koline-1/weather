@@ -11,9 +11,6 @@ import java.util.List;
 @Repository
 public interface MidTermLandRepository extends JpaRepository<MidTermLandEntity, Long>, MidTermLandRepositoryCustom {
 
-    @Query("SELECT e FROM MidTermLandEntity e WHERE e.id = :id")
-    MidTermLandEntity selectById(Long id);
-
     @Query("SELECT e FROM MidTermLandEntity e ORDER BY e.id DESC")
     List<MidTermLandEntity> selectList(Pageable pageable);
 

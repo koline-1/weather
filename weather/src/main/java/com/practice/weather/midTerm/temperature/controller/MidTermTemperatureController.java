@@ -3,8 +3,8 @@ package com.practice.weather.midTerm.temperature.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.practice.weather.midTerm.temperature.dto.MidTermTemperatureDto;
 import com.practice.weather.midTerm.temperature.entity.MidTermTemperatureEntity;
+import com.practice.weather.midTerm.temperature.dto.MidTermTemperatureDto;
 import com.practice.weather.midTerm.temperature.repository.MidTermTemperatureRepository;
 import com.practice.weather.midTerm.temperature.service.MidTermTemperatureService;
 import com.practice.weather.utility.Utility;
@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -129,14 +130,20 @@ public class MidTermTemperatureController {
 
         return ResponseEntity.ok("{\"count\": \"" + count + "\"}");
     }
-    
+
 
     // 아이디로 데이터 조회
     @GetMapping("/mid-term/temperature/{id}")
-    public ResponseEntity<MidTermTemperatureEntity> midTermTemperatureAllData (
+    public ResponseEntity<Optional<MidTermTemperatureEntity>> midTermTemperatureData (
             @PathVariable Long id
     ) {
-        return ResponseEntity.ok(midTermTemperatureRepository.selectById(id));
+
+        if (!midTermTemperatureRepository.existsById(id)) {
+            log.error("[midTermTemperatureData] Get failed: Data not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Optional.of(new MidTermTemperatureEntity()));
+        }
+
+        return ResponseEntity.ok(midTermTemperatureRepository.findById(id));
     }
 
 
@@ -153,15 +160,24 @@ public class MidTermTemperatureController {
 
             MidTermTemperatureDto dto = objectMapper.readValue(jObject.get("data").toString(), MidTermTemperatureDto.class);
 
-            // 수정 대상에 변경사항 적용
-            MidTermTemperatureEntity entityToUpdate = midTermTemperatureRepository.selectById(id);
+            // 수정 대상 찾기
+            Optional<MidTermTemperatureEntity> optionalEntity = midTermTemperatureRepository.findById(id);
 
-            entityToUpdate.updateFromDto(dto);
+            // 수정 대상이 없을 시 NOT_FOUND return
+            if (optionalEntity.isPresent()) {
 
-            midTermTemperatureRepository.save(entityToUpdate);
+                MidTermTemperatureEntity entityToUpdate = optionalEntity.get();
 
-            return ResponseEntity.ok(entityToUpdate);
+                entityToUpdate.updateFromDto(dto);
 
+                midTermTemperatureRepository.save(entityToUpdate);
+
+                return ResponseEntity.ok(entityToUpdate);
+
+            } else {
+                log.error("[midTermTemperaturePatch] Data not found: midTermTemperatureRepository.findById({})", id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MidTermTemperatureEntity());
+            }
         } catch (JsonProcessingException e) {
             log.error("[midTermTemperaturePatch]JSON processing failed: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MidTermTemperatureEntity());
@@ -178,19 +194,16 @@ public class MidTermTemperatureController {
             @PathVariable Long id
     ) {
 
-        // ID로 데이터 조회 안될 시 Not Found return
-        if (!midTermTemperatureRepository.existsById(id)) {
-            log.error("[midTermTemperatureDelete] Delete failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
-        }
+        Optional<MidTermTemperatureEntity> optionalEntity = midTermTemperatureRepository.findById(id);
 
-        try {
+        // 삭제 대상이 없을 시 NOT_FOUND return
+        if (optionalEntity.isPresent()) {
             // 삭제 성공시 삭제된 데이터의 id return
             midTermTemperatureRepository.deleteById(id);
             return ResponseEntity.ok("{\"result\": \"" + id + "\"}");
-        } catch (Exception e) {
-            log.error("[midTermTemperatureDelete] Exception occurred: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"result\": \"Exception occurred.\"}");
+        } else {
+            log.error("[midTermTemperatureDelete] Delete failed: Data not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
         }
     }
     

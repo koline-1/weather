@@ -9,9 +9,6 @@ import java.util.List;
 
 public interface ShortTermExpectationRepository extends JpaRepository<ShortTermExpectationEntity, Long>, ShortTermExpectationRepositoryCustom {
 
-    @Query("SELECT e FROM ShortTermExpectationEntity e WHERE e.id = :id")
-    ShortTermExpectationEntity selectById(Long id);
-
     @Query("SELECT e FROM ShortTermExpectationEntity e ORDER BY e.id DESC")
     List<ShortTermExpectationEntity> selectList(Pageable pageable);
 
