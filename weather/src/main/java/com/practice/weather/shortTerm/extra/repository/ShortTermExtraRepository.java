@@ -9,9 +9,6 @@ import java.util.List;
 
 public interface ShortTermExtraRepository extends JpaRepository<ShortTermExtraEntity, Long>, ShortTermExtraRepositoryCustom {
 
-    @Query("SELECT e FROM ShortTermExtraEntity e WHERE e.id = :id")
-    ShortTermExtraEntity selectById(Long id);
-
     @Query("SELECT e FROM ShortTermExtraEntity e ORDER BY e.id DESC")
     List<ShortTermExtraEntity> selectList(Pageable pageable);
 

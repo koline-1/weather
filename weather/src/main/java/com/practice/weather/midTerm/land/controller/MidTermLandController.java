@@ -3,10 +3,10 @@ package com.practice.weather.midTerm.land.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.practice.weather.midTerm.land.repository.MidTermLandRepository;
-import com.practice.weather.midTerm.land.service.MidTermLandService;
 import com.practice.weather.midTerm.land.dto.MidTermLandDto;
 import com.practice.weather.midTerm.land.entity.MidTermLandEntity;
+import com.practice.weather.midTerm.land.repository.MidTermLandRepository;
+import com.practice.weather.midTerm.land.service.MidTermLandService;
 import com.practice.weather.utility.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -130,22 +131,27 @@ public class MidTermLandController {
     }
 
 
+    // 아이디로 데이터 조회
     @GetMapping("/mid-term/land/{id}")
-    public ResponseEntity<MidTermLandEntity> midTermLandAllData (
+    public ResponseEntity<Optional<MidTermLandEntity>> midTermLandData (
             @PathVariable Long id
     ) {
 
-        return ResponseEntity.ok(midTermLandRepository.selectById(id));
+        if (!midTermLandRepository.existsById(id)) {
+            log.error("[midTermLandData] Get failed: Data not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Optional.of(new MidTermLandEntity()));
+        }
+
+        return ResponseEntity.ok(midTermLandRepository.findById(id));
     }
 
-    
+
     // MidTermLand 데이터 수정
     @PatchMapping("/mid-term/land/{id}")
     public ResponseEntity<MidTermLandEntity> midTermLandPatch (
             @PathVariable Long id,
             @RequestBody String data
     ) {
-
         try {
 
             //JSONObject 로 받아서 dto 객체로 변환
@@ -153,15 +159,24 @@ public class MidTermLandController {
 
             MidTermLandDto dto = objectMapper.readValue(jObject.get("data").toString(), MidTermLandDto.class);
 
-            // 수정 대상에 변경사항 적용
-            MidTermLandEntity entityToUpdate = midTermLandRepository.selectById(id);
+            // 수정 대상 찾기
+            Optional<MidTermLandEntity> optionalEntity = midTermLandRepository.findById(id);
 
-            entityToUpdate.updateFromDto(dto);
+            // 수정 대상이 없을 시 NOT_FOUND return
+            if (optionalEntity.isPresent()) {
 
-            midTermLandRepository.save(entityToUpdate);
+                MidTermLandEntity entityToUpdate = optionalEntity.get();
 
-            return ResponseEntity.ok(entityToUpdate);
+                entityToUpdate.updateFromDto(dto);
 
+                midTermLandRepository.save(entityToUpdate);
+
+                return ResponseEntity.ok(entityToUpdate);
+
+            } else {
+                log.error("[midTermLandPatch] Data not found: midTermLandRepository.findById({})", id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MidTermLandEntity());
+            }
         } catch (JsonProcessingException e) {
             log.error("[midTermLandPatch]JSON processing failed: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MidTermLandEntity());
@@ -174,23 +189,20 @@ public class MidTermLandController {
 
     // MidTermLand 데이터 삭제
     @DeleteMapping("/mid-term/land/{id}")
-    public ResponseEntity<String> midTermExpectationDelete (
+    public ResponseEntity<String> midTermLandDelete (
             @PathVariable Long id
     ) {
 
-        // ID로 데이터 조회 안될 시 Not Found return
-        if (!midTermLandRepository.existsById(id)) {
-            log.error("[midTermExpectationDelete] Delete failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
-        }
+        Optional<MidTermLandEntity> optionalEntity = midTermLandRepository.findById(id);
 
-        try {
+        // 삭제 대상이 없을 시 NOT_FOUND return
+        if (optionalEntity.isPresent()) {
             // 삭제 성공시 삭제된 데이터의 id return
             midTermLandRepository.deleteById(id);
             return ResponseEntity.ok("{\"result\": \"" + id + "\"}");
-        } catch (Exception e) {
-            log.error("[midTermExpectationDelete] Exception occurred: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"result\": \"Exception occurred.\"}");
+        } else {
+            log.error("[midTermLandDelete] Delete failed: Data not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
         }
     }
     

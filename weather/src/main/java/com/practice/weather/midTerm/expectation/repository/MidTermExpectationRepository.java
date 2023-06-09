@@ -11,9 +11,6 @@ import java.util.List;
 @Repository
 public interface MidTermExpectationRepository extends JpaRepository<MidTermExpectationEntity, Long>, MidTermExpectationRepositoryCustom {
 
-    @Query("SELECT e FROM MidTermExpectationEntity e WHERE e.id = :id")
-    MidTermExpectationEntity selectById(Long id);
-
     @Query("SELECT e FROM MidTermExpectationEntity e ORDER BY e.id DESC")
     List<MidTermExpectationEntity> selectList(Pageable pageable);
 

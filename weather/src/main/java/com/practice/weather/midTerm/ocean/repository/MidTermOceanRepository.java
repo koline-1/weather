@@ -11,9 +11,6 @@ import java.util.List;
 @Repository
 public interface MidTermOceanRepository extends JpaRepository<MidTermOceanEntity, Long>, MidTermOceanRepositoryCustom {
 
-    @Query("SELECT e FROM MidTermOceanEntity e WHERE e.id = :id")
-    MidTermOceanEntity selectById(Long id);
-
     @Query("SELECT e FROM MidTermOceanEntity e ORDER BY e.id DESC")
     List<MidTermOceanEntity> selectList(Pageable pageable);
 

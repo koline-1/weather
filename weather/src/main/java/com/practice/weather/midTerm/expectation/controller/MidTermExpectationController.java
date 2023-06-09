@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -136,7 +137,16 @@ public class MidTermExpectationController {
     public ResponseEntity<MidTermExpectationEntity> midTermExpectationData (
             @PathVariable Long id
     ) {
-        return ResponseEntity.ok(midTermExpectationRepository.selectById(id));
+
+        Optional<MidTermExpectationEntity> entity = midTermExpectationRepository.findById(id);
+
+        // 조회 대상이 없을 시 NOT_FOUND return
+        if (entity.isPresent()) {
+            return ResponseEntity.ok(entity.get());
+        } else {
+            log.error("[midTermExpectationData] Data not found: midTermExpectationRepository.findById({})", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MidTermExpectationEntity());
+        }
     }
 
 
@@ -153,15 +163,24 @@ public class MidTermExpectationController {
 
             MidTermExpectationDto dto = objectMapper.readValue(jObject.get("data").toString(), MidTermExpectationDto.class);
 
-            // 수정 대상에 변경사항 적용
-            MidTermExpectationEntity entityToUpdate = midTermExpectationRepository.selectById(id);
+            // 수정 대상 찾기
+            Optional<MidTermExpectationEntity> optionalEntity = midTermExpectationRepository.findById(id);
 
-            entityToUpdate.updateFromDto(dto);
+            // 수정 대상이 없을 시 NOT_FOUND return
+            if (optionalEntity.isPresent()) {
 
-            midTermExpectationRepository.save(entityToUpdate);
+                MidTermExpectationEntity entityToUpdate = optionalEntity.get();
 
-            return ResponseEntity.ok(entityToUpdate);
+                entityToUpdate.updateFromDto(dto);
 
+                midTermExpectationRepository.save(entityToUpdate);
+
+                return ResponseEntity.ok(entityToUpdate);
+
+            } else {
+                log.error("[midTermExpectationPatch] Data not found: midTermExpectationRepository.findById({})", id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MidTermExpectationEntity());
+            }
         } catch (JsonProcessingException e) {
             log.error("[midTermExpectationPatch]JSON processing failed: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MidTermExpectationEntity());
@@ -178,20 +197,17 @@ public class MidTermExpectationController {
             @PathVariable Long id
     ) {
 
-        // ID로 데이터 조회 안될 시 Not Found return
-        if (!midTermExpectationRepository.existsById(id)) {
-            log.error("[midTermExpectationDelete] Delete failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
-        }
+        Optional<MidTermExpectationEntity> optionalEntity = midTermExpectationRepository.findById(id);
 
-        try {
+        // 삭제 대상이 없을 시 NOT_FOUND return
+        if (optionalEntity.isPresent()) {
             // 삭제 성공시 삭제된 데이터의 id return
             midTermExpectationRepository.deleteById(id);
             return ResponseEntity.ok("{\"result\": \"" + id + "\"}");
-        } catch (Exception e) {
-            log.error("[midTermExpectationDelete] Exception occurred: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"result\": \"Exception occurred.\"}");
+        } else {
+            log.error("[midTermExpectationDelete] Delete failed: Data not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
         }
     }
-
+    
 }

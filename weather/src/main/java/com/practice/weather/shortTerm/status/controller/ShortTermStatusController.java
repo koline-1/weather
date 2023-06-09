@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -139,11 +140,16 @@ public class ShortTermStatusController {
 
     // 아이디로 데이터 조회
     @GetMapping("/short-term/status/{id}")
-    public ResponseEntity<ShortTermStatusEntity> shortTermStatusAllData (
+    public ResponseEntity<Optional<ShortTermStatusEntity>> shortTermStatusData (
             @PathVariable Long id
     ) {
 
-        return ResponseEntity.ok(shortTermStatusRepository.selectById(id));
+        if (!shortTermStatusRepository.existsById(id)) {
+            log.error("[shortTermStatusData] Get failed: Data not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Optional.of(new ShortTermStatusEntity()));
+        }
+
+        return ResponseEntity.ok(shortTermStatusRepository.findById(id));
     }
 
 
@@ -160,15 +166,24 @@ public class ShortTermStatusController {
 
             ShortTermStatusDto dto = objectMapper.readValue(jObject.get("data").toString(), ShortTermStatusDto.class);
 
-            // 수정 대상에 변경사항 적용
-            ShortTermStatusEntity entityToUpdate = shortTermStatusRepository.selectById(id);
+            // 수정 대상 찾기
+            Optional<ShortTermStatusEntity> optionalEntity = shortTermStatusRepository.findById(id);
 
-            entityToUpdate.updateFromDto(dto);
+            // 수정 대상이 없을 시 NOT_FOUND return
+            if (optionalEntity.isPresent()) {
 
-            shortTermStatusRepository.save(entityToUpdate);
+                ShortTermStatusEntity entityToUpdate = optionalEntity.get();
 
-            return ResponseEntity.ok(entityToUpdate);
+                entityToUpdate.updateFromDto(dto);
 
+                shortTermStatusRepository.save(entityToUpdate);
+
+                return ResponseEntity.ok(entityToUpdate);
+
+            } else {
+                log.error("[shortTermStatusPatch] Data not found: shortTermStatusRepository.findById({})", id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ShortTermStatusEntity());
+            }
         } catch (JsonProcessingException e) {
             log.error("[shortTermStatusPatch]JSON processing failed: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ShortTermStatusEntity());
@@ -185,19 +200,16 @@ public class ShortTermStatusController {
             @PathVariable Long id
     ) {
 
-        // ID로 데이터 조회 안될 시 Not Found return
-        if (!shortTermStatusRepository.existsById(id)) {
-            log.error("[shortTermStatusDelete] Delete failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
-        }
+        Optional<ShortTermStatusEntity> optionalEntity = shortTermStatusRepository.findById(id);
 
-        try {
+        // 삭제 대상이 없을 시 NOT_FOUND return
+        if (optionalEntity.isPresent()) {
             // 삭제 성공시 삭제된 데이터의 id return
             shortTermStatusRepository.deleteById(id);
             return ResponseEntity.ok("{\"result\": \"" + id + "\"}");
-        } catch (Exception e) {
-            log.error("[shortTermStatusDelete] Exception occurred: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"result\": \"Exception occurred.\"}");
+        } else {
+            log.error("[shortTermStatusDelete] Delete failed: Data not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
         }
     }
     
