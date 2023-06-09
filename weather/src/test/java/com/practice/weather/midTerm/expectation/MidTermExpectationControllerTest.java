@@ -2,11 +2,13 @@ package com.practice.weather.midTerm.expectation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.weather.midTerm.expectation.controller.MidTermExpectationController;
+import com.practice.weather.midTerm.expectation.dto.MidTermExpectationDto;
 import com.practice.weather.midTerm.expectation.entity.MidTermExpectationEntity;
+import com.practice.weather.midTerm.expectation.repository.MidTermExpectationRepository;
 import org.json.JSONObject;
+import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -14,24 +16,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class MidTermExpectationControllerTest {
 
     @Mock
@@ -39,6 +47,9 @@ public class MidTermExpectationControllerTest {
 
     @MockBean
     private MidTermExpectationController midTermExpectationController;
+
+    @Autowired
+    MidTermExpectationRepository midTermExpectationRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,24 +61,22 @@ public class MidTermExpectationControllerTest {
     @BeforeEach
     public void setupExpectation() {
         openMocks = MockitoAnnotations.openMocks(this);
+
+        for (int i = 0; i < 10; i++) {
+            midTermExpectationEntity = MidTermExpectationDto.builder().id(i+1).stnId("stnId"+i).wfSv("wfSv"+i).build().toEntity();
+            midTermExpectationRepository.save(midTermExpectationEntity);
+        }
+
    }
 
-
     @Test
-    @DisplayName("midTermExpectation data 화면 테스트")
-    public void midTermExpectationCurrentTest() throws Exception {
-        mockMvc.perform(get("/mid-term/expectation/current"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("midTermExpectation data DB save 테스트")
+    @DisplayName("중기 예보 조회 저장 테스트")
     public void saveMidTermExpectationTest() throws Exception {
 
-        midTermExpectationEntity = MidTermExpectationEntity.builder()
+        midTermExpectationEntity = MidTermExpectationDto.builder()
                 .stnId("testId")
                 .wfSv("testWfSv")
-                .build();
+                .build().toEntity();
 
         // given
         given(midTermExpectationController.saveMidTermExpectation(any()))
@@ -92,6 +101,169 @@ public class MidTermExpectationControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.stnId").value("testId"))
             .andExpect(jsonPath("$.wfSv").value("testWfSv"));
+
+    }
+
+    @Test
+    @DisplayName("중기 예보 조회 리스트 테스트")
+    public void getMidTermExpectationListTest() throws Exception {
+
+        List<MidTermExpectationEntity> list = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            midTermExpectationEntity = MidTermExpectationDto.builder().stnId("stnId"+i).wfSv("wfSv"+i).build().toEntity();
+            list.add(midTermExpectationEntity);
+        }
+
+        //given
+        given(midTermExpectationController.getMidTermExpectationList(any(Pageable.class), any()))
+                .willReturn(
+                        ResponseEntity.ok(list)
+                );
+
+        final ResultActions actions = mockMvc.perform(get("/mid-term/expectation/list"));
+
+        actions
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(10)));
+    }
+
+    @Test
+    @DisplayName("중기 예보 조회 지역별 리스트 테스트")
+    public void getMidTermExpectationListTest2() throws Exception {
+
+        List<MidTermExpectationEntity> list = new ArrayList<>();
+
+        midTermExpectationEntity = MidTermExpectationDto.builder().stnId("stnId0").wfSv("wfSv0").build().toEntity();
+        list.add(midTermExpectationEntity);
+
+        //given
+        given(midTermExpectationController.getMidTermExpectationList(any(Pageable.class), any()))
+                .willReturn(
+                        ResponseEntity.ok(list)
+                );
+
+        final ResultActions actions = mockMvc.perform(get("/mid-term/expectation/list")
+                .param("location", "stnId0"));
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    @DisplayName("중기 예보 조회 카운트 테스트")
+    public void countMidTermExpectationTest() throws Exception {
+
+        // BeforeEach 에서 추가한 데이터의 수 : 10개
+        String expectedResult = "{\"count\": \"10\"}";
+
+        //given
+        given(midTermExpectationController.countMidTermExpectation(any()))
+                .willReturn(
+                        ResponseEntity.ok(expectedResult)
+                );
+
+        final ResultActions actions = mockMvc.perform(get("/mid-term/expectation/count"));
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count").value("10"));
+    }
+
+    @Test
+    @DisplayName("중기 예보 조회 지역별 카운트 테스트")
+    public void countMidTermExpectationTest2() throws Exception {
+
+        // BeforeEach 에서 추가한 데이터의 수 (지역별) : 1개 (stnId 모두 다르게 넣음)
+        String expectedResult = "{\"count\": \"1\"}";
+
+        //given
+        given(midTermExpectationController.countMidTermExpectation(any()))
+                .willReturn(
+                        ResponseEntity.ok(expectedResult)
+                );
+
+        final ResultActions actions = mockMvc.perform(get("/mid-term/expectation/count")
+                .param("location", "stnId0"));
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count").value("1"));
+    }
+
+    @Test
+    @DisplayName("중기 예보 조회 조회 테스트")
+    public void readMidTermExpectationTest() throws Exception {
+
+        long id = 8;
+
+        midTermExpectationEntity = MidTermExpectationDto.builder().id(id).stnId("stnId0").wfSv("wfSv0").build().toEntity();
+
+        //given
+        given(midTermExpectationController.readMidTermExpectation(any()))
+                .willReturn(
+                        ResponseEntity.ok(midTermExpectationEntity)
+                );
+
+        final ResultActions actions = mockMvc.perform(get("/mid-term/expectation/"+id));
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value( id))
+                .andExpect(jsonPath("$.stnId").value("stnId0"))
+                .andExpect(jsonPath("$.wfSv").value("wfSv0"));
+    }
+
+    @Test
+    @DisplayName("중기 예보 조회 수정 테스트")
+    public void patchMidTermExpectationTest() throws Exception {
+
+        long id = 3;
+
+        midTermExpectationEntity = MidTermExpectationDto.builder().id(id).stnId("stnId0updated").wfSv("wfSv0updated").build().toEntity();
+
+        //given
+        given(midTermExpectationController.patchMidTermExpectation(any(), any()))
+                .willReturn(
+                        ResponseEntity.ok(midTermExpectationEntity)
+                );
+
+        final ResultActions actions = mockMvc.perform(patch("/mid-term/expectation/" + id)
+                .accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .content(objectMapper.writeValueAsString(midTermExpectationEntity))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.stnId").value("stnId0updated"))
+                .andExpect(jsonPath("$.wfSv").value("wfSv0updated"));
+    }
+
+    @Test
+    @DisplayName("중기 예보 조회 삭제 테스트")
+    public void deleteMidTermExpectationTest() throws Exception {
+
+        // 삭제 할 객체 ID
+        long id = 5;
+
+        // 삭제된 객체의 ID 리턴
+        String expectedResult = "{\"result\": \"" + id + "\"}";
+
+        //given
+        given(midTermExpectationController.deleteMidTermExpectation(any()))
+                .willReturn(
+                        ResponseEntity.ok(expectedResult)
+                );
+
+        final ResultActions actions = mockMvc.perform(delete("/mid-term/expectation/"+id)
+                .param("id", String.valueOf(id)));
+
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result").value(5L));
     }
 
 }

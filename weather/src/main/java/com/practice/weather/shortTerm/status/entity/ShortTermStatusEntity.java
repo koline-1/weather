@@ -67,7 +67,8 @@ public class ShortTermStatusEntity extends BaseEntity {
     public ShortTermStatusDto toDto() {
         return ShortTermStatusDto.builder().id(id).baseDate(baseDate).baseTime(baseTime).nxValue(nxValue).nyValue(nyValue)
                 .temperature(temperature).hourPrecipitation(hourPrecipitation).horizontalWind(horizontalWind).verticalWind(verticalWind)
-                .humidity(humidity).rainType(rainType).windDirection(windDirection).windSpeed(windSpeed).version(version).build();
+                .humidity(humidity).rainType(rainType).windDirection(windDirection).windSpeed(windSpeed).version(version)
+                .created(getCreated()).updated(getUpdated()).build();
     }
 
     public void updateFromDto (ShortTermStatusDto dto) {

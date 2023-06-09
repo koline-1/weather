@@ -32,7 +32,7 @@ public class MidTermExpectationEntity extends BaseEntity {
     private String wfSv;
 
     public MidTermExpectationDto toDto() {
-        return MidTermExpectationDto.builder().id(id).stnId(stnId).wfSv(wfSv).build();
+        return MidTermExpectationDto.builder().id(id).stnId(stnId).wfSv(wfSv).created(getCreated()).updated(getUpdated()).build();
     }
 
     public void updateFromDto(MidTermExpectationDto dto) {
