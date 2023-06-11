@@ -87,8 +87,7 @@ public class ShortTermExtraController {
         
         try {
             // 필요한 data 부분만 추출하여 List<DTO>로 파싱
-            List<ShortTermExtraDto> shortTermExtraDtoList = objectMapper.readValue(jObject.get("data").toString(), new TypeReference<List<ShortTermExtraDto>>() {
-            });
+            List<ShortTermExtraDto> shortTermExtraDtoList = objectMapper.readValue(jObject.get("data").toString(), new TypeReference<List<ShortTermExtraDto>>() {});
 
             int saveCount = 0;
 
@@ -112,7 +111,7 @@ public class ShortTermExtraController {
 
     // ShortTermExtraEntity 의 list 를  return
     @GetMapping("/short-term/extra/list")
-    public ResponseEntity<List<ShortTermExtraEntity>> shortTermExtraList (
+    public ResponseEntity<List<ShortTermExtraEntity>> getShortTermExtraList (
             final Pageable pageable,
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
@@ -129,7 +128,7 @@ public class ShortTermExtraController {
 
     // ShortTermExtra 의 총 갯수를 return
     @GetMapping("/short-term/extra/count")
-    public ResponseEntity<String> shortTermExtraCount (
+    public ResponseEntity<String> countShortTermExtra (
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
     ) {
@@ -165,8 +164,8 @@ public class ShortTermExtraController {
 
     // ShortTermExtra 데이터 수정
     @PatchMapping("/short-term/extra/{id}")
-    public ResponseEntity<ShortTermExtraEntity> shortTermExtraPatch (
-            @PathVariable Long id,
+    public ResponseEntity<ShortTermExtraEntity> patchShortTermExtra (
+            @PathVariable("id") Long id,
             @RequestBody String data
     ) {
         try {
@@ -206,8 +205,8 @@ public class ShortTermExtraController {
 
     // ShortTermExtra 데이터 삭제
     @DeleteMapping("/short-term/extra/{id}")
-    public ResponseEntity<String> shortTermExtraDelete (
-            @PathVariable Long id
+    public ResponseEntity<String> deleteShortTermExtra (
+            @PathVariable("id") Long id
     ) {
 
         Optional<ShortTermExtraEntity> optionalEntity = shortTermExtraRepository.findById(id);

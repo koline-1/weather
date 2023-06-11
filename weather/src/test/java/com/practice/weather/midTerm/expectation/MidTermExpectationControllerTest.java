@@ -48,7 +48,7 @@ public class MidTermExpectationControllerTest {
     private MidTermExpectationController midTermExpectationController;
 
     @Autowired
-    MidTermExpectationRepository midTermExpectationRepository;
+    private MidTermExpectationRepository midTermExpectationRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -73,8 +73,8 @@ public class MidTermExpectationControllerTest {
     public void saveMidTermExpectationTest() throws Exception {
 
         midTermExpectationEntity = MidTermExpectationEntity.builder()
-                .stnId("testId")
-                .wfSv("testWfSv")
+                .stnId("stnId")
+                .wfSv("wfSv")
                 .build();
 
         // given
@@ -98,8 +98,8 @@ public class MidTermExpectationControllerTest {
         // then
         actions
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.stnId").value("testId"))
-            .andExpect(jsonPath("$.wfSv").value("testWfSv"));
+            .andExpect(jsonPath("$.stnId").value("stnId"))
+            .andExpect(jsonPath("$.wfSv").value("wfSv"));
 
     }
 
@@ -114,14 +114,16 @@ public class MidTermExpectationControllerTest {
             list.add(midTermExpectationEntity);
         }
 
-        //given
+        // given
         given(midTermExpectationController.getMidTermExpectationList(any(Pageable.class), any()))
                 .willReturn(
                         ResponseEntity.ok(list)
                 );
 
+        // when
         final ResultActions actions = mockMvc.perform(get("/mid-term/expectation/list"));
 
+        // then
         actions
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(10)));
@@ -138,15 +140,17 @@ public class MidTermExpectationControllerTest {
         midTermExpectationEntity = MidTermExpectationEntity.builder().id(id).stnId("stnId"+id).wfSv("wfSv"+id).build();
         list.add(midTermExpectationEntity);
 
-        //given
+        // given
         given(midTermExpectationController.getMidTermExpectationList(any(Pageable.class), any()))
                 .willReturn(
                         ResponseEntity.ok(list)
                 );
 
+        // when
         final ResultActions actions = mockMvc.perform(get("/mid-term/expectation/list")
                 .param("location", "stnId"+id));
 
+        // then
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
@@ -185,9 +189,11 @@ public class MidTermExpectationControllerTest {
                         ResponseEntity.ok(expectedResult)
                 );
 
+        // when
         final ResultActions actions = mockMvc.perform(get("/mid-term/expectation/count")
-                .param("location", "stnId0"));
+                .param("location", "stnId1"));
 
+        //then
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.count").value("1"));
@@ -201,17 +207,19 @@ public class MidTermExpectationControllerTest {
 
         midTermExpectationEntity = MidTermExpectationEntity.builder().id(id).stnId("stnId"+id).wfSv("wfSv"+id).build();
 
-        //given
+        // given
         given(midTermExpectationController.readMidTermExpectation(any()))
                 .willReturn(
                         ResponseEntity.ok(midTermExpectationEntity)
                 );
 
+        // when
         final ResultActions actions = mockMvc.perform(get("/mid-term/expectation/"+id));
 
+        // then
         actions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value( id))
+                .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.stnId").value("stnId"+id))
                 .andExpect(jsonPath("$.wfSv").value("wfSv"+id));
     }
@@ -224,18 +232,20 @@ public class MidTermExpectationControllerTest {
 
         midTermExpectationEntity = MidTermExpectationEntity.builder().id(id).stnId("stnId" + id + "updated").wfSv("wfSv" + id + "updated").build();
 
-        //given
+        // given
         given(midTermExpectationController.patchMidTermExpectation(any(), any()))
                 .willReturn(
                         ResponseEntity.ok(midTermExpectationEntity)
                 );
 
+        // when
         final ResultActions actions = mockMvc.perform(patch("/mid-term/expectation/" + id)
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .content(objectMapper.writeValueAsString(midTermExpectationEntity))
                 .contentType(MediaType.APPLICATION_JSON));
 
+        // then
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
@@ -253,15 +263,17 @@ public class MidTermExpectationControllerTest {
         // 삭제된 객체의 ID 리턴
         String expectedResult = "{\"result\": \"" + id + "\"}";
 
-        //given
+        // given
         given(midTermExpectationController.deleteMidTermExpectation(any()))
                 .willReturn(
                         ResponseEntity.ok(expectedResult)
                 );
 
+        // when
         final ResultActions actions = mockMvc.perform(delete("/mid-term/expectation/"+id)
                 .param("id", String.valueOf(id)));
 
+        // then
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value(id));

@@ -48,7 +48,7 @@ public class MidTermLandControllerTest {
     private MidTermLandController midTermLandController;
 
     @Autowired
-    MidTermLandRepository midTermLandRepository;
+    private MidTermLandRepository midTermLandRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -64,8 +64,9 @@ public class MidTermLandControllerTest {
         for (int i = 1; i <= 10; i++) {
             midTermLandEntity = MidTermLandEntity.builder().id(i).regId("regId"+i).rnSt3Am("rnSt3Am"+i).rnSt3Pm("rnSt3Pm"+i).rnSt4Am("rnSt4Am"+i)
                     .rnSt4Pm("rnSt4Pm"+i).rnSt5Am("rnSt5Am"+i).rnSt5Pm("rnSt5Pm"+i).rnSt6Am("rnSt6Am"+i).rnSt6Pm("rnSt6Pm"+i).rnSt7Am("rnSt7Am"+i)
-                    .rnSt7Pm("rnSt7Pm"+i).rnSt8("rnSt8"+i).rnSt9("rnSt9"+i).rnSt10("rnSt10"+i).wf3Am("wf3Am"+i).wf3Pm("wf3Pm"+i).wf4Am("wf4Am"+i).wf4Pm("wf4Pm"+i)
-                    .wf5Am("wf5Am"+i).wf5Pm("wf5Pm"+i).wf6Am("wf6Am"+i).wf6Pm("wf6Pm"+i).wf7Am("wf7Am"+i).wf7Pm("wf7Pm"+i).wf8("wf8"+i).wf9("wf9"+i).wf10("wf10"+i).build();
+                    .rnSt7Pm("rnSt7Pm"+i).rnSt8("rnSt8"+i).rnSt9("rnSt9"+i).rnSt10("rnSt10"+i).wf3Am("wf3Am"+i).wf3Pm("wf3Pm"+i).wf4Am("wf4Am"+i)
+                    .wf4Pm("wf4Pm"+i).wf5Am("wf5Am"+i).wf5Pm("wf5Pm"+i).wf6Am("wf6Am"+i).wf6Pm("wf6Pm"+i).wf7Am("wf7Am"+i).wf7Pm("wf7Pm"+i)
+                    .wf8("wf8"+i).wf9("wf9"+i).wf10("wf10"+i).build();
             midTermLandRepository.save(midTermLandEntity);
         }
 
@@ -75,12 +76,10 @@ public class MidTermLandControllerTest {
     @DisplayName("중기 육상 예보 저장 테스트")
     public void saveMidTermLandTest() throws Exception {
 
-        long id = 3;
-
-        midTermLandEntity = MidTermLandEntity.builder().id(id).regId("regId"+id).rnSt3Am("rnSt3Am"+id).rnSt3Pm("rnSt3Pm"+id).rnSt4Am("rnSt4Am"+id)
-                .rnSt4Pm("rnSt4Pm"+id).rnSt5Am("rnSt5Am"+id).rnSt5Pm("rnSt5Pm"+id).rnSt6Am("rnSt6Am"+id).rnSt6Pm("rnSt6Pm"+id).rnSt7Am("rnSt7Am"+id)
-                .rnSt7Pm("rnSt7Pm"+id).rnSt8("rnSt8"+id).rnSt9("rnSt9"+id).rnSt10("rnSt10"+id).wf3Am("wf3Am"+id).wf3Pm("wf3Pm"+id).wf4Am("wf4Am"+id).wf4Pm("wf4Pm"+id)
-                .wf5Am("wf5Am"+id).wf5Pm("wf5Pm"+id).wf6Am("wf6Am"+id).wf6Pm("wf6Pm"+id).wf7Am("wf7Am"+id).wf7Pm("wf7Pm"+id).wf8("wf8"+id).wf9("wf9"+id).wf10("wf10"+id).build();
+        midTermLandEntity = MidTermLandEntity.builder().regId("regId").rnSt3Am("rnSt3Am").rnSt3Pm("rnSt3Pm").rnSt4Am("rnSt4Am")
+                .rnSt4Pm("rnSt4Pm").rnSt5Am("rnSt5Am").rnSt5Pm("rnSt5Pm").rnSt6Am("rnSt6Am").rnSt6Pm("rnSt6Pm").rnSt7Am("rnSt7Am")
+                .rnSt7Pm("rnSt7Pm").rnSt8("rnSt8").rnSt9("rnSt9").rnSt10("rnSt10").wf3Am("wf3Am").wf3Pm("wf3Pm").wf4Am("wf4Am").wf4Pm("wf4Pm")
+                .wf5Am("wf5Am").wf5Pm("wf5Pm").wf6Am("wf6Am").wf6Pm("wf6Pm").wf7Am("wf7Am").wf7Pm("wf7Pm").wf8("wf8").wf9("wf9").wf10("wf10").build();
 
         // given
         given(midTermLandController.saveMidTermLand(any()))
@@ -103,34 +102,33 @@ public class MidTermLandControllerTest {
         // then
         actions
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(id))
-            .andExpect(jsonPath("$.regId").value("regId"+id))
-            .andExpect(jsonPath("$.rnSt3Am").value("rnSt3Am"+id))
-            .andExpect(jsonPath("$.rnSt3Pm").value("rnSt3Pm"+id))
-            .andExpect(jsonPath("$.rnSt4Am").value("rnSt4Am"+id))
-            .andExpect(jsonPath("$.rnSt4Pm").value("rnSt4Pm"+id))
-            .andExpect(jsonPath("$.rnSt5Am").value("rnSt5Am"+id))
-            .andExpect(jsonPath("$.rnSt5Pm").value("rnSt5Pm"+id))
-            .andExpect(jsonPath("$.rnSt6Am").value("rnSt6Am"+id))
-            .andExpect(jsonPath("$.rnSt6Pm").value("rnSt6Pm"+id))
-            .andExpect(jsonPath("$.rnSt7Am").value("rnSt7Am"+id))
-            .andExpect(jsonPath("$.rnSt7Pm").value("rnSt7Pm"+id))
-            .andExpect(jsonPath("$.rnSt8").value("rnSt8"+id))
-            .andExpect(jsonPath("$.rnSt9").value("rnSt9"+id))
-            .andExpect(jsonPath("$.rnSt10").value("rnSt10"+id))
-            .andExpect(jsonPath("$.wf3Am").value("wf3Am"+id))
-            .andExpect(jsonPath("$.wf3Pm").value("wf3Pm"+id))
-            .andExpect(jsonPath("$.wf4Am").value("wf4Am"+id))
-            .andExpect(jsonPath("$.wf4Pm").value("wf4Pm"+id))
-            .andExpect(jsonPath("$.wf5Am").value("wf5Am"+id))
-            .andExpect(jsonPath("$.wf5Pm").value("wf5Pm"+id))
-            .andExpect(jsonPath("$.wf6Am").value("wf6Am"+id))
-            .andExpect(jsonPath("$.wf6Pm").value("wf6Pm"+id))
-            .andExpect(jsonPath("$.wf7Am").value("wf7Am"+id))
-            .andExpect(jsonPath("$.wf7Pm").value("wf7Pm"+id))
-            .andExpect(jsonPath("$.wf8").value("wf8"+id))
-            .andExpect(jsonPath("$.wf9").value("wf9"+id))
-            .andExpect(jsonPath("$.wf10").value("wf10"+id));
+                .andExpect(jsonPath("$.regId").value("regId"))
+                .andExpect(jsonPath("$.rnSt3Am").value("rnSt3Am"))
+                .andExpect(jsonPath("$.rnSt3Pm").value("rnSt3Pm"))
+                .andExpect(jsonPath("$.rnSt4Am").value("rnSt4Am"))
+                .andExpect(jsonPath("$.rnSt4Pm").value("rnSt4Pm"))
+                .andExpect(jsonPath("$.rnSt5Am").value("rnSt5Am"))
+                .andExpect(jsonPath("$.rnSt5Pm").value("rnSt5Pm"))
+                .andExpect(jsonPath("$.rnSt6Am").value("rnSt6Am"))
+                .andExpect(jsonPath("$.rnSt6Pm").value("rnSt6Pm"))
+                .andExpect(jsonPath("$.rnSt7Am").value("rnSt7Am"))
+                .andExpect(jsonPath("$.rnSt7Pm").value("rnSt7Pm"))
+                .andExpect(jsonPath("$.rnSt8").value("rnSt8"))
+                .andExpect(jsonPath("$.rnSt9").value("rnSt9"))
+                .andExpect(jsonPath("$.rnSt10").value("rnSt10"))
+                .andExpect(jsonPath("$.wf3Am").value("wf3Am"))
+                .andExpect(jsonPath("$.wf3Pm").value("wf3Pm"))
+                .andExpect(jsonPath("$.wf4Am").value("wf4Am"))
+                .andExpect(jsonPath("$.wf4Pm").value("wf4Pm"))
+                .andExpect(jsonPath("$.wf5Am").value("wf5Am"))
+                .andExpect(jsonPath("$.wf5Pm").value("wf5Pm"))
+                .andExpect(jsonPath("$.wf6Am").value("wf6Am"))
+                .andExpect(jsonPath("$.wf6Pm").value("wf6Pm"))
+                .andExpect(jsonPath("$.wf7Am").value("wf7Am"))
+                .andExpect(jsonPath("$.wf7Pm").value("wf7Pm"))
+                .andExpect(jsonPath("$.wf8").value("wf8"))
+                .andExpect(jsonPath("$.wf9").value("wf9"))
+                .andExpect(jsonPath("$.wf10").value("wf10"));
 
     }
 
@@ -143,19 +141,22 @@ public class MidTermLandControllerTest {
         for (int i = 1; i <= 10; i++) {
             midTermLandEntity = MidTermLandEntity.builder().id(i).regId("regId"+i).rnSt3Am("rnSt3Am"+i).rnSt3Pm("rnSt3Pm"+i).rnSt4Am("rnSt4Am"+i)
                     .rnSt4Pm("rnSt4Pm"+i).rnSt5Am("rnSt5Am"+i).rnSt5Pm("rnSt5Pm"+i).rnSt6Am("rnSt6Am"+i).rnSt6Pm("rnSt6Pm"+i).rnSt7Am("rnSt7Am"+i)
-                    .rnSt7Pm("rnSt7Pm"+i).rnSt8("rnSt8"+i).rnSt9("rnSt9"+i).rnSt10("rnSt10"+i).wf3Am("wf3Am"+i).wf3Pm("wf3Pm"+i).wf4Am("wf4Am"+i).wf4Pm("wf4Pm"+i)
-                    .wf5Am("wf5Am"+i).wf5Pm("wf5Pm"+i).wf6Am("wf6Am"+i).wf6Pm("wf6Pm"+i).wf7Am("wf7Am"+i).wf7Pm("wf7Pm"+i).wf8("wf8"+i).wf9("wf9"+i).wf10("wf10"+i).build();
+                    .rnSt7Pm("rnSt7Pm"+i).rnSt8("rnSt8"+i).rnSt9("rnSt9"+i).rnSt10("rnSt10"+i).wf3Am("wf3Am"+i).wf3Pm("wf3Pm"+i).wf4Am("wf4Am"+i)
+                    .wf4Pm("wf4Pm"+i).wf5Am("wf5Am"+i).wf5Pm("wf5Pm"+i).wf6Am("wf6Am"+i).wf6Pm("wf6Pm"+i).wf7Am("wf7Am"+i).wf7Pm("wf7Pm"+i)
+                    .wf8("wf8"+i).wf9("wf9"+i).wf10("wf10"+i).build();
             list.add(midTermLandEntity);
         }
 
-        //given
+        // given
         given(midTermLandController.getMidTermLandList(any(Pageable.class), any()))
                 .willReturn(
                         ResponseEntity.ok(list)
                 );
 
+        // when
         final ResultActions actions = mockMvc.perform(get("/mid-term/land/list"));
 
+        // then
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(10)));
@@ -171,19 +172,22 @@ public class MidTermLandControllerTest {
 
         midTermLandEntity = MidTermLandEntity.builder().id(id).regId("regId"+id).rnSt3Am("rnSt3Am"+id).rnSt3Pm("rnSt3Pm"+id).rnSt4Am("rnSt4Am"+id)
                 .rnSt4Pm("rnSt4Pm"+id).rnSt5Am("rnSt5Am"+id).rnSt5Pm("rnSt5Pm"+id).rnSt6Am("rnSt6Am"+id).rnSt6Pm("rnSt6Pm"+id).rnSt7Am("rnSt7Am"+id)
-                .rnSt7Pm("rnSt7Pm"+id).rnSt8("rnSt8"+id).rnSt9("rnSt9"+id).rnSt10("rnSt10"+id).wf3Am("wf3Am"+id).wf3Pm("wf3Pm"+id).wf4Am("wf4Am"+id).wf4Pm("wf4Pm"+id)
-                .wf5Am("wf5Am"+id).wf5Pm("wf5Pm"+id).wf6Am("wf6Am"+id).wf6Pm("wf6Pm"+id).wf7Am("wf7Am"+id).wf7Pm("wf7Pm"+id).wf8("wf8"+id).wf9("wf9"+id).wf10("wf10"+id).build();
+                .rnSt7Pm("rnSt7Pm"+id).rnSt8("rnSt8"+id).rnSt9("rnSt9"+id).rnSt10("rnSt10"+id).wf3Am("wf3Am"+id).wf3Pm("wf3Pm"+id).wf4Am("wf4Am"+id)
+                .wf4Pm("wf4Pm"+id).wf5Am("wf5Am"+id).wf5Pm("wf5Pm"+id).wf6Am("wf6Am"+id).wf6Pm("wf6Pm"+id).wf7Am("wf7Am"+id).wf7Pm("wf7Pm"+id)
+                .wf8("wf8"+id).wf9("wf9"+id).wf10("wf10"+id).build();
         list.add(midTermLandEntity);
 
-        //given
+        // given
         given(midTermLandController.getMidTermLandList(any(Pageable.class), any()))
                 .willReturn(
                         ResponseEntity.ok(list)
                 );
 
+        // when
         final ResultActions actions = mockMvc.perform(get("/mid-term/land/list")
                 .param("location", "regId"+id));
 
+        // then
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
@@ -196,14 +200,16 @@ public class MidTermLandControllerTest {
         // BeforeEach 에서 추가한 데이터의 수 : 10개
         String expectedResult = "{\"count\": \"10\"}";
 
-        //given
+        // given
         given(midTermLandController.countMidTermLand(any()))
                 .willReturn(
                         ResponseEntity.ok(expectedResult)
                 );
 
+        // when
         final ResultActions actions = mockMvc.perform(get("/mid-term/land/count"));
 
+        // then
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.count").value("10"));
@@ -216,15 +222,17 @@ public class MidTermLandControllerTest {
         // BeforeEach 에서 추가한 데이터의 수 (지역별) : 1개 (regId 모두 다르게 넣음)
         String expectedResult = "{\"count\": \"1\"}";
 
-        //given
+        // given
         given(midTermLandController.countMidTermLand(any()))
                 .willReturn(
                         ResponseEntity.ok(expectedResult)
                 );
 
+        // when
         final ResultActions actions = mockMvc.perform(get("/mid-term/land/count")
                 .param("location", "regId3"));
 
+        // then
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.count").value("1"));
@@ -238,20 +246,23 @@ public class MidTermLandControllerTest {
 
         midTermLandEntity = MidTermLandEntity.builder().id(id).regId("regId"+id).rnSt3Am("rnSt3Am"+id).rnSt3Pm("rnSt3Pm"+id).rnSt4Am("rnSt4Am"+id)
                 .rnSt4Pm("rnSt4Pm"+id).rnSt5Am("rnSt5Am"+id).rnSt5Pm("rnSt5Pm"+id).rnSt6Am("rnSt6Am"+id).rnSt6Pm("rnSt6Pm"+id).rnSt7Am("rnSt7Am"+id)
-                .rnSt7Pm("rnSt7Pm"+id).rnSt8("rnSt8"+id).rnSt9("rnSt9"+id).rnSt10("rnSt10"+id).wf3Am("wf3Am"+id).wf3Pm("wf3Pm"+id).wf4Am("wf4Am"+id).wf4Pm("wf4Pm"+id)
-                .wf5Am("wf5Am"+id).wf5Pm("wf5Pm"+id).wf6Am("wf6Am"+id).wf6Pm("wf6Pm"+id).wf7Am("wf7Am"+id).wf7Pm("wf7Pm"+id).wf8("wf8"+id).wf9("wf9"+id).wf10("wf10"+id).build();
+                .rnSt7Pm("rnSt7Pm"+id).rnSt8("rnSt8"+id).rnSt9("rnSt9"+id).rnSt10("rnSt10"+id).wf3Am("wf3Am"+id).wf3Pm("wf3Pm"+id).wf4Am("wf4Am"+id)
+                .wf4Pm("wf4Pm"+id).wf5Am("wf5Am"+id).wf5Pm("wf5Pm"+id).wf6Am("wf6Am"+id).wf6Pm("wf6Pm"+id).wf7Am("wf7Am"+id).wf7Pm("wf7Pm"+id)
+                .wf8("wf8"+id).wf9("wf9"+id).wf10("wf10"+id).build();
 
-        //given
+        // given
         given(midTermLandController.readMidTermLand(any()))
                 .willReturn(
                         ResponseEntity.ok(midTermLandEntity)
                 );
 
+        // when
         final ResultActions actions = mockMvc.perform(get("/mid-term/land/"+id));
 
+        // then
         actions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value( id))
+                .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.regId").value("regId"+id))
                 .andExpect(jsonPath("$.rnSt3Am").value("rnSt3Am"+id))
                 .andExpect(jsonPath("$.rnSt3Pm").value("rnSt3Pm"+id))
@@ -295,18 +306,20 @@ public class MidTermLandControllerTest {
                 .wf6Pm("wf6Pm"+id+"updated").wf7Am("wf7Am"+id+"updated").wf7Pm("wf7Pm"+id+"updated").wf8("wf8"+id+"updated").wf9("wf9"+id+"updated")
                 .wf10("wf10"+id+"updated").build();
 
-        //given
+        // given
         given(midTermLandController.patchMidTermLand(any(), any()))
                 .willReturn(
                         ResponseEntity.ok(midTermLandEntity)
                 );
 
+        // when
         final ResultActions actions = mockMvc.perform(patch("/mid-term/land/" + id)
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .content(objectMapper.writeValueAsString(midTermLandEntity))
                 .contentType(MediaType.APPLICATION_JSON));
 
+        // then
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
@@ -349,15 +362,17 @@ public class MidTermLandControllerTest {
         // 삭제된 객체의 ID 리턴
         String expectedResult = "{\"result\": \"" + id + "\"}";
 
-        //given
+        // given
         given(midTermLandController.deleteMidTermLand(any()))
                 .willReturn(
                         ResponseEntity.ok(expectedResult)
                 );
 
+        // when
         final ResultActions actions = mockMvc.perform(delete("/mid-term/land/"+id)
                 .param("id", String.valueOf(id)));
 
+        // then
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value(id));

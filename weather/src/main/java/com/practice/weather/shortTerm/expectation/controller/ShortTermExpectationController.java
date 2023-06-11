@@ -112,7 +112,7 @@ public class ShortTermExpectationController {
 
     // ShortTermExpectationEntity 의 list 를  return
     @GetMapping("/short-term/expectation/list")
-    public ResponseEntity<List<ShortTermExpectationEntity>> shortTermExpectationList (
+    public ResponseEntity<List<ShortTermExpectationEntity>> getShortTermExpectationList (
             final Pageable pageable,
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
@@ -129,7 +129,7 @@ public class ShortTermExpectationController {
 
     // ShortTermExpectation 의 총 갯수를 return
     @GetMapping("/short-term/expectation/count")
-    public ResponseEntity<String> shortTermExpectationCount (
+    public ResponseEntity<String> countShortTermExpectation (
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
     ) {
@@ -165,8 +165,8 @@ public class ShortTermExpectationController {
 
     // ShortTermExpectation 데이터 수정
     @PatchMapping("/short-term/expectation/{id}")
-    public ResponseEntity<ShortTermExpectationEntity> shortTermExpectationPatch (
-            @PathVariable Long id,
+    public ResponseEntity<ShortTermExpectationEntity> patchShortTermExpectation (
+            @PathVariable("id") Long id,
             @RequestBody String data
     ) {
         try {
@@ -206,8 +206,8 @@ public class ShortTermExpectationController {
 
     // ShortTermExpectation 데이터 삭제
     @DeleteMapping("/short-term/expectation/{id}")
-    public ResponseEntity<String> shortTermExpectationDelete (
-            @PathVariable Long id
+    public ResponseEntity<String> deleteShortTermExpectation (
+            @PathVariable("id") Long id
     ) {
 
         Optional<ShortTermExpectationEntity> optionalEntity = shortTermExpectationRepository.findById(id);

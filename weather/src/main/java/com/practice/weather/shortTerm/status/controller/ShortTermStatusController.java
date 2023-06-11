@@ -105,7 +105,7 @@ public class ShortTermStatusController {
 
     // ShortTermStatusEntity 의 list 를  return
     @GetMapping("/short-term/status/list")
-    public ResponseEntity<List<ShortTermStatusEntity>> shortTermStatusList (
+    public ResponseEntity<List<ShortTermStatusEntity>> getShortTermStatusList (
             final Pageable pageable,
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
@@ -122,7 +122,7 @@ public class ShortTermStatusController {
 
     // ShortTermStatus 의 총 갯수를 return
     @GetMapping("/short-term/status/count")
-    public ResponseEntity<String> shortTermStatusCount (
+    public ResponseEntity<String> countShortTermStatus (
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
     ) {
@@ -158,8 +158,8 @@ public class ShortTermStatusController {
 
     // ShortTermStatus 데이터 수정
     @PatchMapping("/short-term/status/{id}")
-    public ResponseEntity<ShortTermStatusEntity> shortTermStatusPatch (
-            @PathVariable Long id,
+    public ResponseEntity<ShortTermStatusEntity> patchShortTermStatus (
+            @PathVariable("id") Long id,
             @RequestBody String data
     ) {
         try {
@@ -199,8 +199,8 @@ public class ShortTermStatusController {
 
     // ShortTermStatus 데이터 삭제
     @DeleteMapping("/short-term/status/{id}")
-    public ResponseEntity<String> shortTermStatusDelete (
-            @PathVariable Long id
+    public ResponseEntity<String> deleteShortTermStatus (
+            @PathVariable("id") Long id
     ) {
 
         Optional<ShortTermStatusEntity> optionalEntity = shortTermStatusRepository.findById(id);

@@ -23,7 +23,7 @@ public class MidTermTemperatureEntity extends BaseEntity {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MID_TERM_TEMPERATURE_ID_GENERATOR")
-    private Long id;
+    private long id;
 
     @Column(name = "REG_ID")
     private String regId;

@@ -100,7 +100,7 @@ public class MidTermOceanController {
 
     // MidTermOceanEntity 의 list 를  return
     @GetMapping("/mid-term/ocean/list")
-    public ResponseEntity<List<MidTermOceanEntity>> midTermOceanList (
+    public ResponseEntity<List<MidTermOceanEntity>> getMidTermOceanList (
             final Pageable pageable,
             @RequestParam(name = "location", required = false) String location
     ) {
@@ -116,7 +116,7 @@ public class MidTermOceanController {
 
     // MidTermOcean 의 총 갯수를 return
     @GetMapping("/mid-term/ocean/count")
-    public ResponseEntity<String> midTermOceanCount (
+    public ResponseEntity<String> countMidTermOcean (
             @RequestParam(name = "location", required = false) String location
     ) {
         long count;
@@ -151,8 +151,8 @@ public class MidTermOceanController {
 
     // MidTermOcean 데이터 수정
     @PatchMapping("/mid-term/ocean/{id}")
-    public ResponseEntity<MidTermOceanEntity> midTermOceanPatch (
-            @PathVariable Long id,
+    public ResponseEntity<MidTermOceanEntity> patchMidTermOcean (
+            @PathVariable("id") Long id,
             @RequestBody String data
     ) {
         try {
@@ -192,8 +192,8 @@ public class MidTermOceanController {
 
     // MidTermOcean 데이터 삭제
     @DeleteMapping("/mid-term/ocean/{id}")
-    public ResponseEntity<String> midTermOceanDelete (
-            @PathVariable Long id
+    public ResponseEntity<String> deleteMidTermOcean (
+            @PathVariable("id") Long id
     ) {
 
         Optional<MidTermOceanEntity> optionalEntity = midTermOceanRepository.findById(id);
