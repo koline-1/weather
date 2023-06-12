@@ -1,10 +1,11 @@
 package com.practice.weather.shortTerm.extra.repository;
 
-import com.practice.weather.shortTerm.extra.entity.QShortTermExtraEntity;
 import com.practice.weather.shortTerm.extra.dto.ShortTermExtraDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import static com.practice.weather.shortTerm.extra.entity.QShortTermExtraEntity.shortTermExtraEntity;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,13 +16,13 @@ public class ShortTermExtraRepositoryCustomImpl implements ShortTermExtraReposit
     @Override
     public boolean isExist(ShortTermExtraDto dto) {
         return queryFactory
-                .select(QShortTermExtraEntity.shortTermExtraEntity.id).from(QShortTermExtraEntity.shortTermExtraEntity)
+                .select(shortTermExtraEntity.shortTermExtraEntity.id).from(shortTermExtraEntity.shortTermExtraEntity)
                 .where(
-                        QShortTermExtraEntity.shortTermExtraEntity.version.eq(dto.getVersion())
-                        .and(QShortTermExtraEntity.shortTermExtraEntity.forecastDate.eq(dto.getForecastDate()))
-                        .and(QShortTermExtraEntity.shortTermExtraEntity.forecastTime.eq(dto.getForecastTime()))
-                        .and(QShortTermExtraEntity.shortTermExtraEntity.nxValue.eq(dto.getNxValue()))
-                        .and(QShortTermExtraEntity.shortTermExtraEntity.nyValue.eq(dto.getNyValue()))
+                        shortTermExtraEntity.shortTermExtraEntity.version.eq(dto.getVersion())
+                        .and(shortTermExtraEntity.shortTermExtraEntity.forecastDate.eq(dto.getForecastDate()))
+                        .and(shortTermExtraEntity.shortTermExtraEntity.forecastTime.eq(dto.getForecastTime()))
+                        .and(shortTermExtraEntity.shortTermExtraEntity.nxValue.eq(dto.getNxValue()))
+                        .and(shortTermExtraEntity.shortTermExtraEntity.nyValue.eq(dto.getNyValue()))
                 ).fetch().size() > 0;
     }
 }

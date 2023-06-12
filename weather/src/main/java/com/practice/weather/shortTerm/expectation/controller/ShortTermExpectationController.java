@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.practice.weather.shortTerm.expectation.dto.ShortTermExpectationDto;
 import com.practice.weather.shortTerm.expectation.entity.ShortTermExpectationEntity;
+import com.practice.weather.shortTerm.expectation.dto.ShortTermExpectationDto;
 import com.practice.weather.shortTerm.expectation.repository.ShortTermExpectationRepository;
 import com.practice.weather.shortTerm.expectation.service.ShortTermExpectationService;
 import com.practice.weather.utility.Utility;
@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -111,7 +112,7 @@ public class ShortTermExpectationController {
 
     // ShortTermExpectationEntity 의 list 를  return
     @GetMapping("/short-term/expectation/list")
-    public ResponseEntity<List<ShortTermExpectationEntity>> shortTermExpectationList (
+    public ResponseEntity<List<ShortTermExpectationEntity>> getShortTermExpectationList (
             final Pageable pageable,
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
@@ -128,7 +129,7 @@ public class ShortTermExpectationController {
 
     // ShortTermExpectation 의 총 갯수를 return
     @GetMapping("/short-term/expectation/count")
-    public ResponseEntity<String> shortTermExpectationCount (
+    public ResponseEntity<String> countShortTermExpectation (
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
     ) {
@@ -143,21 +144,29 @@ public class ShortTermExpectationController {
         return ResponseEntity.ok("{\"count\": \"" + count + "\"}");
     }
 
-    
+
     // 아이디로 데이터 조회
     @GetMapping("/short-term/expectation/{id}")
-    public ResponseEntity<ShortTermExpectationEntity> shortTermExpectationAllData (
-            @PathVariable Long id
+    public ResponseEntity<ShortTermExpectationEntity> readShortTermExpectation (
+            @PathVariable("id") Long id
     ) {
 
-        return ResponseEntity.ok(shortTermExpectationRepository.selectById(id));
+        Optional<ShortTermExpectationEntity> entity = shortTermExpectationRepository.findById(id);
+
+        // 조회 대상이 없을 시 NOT_FOUND return
+        if (entity.isPresent()) {
+            return ResponseEntity.ok(entity.get());
+        } else {
+            log.error("[shortTermExpectationData] Data not found: shortTermExpectationRepository.findById({})", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ShortTermExpectationEntity());
+        }
     }
 
 
     // ShortTermExpectation 데이터 수정
     @PatchMapping("/short-term/expectation/{id}")
-    public ResponseEntity<ShortTermExpectationEntity> shortTermExpectationPatch (
-            @PathVariable Long id,
+    public ResponseEntity<ShortTermExpectationEntity> patchShortTermExpectation (
+            @PathVariable("id") Long id,
             @RequestBody String data
     ) {
         try {
@@ -167,15 +176,24 @@ public class ShortTermExpectationController {
 
             ShortTermExpectationDto dto = objectMapper.readValue(jObject.get("data").toString(), ShortTermExpectationDto.class);
 
-            // 수정 대상에 변경사항 적용
-            ShortTermExpectationEntity entityToUpdate = shortTermExpectationRepository.selectById(id);
+            // 수정 대상 찾기
+            Optional<ShortTermExpectationEntity> optionalEntity = shortTermExpectationRepository.findById(id);
 
-            entityToUpdate.updateFromDto(dto);
+            // 수정 대상이 없을 시 NOT_FOUND return
+            if (optionalEntity.isPresent()) {
 
-            shortTermExpectationRepository.save(entityToUpdate);
+                ShortTermExpectationEntity entityToUpdate = optionalEntity.get();
 
-            return ResponseEntity.ok(entityToUpdate);
+                entityToUpdate.updateFromDto(dto);
 
+                shortTermExpectationRepository.save(entityToUpdate);
+
+                return ResponseEntity.ok(entityToUpdate);
+
+            } else {
+                log.error("[shortTermExpectationPatch] Data not found: shortTermExpectationRepository.findById({})", id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ShortTermExpectationEntity());
+            }
         } catch (JsonProcessingException e) {
             log.error("[shortTermExpectationPatch]JSON processing failed: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ShortTermExpectationEntity());
@@ -188,23 +206,20 @@ public class ShortTermExpectationController {
 
     // ShortTermExpectation 데이터 삭제
     @DeleteMapping("/short-term/expectation/{id}")
-    public ResponseEntity<String> shortTermExpectationDelete (
-            @PathVariable Long id
+    public ResponseEntity<String> deleteShortTermExpectation (
+            @PathVariable("id") Long id
     ) {
 
-        // ID로 데이터 조회 안될 시 Not Found return
-        if (!shortTermExpectationRepository.existsById(id)) {
-            log.error("[shortTermExpectationDelete] Delete failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
-        }
+        Optional<ShortTermExpectationEntity> optionalEntity = shortTermExpectationRepository.findById(id);
 
-        try {
+        // 삭제 대상이 없을 시 NOT_FOUND return
+        if (optionalEntity.isPresent()) {
             // 삭제 성공시 삭제된 데이터의 id return
             shortTermExpectationRepository.deleteById(id);
             return ResponseEntity.ok("{\"result\": \"" + id + "\"}");
-        } catch (Exception e) {
-            log.error("[shortTermExpectationDelete] Exception occurred: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"result\": \"Exception occurred.\"}");
+        } else {
+            log.error("[shortTermExpectationDelete] Delete failed: Data not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
         }
     }
 

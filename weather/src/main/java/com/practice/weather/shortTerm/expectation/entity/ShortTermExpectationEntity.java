@@ -94,7 +94,7 @@ public class ShortTermExpectationEntity extends BaseEntity {
                 .horizontalWind(horizontalWind).verticalWind(verticalWind).windDirection(windDirection).windSpeed(windSpeed)
                 .skyStatus(skyStatus).rainType(rainType).rainPossibility(rainPossibility).waveHeight(waveHeight)
                 .hourPrecipitation(hourPrecipitation).snowDepth(snowDepth).minimumTemperature(minimumTemperature)
-                .maximumTemperature(maximumTemperature).version(version).build();
+                .maximumTemperature(maximumTemperature).version(version).created(getCreated()).updated(getUpdated()).build();
     }
 
     public void updateFromDto(ShortTermExpectationDto dto) {

@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -53,7 +54,7 @@ public class MidTermExpectationController {
     @Deprecated
     @GetMapping("/mid-term/expectation/current/{location}")
     private ResponseEntity<MidTermExpectationDto> midTermExpectationCurrent (
-            @PathVariable String location
+            @PathVariable("location") String location
     ) {
 
         // 현재 시간 기준 baseDate 와 baseTime 값 받아오기
@@ -89,7 +90,7 @@ public class MidTermExpectationController {
             }
 
             // 중복된 데이터일 경우 빈 Entity return
-            return ResponseEntity.ok(MidTermExpectationEntity.builder().stnId("0").build());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(MidTermExpectationEntity.builder().stnId("0").build());
 
         } catch (JsonProcessingException e) {
             log.error("[saveMidTermExpectation]JSON processing failed: {}", e.getMessage(), e);
@@ -101,7 +102,7 @@ public class MidTermExpectationController {
 
     // MidTermExpectationEntity 의 list 를  return
     @GetMapping("/mid-term/expectation/list")
-    public ResponseEntity<List<MidTermExpectationEntity>> midTermExpectationList (
+    public ResponseEntity<List<MidTermExpectationEntity>> getMidTermExpectationList (
             final Pageable pageable,
             @RequestParam(name = "location", required = false) String location
     ) {
@@ -116,7 +117,7 @@ public class MidTermExpectationController {
 
     // MidTermExpectation 의 총 갯수를 return
     @GetMapping("/mid-term/expectation/count")
-    public ResponseEntity<String> midTermExpectationCount (
+    public ResponseEntity<String> countMidTermExpectation (
             @RequestParam(name = "location", required = false) String location
     ) {
         long count;
@@ -133,17 +134,26 @@ public class MidTermExpectationController {
 
     // 아이디로 데이터 조회
     @GetMapping("/mid-term/expectation/{id}")
-    public ResponseEntity<MidTermExpectationEntity> midTermExpectationData (
-            @PathVariable Long id
+    public ResponseEntity<MidTermExpectationEntity> readMidTermExpectation (
+            @PathVariable("id") Long id
     ) {
-        return ResponseEntity.ok(midTermExpectationRepository.selectById(id));
+
+        Optional<MidTermExpectationEntity> entity = midTermExpectationRepository.findById(id);
+
+        // 조회 대상이 없을 시 NOT_FOUND return
+        if (entity.isPresent()) {
+            return ResponseEntity.ok(entity.get());
+        } else {
+            log.error("[midTermExpectationData] Data not found: midTermExpectationRepository.findById({})", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MidTermExpectationEntity());
+        }
     }
 
 
     // MidTermExpectation 데이터 수정
     @PatchMapping("/mid-term/expectation/{id}")
-    public ResponseEntity<MidTermExpectationEntity> midTermExpectationPatch (
-            @PathVariable Long id,
+    public ResponseEntity<MidTermExpectationEntity> patchMidTermExpectation (
+            @PathVariable("id") Long id,
             @RequestBody String data
     ) {
         try {
@@ -153,15 +163,24 @@ public class MidTermExpectationController {
 
             MidTermExpectationDto dto = objectMapper.readValue(jObject.get("data").toString(), MidTermExpectationDto.class);
 
-            // 수정 대상에 변경사항 적용
-            MidTermExpectationEntity entityToUpdate = midTermExpectationRepository.selectById(id);
+            // 수정 대상 찾기
+            Optional<MidTermExpectationEntity> optionalEntity = midTermExpectationRepository.findById(id);
 
-            entityToUpdate.updateFromDto(dto);
+            // 수정 대상이 없을 시 NOT_FOUND return
+            if (optionalEntity.isPresent()) {
 
-            midTermExpectationRepository.save(entityToUpdate);
+                MidTermExpectationEntity entityToUpdate = optionalEntity.get();
 
-            return ResponseEntity.ok(entityToUpdate);
+                entityToUpdate.updateFromDto(dto);
 
+                midTermExpectationRepository.save(entityToUpdate);
+
+                return ResponseEntity.ok(entityToUpdate);
+
+            } else {
+                log.error("[midTermExpectationPatch] Data not found: midTermExpectationRepository.findById({})", id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MidTermExpectationEntity());
+            }
         } catch (JsonProcessingException e) {
             log.error("[midTermExpectationPatch]JSON processing failed: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MidTermExpectationEntity());
@@ -174,24 +193,21 @@ public class MidTermExpectationController {
 
     // MidTermExpectation 데이터 삭제
     @DeleteMapping("/mid-term/expectation/{id}")
-    public ResponseEntity<String> midTermExpectationDelete (
-            @PathVariable Long id
+    public ResponseEntity<String> deleteMidTermExpectation (
+            @PathVariable("id") Long id
     ) {
 
-        // ID로 데이터 조회 안될 시 Not Found return
-        if (!midTermExpectationRepository.existsById(id)) {
-            log.error("[midTermExpectationDelete] Delete failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
-        }
+        Optional<MidTermExpectationEntity> optionalEntity = midTermExpectationRepository.findById(id);
 
-        try {
+        // 삭제 대상이 없을 시 NOT_FOUND return
+        if (optionalEntity.isPresent()) {
             // 삭제 성공시 삭제된 데이터의 id return
             midTermExpectationRepository.deleteById(id);
             return ResponseEntity.ok("{\"result\": \"" + id + "\"}");
-        } catch (Exception e) {
-            log.error("[midTermExpectationDelete] Exception occurred: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"result\": \"Exception occurred.\"}");
+        } else {
+            log.error("[midTermExpectationDelete] Delete failed: Data not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
         }
     }
-
+    
 }

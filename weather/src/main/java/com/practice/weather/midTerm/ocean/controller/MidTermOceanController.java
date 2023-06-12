@@ -3,8 +3,8 @@ package com.practice.weather.midTerm.ocean.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.practice.weather.midTerm.ocean.dto.MidTermOceanDto;
 import com.practice.weather.midTerm.ocean.entity.MidTermOceanEntity;
+import com.practice.weather.midTerm.ocean.dto.MidTermOceanDto;
 import com.practice.weather.midTerm.ocean.repository.MidTermOceanRepository;
 import com.practice.weather.midTerm.ocean.service.MidTermOceanService;
 import com.practice.weather.utility.Utility;
@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -99,7 +100,7 @@ public class MidTermOceanController {
 
     // MidTermOceanEntity 의 list 를  return
     @GetMapping("/mid-term/ocean/list")
-    public ResponseEntity<List<MidTermOceanEntity>> midTermOceanList (
+    public ResponseEntity<List<MidTermOceanEntity>> getMidTermOceanList (
             final Pageable pageable,
             @RequestParam(name = "location", required = false) String location
     ) {
@@ -115,7 +116,7 @@ public class MidTermOceanController {
 
     // MidTermOcean 의 총 갯수를 return
     @GetMapping("/mid-term/ocean/count")
-    public ResponseEntity<String> midTermOceanCount (
+    public ResponseEntity<String> countMidTermOcean (
             @RequestParam(name = "location", required = false) String location
     ) {
         long count;
@@ -132,21 +133,28 @@ public class MidTermOceanController {
 
     // 아이디로 데이터 조회
     @GetMapping("/mid-term/ocean/{id}")
-    public ResponseEntity<MidTermOceanEntity> midTermOceanAllData (
-            @PathVariable Long id
+    public ResponseEntity<MidTermOceanEntity> readMidTermOcean (
+            @PathVariable("id") Long id
     ) {
 
-        return ResponseEntity.ok(midTermOceanRepository.selectById(id));
+        Optional<MidTermOceanEntity> entity = midTermOceanRepository.findById(id);
+
+        // 조회 대상이 없을 시 NOT_FOUND return
+        if (entity.isPresent()) {
+            return ResponseEntity.ok(entity.get());
+        } else {
+            log.error("[midTermOceanData] Data not found: midTermOceanRepository.findById({})", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MidTermOceanEntity());
+        }
     }
 
 
     // MidTermOcean 데이터 수정
     @PatchMapping("/mid-term/ocean/{id}")
-    public ResponseEntity<MidTermOceanEntity> midTermOceanPatch (
-            @PathVariable Long id,
+    public ResponseEntity<MidTermOceanEntity> patchMidTermOcean (
+            @PathVariable("id") Long id,
             @RequestBody String data
     ) {
-
         try {
 
             //JSONObject 로 받아서 dto 객체로 변환
@@ -154,15 +162,24 @@ public class MidTermOceanController {
 
             MidTermOceanDto dto = objectMapper.readValue(jObject.get("data").toString(), MidTermOceanDto.class);
 
-            // 수정 대상에 변경사항 적용
-            MidTermOceanEntity entityToUpdate = midTermOceanRepository.selectById(id);
+            // 수정 대상 찾기
+            Optional<MidTermOceanEntity> optionalEntity = midTermOceanRepository.findById(id);
 
-            entityToUpdate.updateFromDto(dto);
+            // 수정 대상이 없을 시 NOT_FOUND return
+            if (optionalEntity.isPresent()) {
 
-            midTermOceanRepository.save(entityToUpdate);
+                MidTermOceanEntity entityToUpdate = optionalEntity.get();
 
-            return ResponseEntity.ok(entityToUpdate);
+                entityToUpdate.updateFromDto(dto);
 
+                midTermOceanRepository.save(entityToUpdate);
+
+                return ResponseEntity.ok(entityToUpdate);
+
+            } else {
+                log.error("[midTermOceanPatch] Data not found: midTermOceanRepository.findById({})", id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MidTermOceanEntity());
+            }
         } catch (JsonProcessingException e) {
             log.error("[midTermOceanPatch]JSON processing failed: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MidTermOceanEntity());
@@ -175,23 +192,20 @@ public class MidTermOceanController {
 
     // MidTermOcean 데이터 삭제
     @DeleteMapping("/mid-term/ocean/{id}")
-    public ResponseEntity<String> midTermOceanDelete (
-            @PathVariable Long id
+    public ResponseEntity<String> deleteMidTermOcean (
+            @PathVariable("id") Long id
     ) {
 
-        // ID로 데이터 조회 안될 시 Not Found return
-        if (!midTermOceanRepository.existsById(id)) {
-            log.error("[midTermOceanDelete] Delete failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
-        }
+        Optional<MidTermOceanEntity> optionalEntity = midTermOceanRepository.findById(id);
 
-        try {
+        // 삭제 대상이 없을 시 NOT_FOUND return
+        if (optionalEntity.isPresent()) {
             // 삭제 성공시 삭제된 데이터의 id return
             midTermOceanRepository.deleteById(id);
             return ResponseEntity.ok("{\"result\": \"" + id + "\"}");
-        } catch (Exception e) {
-            log.error("[midTermOceanDelete] Exception occurred: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"result\": \"Exception occurred.\"}");
+        } else {
+            log.error("[midTermOceanDelete] Delete failed: Data not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
         }
     }
     

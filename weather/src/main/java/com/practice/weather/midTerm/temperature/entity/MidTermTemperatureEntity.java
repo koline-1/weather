@@ -23,7 +23,7 @@ public class MidTermTemperatureEntity extends BaseEntity {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MID_TERM_TEMPERATURE_ID_GENERATOR")
-    private Long id;
+    private long id;
 
     @Column(name = "REG_ID")
     private String regId;
@@ -181,8 +181,8 @@ public class MidTermTemperatureEntity extends BaseEntity {
                 .taMax6(taMax6).taMax6Low(taMax6Low).taMax6High(taMax6High).taMin7(taMin7).taMin7Low(taMin7Low).taMin7High(taMin7High)
                 .taMax7(taMax7).taMax7Low(taMax7Low).taMax7High(taMax7High).taMin8(taMin8).taMin8Low(taMin8Low).taMin8High(taMin8High)
                 .taMax8(taMax8).taMax8Low(taMax8Low).taMax8High(taMax8High).taMin9(taMin9).taMin9Low(taMin9Low).taMin9High(taMin9High)
-                .taMax9(taMax9).taMax9Low(taMax9Low).taMax9High(taMax9High).taMin10(taMin10).taMin10Low(taMin10Low)
-                .taMin10High(taMin10High).taMax10(taMax10).taMax10Low(taMax10Low).taMax10High(taMax10High).build();
+                .taMax9(taMax9).taMax9Low(taMax9Low).taMax9High(taMax9High).taMin10(taMin10).taMin10Low(taMin10Low).taMin10High(taMin10High)
+                .taMax10(taMax10).taMax10Low(taMax10Low).taMax10High(taMax10High).created(getCreated()).updated(getUpdated()).build();
     }
 
     public void updateFromDto(MidTermTemperatureDto dto) {

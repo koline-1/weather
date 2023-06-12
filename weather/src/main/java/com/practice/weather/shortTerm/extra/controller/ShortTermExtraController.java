@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.practice.weather.shortTerm.extra.dto.ShortTermExtraDto;
 import com.practice.weather.shortTerm.extra.entity.ShortTermExtraEntity;
+import com.practice.weather.shortTerm.extra.dto.ShortTermExtraDto;
 import com.practice.weather.shortTerm.extra.repository.ShortTermExtraRepository;
 import com.practice.weather.shortTerm.extra.service.ShortTermExtraService;
 import com.practice.weather.utility.Utility;
@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -86,8 +87,7 @@ public class ShortTermExtraController {
         
         try {
             // 필요한 data 부분만 추출하여 List<DTO>로 파싱
-            List<ShortTermExtraDto> shortTermExtraDtoList = objectMapper.readValue(jObject.get("data").toString(), new TypeReference<List<ShortTermExtraDto>>() {
-            });
+            List<ShortTermExtraDto> shortTermExtraDtoList = objectMapper.readValue(jObject.get("data").toString(), new TypeReference<List<ShortTermExtraDto>>() {});
 
             int saveCount = 0;
 
@@ -111,7 +111,7 @@ public class ShortTermExtraController {
 
     // ShortTermExtraEntity 의 list 를  return
     @GetMapping("/short-term/extra/list")
-    public ResponseEntity<List<ShortTermExtraEntity>> shortTermExtraList (
+    public ResponseEntity<List<ShortTermExtraEntity>> getShortTermExtraList (
             final Pageable pageable,
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
@@ -128,7 +128,7 @@ public class ShortTermExtraController {
 
     // ShortTermExtra 의 총 갯수를 return
     @GetMapping("/short-term/extra/count")
-    public ResponseEntity<String> shortTermExtraCount (
+    public ResponseEntity<String> countShortTermExtra (
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
     ) {
@@ -142,22 +142,30 @@ public class ShortTermExtraController {
 
         return ResponseEntity.ok("{\"count\": \"" + count + "\"}");
     }
-    
+
 
     // 아이디로 데이터 조회
     @GetMapping("/short-term/extra/{id}")
-    public ResponseEntity<ShortTermExtraEntity> shortTermExtraAllData (
-            @PathVariable Long id
+    public ResponseEntity<ShortTermExtraEntity> readShortTermExtra (
+            @PathVariable("id") Long id
     ) {
 
-        return ResponseEntity.ok(shortTermExtraRepository.selectById(id));
+        Optional<ShortTermExtraEntity> entity = shortTermExtraRepository.findById(id);
+
+        // 조회 대상이 없을 시 NOT_FOUND return
+        if (entity.isPresent()) {
+            return ResponseEntity.ok(entity.get());
+        } else {
+            log.error("[shortTermExtraData] Data not found: shortTermExtraRepository.findById({})", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ShortTermExtraEntity());
+        }
     }
 
 
     // ShortTermExtra 데이터 수정
     @PatchMapping("/short-term/extra/{id}")
-    public ResponseEntity<ShortTermExtraEntity> shortTermExtraPatch (
-            @PathVariable Long id,
+    public ResponseEntity<ShortTermExtraEntity> patchShortTermExtra (
+            @PathVariable("id") Long id,
             @RequestBody String data
     ) {
         try {
@@ -167,15 +175,24 @@ public class ShortTermExtraController {
 
             ShortTermExtraDto dto = objectMapper.readValue(jObject.get("data").toString(), ShortTermExtraDto.class);
 
-            // 수정 대상에 변경사항 적용
-            ShortTermExtraEntity entityToUpdate = shortTermExtraRepository.selectById(id);
+            // 수정 대상 찾기
+            Optional<ShortTermExtraEntity> optionalEntity = shortTermExtraRepository.findById(id);
 
-            entityToUpdate.updateFromDto(dto);
+            // 수정 대상이 없을 시 NOT_FOUND return
+            if (optionalEntity.isPresent()) {
 
-            shortTermExtraRepository.save(entityToUpdate);
+                ShortTermExtraEntity entityToUpdate = optionalEntity.get();
 
-            return ResponseEntity.ok(entityToUpdate);
+                entityToUpdate.updateFromDto(dto);
 
+                shortTermExtraRepository.save(entityToUpdate);
+
+                return ResponseEntity.ok(entityToUpdate);
+
+            } else {
+                log.error("[shortTermExtraPatch] Data not found: shortTermExtraRepository.findById({})", id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ShortTermExtraEntity());
+            }
         } catch (JsonProcessingException e) {
             log.error("[shortTermExtraPatch]JSON processing failed: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ShortTermExtraEntity());
@@ -188,23 +205,20 @@ public class ShortTermExtraController {
 
     // ShortTermExtra 데이터 삭제
     @DeleteMapping("/short-term/extra/{id}")
-    public ResponseEntity<String> shortTermExtraDelete (
-            @PathVariable Long id
+    public ResponseEntity<String> deleteShortTermExtra (
+            @PathVariable("id") Long id
     ) {
 
-        // ID로 데이터 조회 안될 시 Not Found return
-        if (!shortTermExtraRepository.existsById(id)) {
-            log.error("[shortTermExtraDelete] Delete failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
-        }
+        Optional<ShortTermExtraEntity> optionalEntity = shortTermExtraRepository.findById(id);
 
-        try {
+        // 삭제 대상이 없을 시 NOT_FOUND return
+        if (optionalEntity.isPresent()) {
             // 삭제 성공시 삭제된 데이터의 id return
             shortTermExtraRepository.deleteById(id);
             return ResponseEntity.ok("{\"result\": \"" + id + "\"}");
-        } catch (Exception e) {
-            log.error("[shortTermExtraDelete] Exception occurred: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"result\": \"Exception occurred.\"}");
+        } else {
+            log.error("[shortTermExtraDelete] Delete failed: Data not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"result\": \"Data not found.\"}");
         }
     }
 

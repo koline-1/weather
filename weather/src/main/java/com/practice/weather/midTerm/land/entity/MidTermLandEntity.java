@@ -109,7 +109,8 @@ public class MidTermLandEntity extends BaseEntity {
         return MidTermLandDto.builder().id(id).regId(regId).rnSt3Am(rnSt3Am).rnSt3Pm(rnSt3Pm).rnSt4Am(rnSt4Am).rnSt4Pm(rnSt4Pm)
                 .rnSt5Am(rnSt5Am).rnSt5Pm(rnSt5Pm).rnSt6Am(rnSt6Am).rnSt6Pm(rnSt6Pm).rnSt7Am(rnSt7Am).rnSt7Pm(rnSt7Pm)
                 .rnSt8(rnSt8).rnSt9(rnSt9).rnSt10(rnSt10).wf3Am(wf3Am).wf3Pm(wf3Pm).wf4Am(wf4Am).wf4Pm(wf4Pm)
-                .wf5Am(wf5Am).wf5Pm(wf5Pm).wf6Am(wf6Am).wf6Pm(wf6Pm).wf7Am(wf7Am).wf7Pm(wf7Pm).wf8(wf8).wf9(wf9).wf10(wf10).build();
+                .wf5Am(wf5Am).wf5Pm(wf5Pm).wf6Am(wf6Am).wf6Pm(wf6Pm).wf7Am(wf7Am).wf7Pm(wf7Pm).wf8(wf8).wf9(wf9).wf10(wf10)
+                .created(getCreated()).updated(getUpdated()).build();
     }
 
     public void updateFromDto(MidTermLandDto dto) {
