@@ -57,7 +57,7 @@ public class ShortTermStatusControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    public void setupStatus() {
+    void setupStatus() {
         openMocks = MockitoAnnotations.openMocks(this);
 
         for (int i = 1; i <= 10; i++) {

@@ -58,7 +58,7 @@ public class MidTermOceanControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    public void setupOcean() {
+    void setupOcean() {
         openMocks = MockitoAnnotations.openMocks(this);
 
         for (int i = 1; i <= 10; i++) {

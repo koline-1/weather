@@ -58,8 +58,23 @@ public class MidTermTemperatureControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    public void setupTemperature() {
+    void setupTemperature() {
         openMocks = MockitoAnnotations.openMocks(this);
+
+        for (int i = 1; i <= 10; i++) {
+            midTermTemperatureEntity = MidTermTemperatureEntity.builder().id(i).regId("regId"+i).taMin3("taMin3"+i).taMin3Low("taMin3Low"+i)
+                    .taMin3High("taMin3High"+i).taMax3("taMax3").taMax3Low("taMax3Low"+i).taMax3High("taMax3High"+i).taMin4("taMin4"+i)
+                    .taMin4Low("taMin4Low"+i).taMin4High("taMin4High"+i).taMax4("taMax4").taMax4Low("taMax4Low"+i).taMax4High("taMax4High"+i)
+                    .taMin5("taMin5"+i).taMin5Low("taMin5Low"+i).taMin5High("taMin5High"+i).taMax5("taMax5").taMax5Low("taMax5Low"+i)
+                    .taMax5High("taMax5High"+i).taMin6("taMin6"+i).taMin6Low("taMin6Low"+i).taMin6High("taMin6High"+i).taMax6("taMax6")
+                    .taMax6Low("taMax6Low"+i).taMax6High("taMax6High"+i).taMin7("taMin7"+i).taMin7Low("taMin7Low"+i).taMin7High("taMin7High"+i)
+                    .taMax7("taMax7").taMax7Low("taMax7Low"+i).taMax7High("taMax7High"+i).taMin8("taMin8"+i).taMin8Low("taMin8Low"+i)
+                    .taMin8High("taMin8High"+i).taMax8("taMax8").taMax8Low("taMax8Low"+i).taMax8High("taMax8High"+i).taMin9("taMin9"+i)
+                    .taMin9Low("taMin9Low"+i).taMin9High("taMin9High"+i).taMax9("taMax9").taMax9Low("taMax9Low"+i).taMax9High("taMax9High"+i)
+                    .taMin10("taMin10"+i).taMin10Low("taMin10Low"+i).taMin10High("taMin10High").taMax10("taMax10"+i).taMax10Low("taMax10Low"+i)
+                    .taMax10High("taMax10High"+i).build();
+            midTermTemperatureRepository.save(midTermTemperatureEntity);
+        }
     }
 
     @Test
@@ -155,15 +170,17 @@ public class MidTermTemperatureControllerTest {
         List<MidTermTemperatureEntity> list = new ArrayList<>();
 
         for (int i = 1; i <= 10; i++) {
-            midTermTemperatureEntity = MidTermTemperatureEntity.builder().regId("regId").taMin3("taMin3").taMin3Low("taMin3Low").taMin3High("taMin3High")
-                    .taMax3("taMax3").taMax3Low("taMax3Low").taMax3High("taMax3High").taMin4("taMin4").taMin4Low("taMin4Low").taMin4High("taMin4High")
-                    .taMax4("taMax4").taMax4Low("taMax4Low").taMax4High("taMax4High").taMin5("taMin5").taMin5Low("taMin5Low").taMin5High("taMin5High")
-                    .taMax5("taMax5").taMax5Low("taMax5Low").taMax5High("taMax5High").taMin6("taMin6").taMin6Low("taMin6Low").taMin6High("taMin6High")
-                    .taMax6("taMax6").taMax6Low("taMax6Low").taMax6High("taMax6High").taMin7("taMin7").taMin7Low("taMin7Low").taMin7High("taMin7High")
-                    .taMax7("taMax7").taMax7Low("taMax7Low").taMax7High("taMax7High").taMin8("taMin8").taMin8Low("taMin8Low").taMin8High("taMin8High")
-                    .taMax8("taMax8").taMax8Low("taMax8Low").taMax8High("taMax8High").taMin9("taMin9").taMin9Low("taMin9Low").taMin9High("taMin9High")
-                    .taMax9("taMax9").taMax9Low("taMax9Low").taMax9High("taMax9High").taMin10("taMin10").taMin10Low("taMin10Low")
-                    .taMin10High("taMin10High").taMax10("taMax10").taMax10Low("taMax10Low").taMax10High("taMax10High").build();
+            midTermTemperatureEntity = MidTermTemperatureEntity.builder().id(i).regId("regId"+i).taMin3("taMin3"+i).taMin3Low("taMin3Low"+i)
+                    .taMin3High("taMin3High"+i).taMax3("taMax3").taMax3Low("taMax3Low"+i).taMax3High("taMax3High"+i).taMin4("taMin4"+i)
+                    .taMin4Low("taMin4Low"+i).taMin4High("taMin4High"+i).taMax4("taMax4").taMax4Low("taMax4Low"+i).taMax4High("taMax4High"+i)
+                    .taMin5("taMin5"+i).taMin5Low("taMin5Low"+i).taMin5High("taMin5High"+i).taMax5("taMax5").taMax5Low("taMax5Low"+i)
+                    .taMax5High("taMax5High"+i).taMin6("taMin6"+i).taMin6Low("taMin6Low"+i).taMin6High("taMin6High"+i).taMax6("taMax6")
+                    .taMax6Low("taMax6Low"+i).taMax6High("taMax6High"+i).taMin7("taMin7"+i).taMin7Low("taMin7Low"+i).taMin7High("taMin7High"+i)
+                    .taMax7("taMax7").taMax7Low("taMax7Low"+i).taMax7High("taMax7High"+i).taMin8("taMin8"+i).taMin8Low("taMin8Low"+i)
+                    .taMin8High("taMin8High"+i).taMax8("taMax8").taMax8Low("taMax8Low"+i).taMax8High("taMax8High"+i).taMin9("taMin9"+i)
+                    .taMin9Low("taMin9Low"+i).taMin9High("taMin9High"+i).taMax9("taMax9").taMax9Low("taMax9Low"+i).taMax9High("taMax9High"+i)
+                    .taMin10("taMin10"+i).taMin10Low("taMin10Low"+i).taMin10High("taMin10High").taMax10("taMax10"+i).taMax10Low("taMax10Low"+i)
+                    .taMax10High("taMax10High"+i).build();
             list.add(midTermTemperatureEntity);
         }
 

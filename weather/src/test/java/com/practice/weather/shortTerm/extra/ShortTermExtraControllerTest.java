@@ -59,7 +59,7 @@ public class ShortTermExtraControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    public void setupExtra() {
+    void setupExtra() {
         openMocks = MockitoAnnotations.openMocks(this);
 
         for (int i = 1; i <= 10; i++) {

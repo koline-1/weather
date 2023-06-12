@@ -58,7 +58,7 @@ public class MidTermLandControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    public void setupLand() {
+    void setupLand() {
         openMocks = MockitoAnnotations.openMocks(this);
 
         for (int i = 1; i <= 10; i++) {
