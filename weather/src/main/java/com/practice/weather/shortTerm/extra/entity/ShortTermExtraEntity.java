@@ -77,10 +77,10 @@ public class ShortTermExtraEntity extends BaseEntity {
     private String version;
 
     public ShortTermExtraDto toDto() {
-        return ShortTermExtraDto.builder().id(id).baseDate(baseDate).baseTime(baseTime).forecastDate(forecastDate)
-                .forecastTime(forecastTime).nxValue(nxValue).nyValue(nyValue).temperature(temperature).hourPrecipitation(hourPrecipitation)
-                .skyStatus(skyStatus).horizontalWind(horizontalWind).verticalWind(verticalWind).humidity(humidity).rainType(rainType)
-                .lightning(lightning).windDirection(windDirection).windSpeed(windSpeed).version(version).build();
+        return ShortTermExtraDto.builder().id(id).baseDate(baseDate).baseTime(baseTime).forecastDate(forecastDate).forecastTime(forecastTime)
+                .nxValue(nxValue).nyValue(nyValue).temperature(temperature).hourPrecipitation(hourPrecipitation).skyStatus(skyStatus)
+                .horizontalWind(horizontalWind).verticalWind(verticalWind).humidity(humidity).rainType(rainType).lightning(lightning)
+                .windDirection(windDirection).windSpeed(windSpeed).version(version).created(getCreated()).updated(getUpdated()).build();
     }
 
     public void updateFromDto (ShortTermExtraDto dto) {

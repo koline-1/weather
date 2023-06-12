@@ -101,7 +101,7 @@ public class MidTermTemperatureController {
 
     // MidTermTemperatureEntity 의 list 를  return
     @GetMapping("/mid-term/temperature/list")
-    public ResponseEntity<List<MidTermTemperatureEntity>> midTermTemperatureList (
+    public ResponseEntity<List<MidTermTemperatureEntity>> getMidTermTemperatureList (
             final Pageable pageable,
             @RequestParam(name = "location", required = false) String location
     )  {
@@ -117,7 +117,7 @@ public class MidTermTemperatureController {
 
     // MidTermTemperature 의 총 갯수를 return
     @GetMapping("/mid-term/temperature/count")
-    public ResponseEntity<String> midTermTemperatureCount (
+    public ResponseEntity<String> countMidTermTemperature (
             @RequestParam(name = "location", required = false) String location
     ) {
         long count;
@@ -134,23 +134,26 @@ public class MidTermTemperatureController {
 
     // 아이디로 데이터 조회
     @GetMapping("/mid-term/temperature/{id}")
-    public ResponseEntity<Optional<MidTermTemperatureEntity>> midTermTemperatureData (
-            @PathVariable Long id
+    public ResponseEntity<MidTermTemperatureEntity> readMidTermTemperature (
+            @PathVariable("id") Long id
     ) {
 
-        if (!midTermTemperatureRepository.existsById(id)) {
-            log.error("[midTermTemperatureData] Get failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Optional.of(new MidTermTemperatureEntity()));
-        }
+        Optional<MidTermTemperatureEntity> entity = midTermTemperatureRepository.findById(id);
 
-        return ResponseEntity.ok(midTermTemperatureRepository.findById(id));
+        // 조회 대상이 없을 시 NOT_FOUND return
+        if (entity.isPresent()) {
+            return ResponseEntity.ok(entity.get());
+        } else {
+            log.error("[midTermTemperatureData] Data not found: midTermTemperatureRepository.findById({})", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MidTermTemperatureEntity());
+        }
     }
 
 
     // MidTermTemperature 데이터 수정
     @PatchMapping("/mid-term/temperature/{id}")
-    public ResponseEntity<MidTermTemperatureEntity> midTermTemperaturePatch (
-            @PathVariable Long id,
+    public ResponseEntity<MidTermTemperatureEntity> patchMidTermTemperature (
+            @PathVariable("id") Long id,
             @RequestBody String data
     ) {
         try {
@@ -190,8 +193,8 @@ public class MidTermTemperatureController {
 
     // MidTermTemperature 데이터 삭제
     @DeleteMapping("/mid-term/temperature/{id}")
-    public ResponseEntity<String> midTermTemperatureDelete (
-            @PathVariable Long id
+    public ResponseEntity<String> deleteMidTermTemperature (
+            @PathVariable("id") Long id
     ) {
 
         Optional<MidTermTemperatureEntity> optionalEntity = midTermTemperatureRepository.findById(id);

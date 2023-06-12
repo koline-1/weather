@@ -105,7 +105,7 @@ public class ShortTermStatusController {
 
     // ShortTermStatusEntity 의 list 를  return
     @GetMapping("/short-term/status/list")
-    public ResponseEntity<List<ShortTermStatusEntity>> shortTermStatusList (
+    public ResponseEntity<List<ShortTermStatusEntity>> getShortTermStatusList (
             final Pageable pageable,
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
@@ -122,7 +122,7 @@ public class ShortTermStatusController {
 
     // ShortTermStatus 의 총 갯수를 return
     @GetMapping("/short-term/status/count")
-    public ResponseEntity<String> shortTermStatusCount (
+    public ResponseEntity<String> countShortTermStatus (
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
     ) {
@@ -140,23 +140,26 @@ public class ShortTermStatusController {
 
     // 아이디로 데이터 조회
     @GetMapping("/short-term/status/{id}")
-    public ResponseEntity<Optional<ShortTermStatusEntity>> shortTermStatusData (
-            @PathVariable Long id
+    public ResponseEntity<ShortTermStatusEntity> readShortTermStatus (
+            @PathVariable("id") Long id
     ) {
 
-        if (!shortTermStatusRepository.existsById(id)) {
-            log.error("[shortTermStatusData] Get failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Optional.of(new ShortTermStatusEntity()));
-        }
+        Optional<ShortTermStatusEntity> entity = shortTermStatusRepository.findById(id);
 
-        return ResponseEntity.ok(shortTermStatusRepository.findById(id));
+        // 조회 대상이 없을 시 NOT_FOUND return
+        if (entity.isPresent()) {
+            return ResponseEntity.ok(entity.get());
+        } else {
+            log.error("[shortTermStatusData] Data not found: shortTermStatusRepository.findById({})", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ShortTermStatusEntity());
+        }
     }
 
 
     // ShortTermStatus 데이터 수정
     @PatchMapping("/short-term/status/{id}")
-    public ResponseEntity<ShortTermStatusEntity> shortTermStatusPatch (
-            @PathVariable Long id,
+    public ResponseEntity<ShortTermStatusEntity> patchShortTermStatus (
+            @PathVariable("id") Long id,
             @RequestBody String data
     ) {
         try {
@@ -196,8 +199,8 @@ public class ShortTermStatusController {
 
     // ShortTermStatus 데이터 삭제
     @DeleteMapping("/short-term/status/{id}")
-    public ResponseEntity<String> shortTermStatusDelete (
-            @PathVariable Long id
+    public ResponseEntity<String> deleteShortTermStatus (
+            @PathVariable("id") Long id
     ) {
 
         Optional<ShortTermStatusEntity> optionalEntity = shortTermStatusRepository.findById(id);

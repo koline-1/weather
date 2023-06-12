@@ -100,7 +100,7 @@ public class MidTermOceanController {
 
     // MidTermOceanEntity 의 list 를  return
     @GetMapping("/mid-term/ocean/list")
-    public ResponseEntity<List<MidTermOceanEntity>> midTermOceanList (
+    public ResponseEntity<List<MidTermOceanEntity>> getMidTermOceanList (
             final Pageable pageable,
             @RequestParam(name = "location", required = false) String location
     ) {
@@ -116,7 +116,7 @@ public class MidTermOceanController {
 
     // MidTermOcean 의 총 갯수를 return
     @GetMapping("/mid-term/ocean/count")
-    public ResponseEntity<String> midTermOceanCount (
+    public ResponseEntity<String> countMidTermOcean (
             @RequestParam(name = "location", required = false) String location
     ) {
         long count;
@@ -133,23 +133,26 @@ public class MidTermOceanController {
 
     // 아이디로 데이터 조회
     @GetMapping("/mid-term/ocean/{id}")
-    public ResponseEntity<Optional<MidTermOceanEntity>> midTermOceanData (
-            @PathVariable Long id
+    public ResponseEntity<MidTermOceanEntity> readMidTermOcean (
+            @PathVariable("id") Long id
     ) {
 
-        if (!midTermOceanRepository.existsById(id)) {
-            log.error("[midTermOceanData] Get failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Optional.of(new MidTermOceanEntity()));
-        }
+        Optional<MidTermOceanEntity> entity = midTermOceanRepository.findById(id);
 
-        return ResponseEntity.ok(midTermOceanRepository.findById(id));
+        // 조회 대상이 없을 시 NOT_FOUND return
+        if (entity.isPresent()) {
+            return ResponseEntity.ok(entity.get());
+        } else {
+            log.error("[midTermOceanData] Data not found: midTermOceanRepository.findById({})", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MidTermOceanEntity());
+        }
     }
 
 
     // MidTermOcean 데이터 수정
     @PatchMapping("/mid-term/ocean/{id}")
-    public ResponseEntity<MidTermOceanEntity> midTermOceanPatch (
-            @PathVariable Long id,
+    public ResponseEntity<MidTermOceanEntity> patchMidTermOcean (
+            @PathVariable("id") Long id,
             @RequestBody String data
     ) {
         try {
@@ -189,8 +192,8 @@ public class MidTermOceanController {
 
     // MidTermOcean 데이터 삭제
     @DeleteMapping("/mid-term/ocean/{id}")
-    public ResponseEntity<String> midTermOceanDelete (
-            @PathVariable Long id
+    public ResponseEntity<String> deleteMidTermOcean (
+            @PathVariable("id") Long id
     ) {
 
         Optional<MidTermOceanEntity> optionalEntity = midTermOceanRepository.findById(id);

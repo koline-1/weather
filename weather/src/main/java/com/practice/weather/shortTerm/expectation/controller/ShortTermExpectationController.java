@@ -112,7 +112,7 @@ public class ShortTermExpectationController {
 
     // ShortTermExpectationEntity 의 list 를  return
     @GetMapping("/short-term/expectation/list")
-    public ResponseEntity<List<ShortTermExpectationEntity>> shortTermExpectationList (
+    public ResponseEntity<List<ShortTermExpectationEntity>> getShortTermExpectationList (
             final Pageable pageable,
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
@@ -129,7 +129,7 @@ public class ShortTermExpectationController {
 
     // ShortTermExpectation 의 총 갯수를 return
     @GetMapping("/short-term/expectation/count")
-    public ResponseEntity<String> shortTermExpectationCount (
+    public ResponseEntity<String> countShortTermExpectation (
             @RequestParam(name = "nxValue", required = false) String nxValue,
             @RequestParam(name = "nyValue", required = false) String nyValue
     ) {
@@ -147,23 +147,26 @@ public class ShortTermExpectationController {
 
     // 아이디로 데이터 조회
     @GetMapping("/short-term/expectation/{id}")
-    public ResponseEntity<Optional<ShortTermExpectationEntity>> shortTermExpectationData (
-            @PathVariable Long id
+    public ResponseEntity<ShortTermExpectationEntity> readShortTermExpectation (
+            @PathVariable("id") Long id
     ) {
 
-        if (!shortTermExpectationRepository.existsById(id)) {
-            log.error("[shortTermExpectationData] Get failed: Data not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Optional.of(new ShortTermExpectationEntity()));
-        }
+        Optional<ShortTermExpectationEntity> entity = shortTermExpectationRepository.findById(id);
 
-        return ResponseEntity.ok(shortTermExpectationRepository.findById(id));
+        // 조회 대상이 없을 시 NOT_FOUND return
+        if (entity.isPresent()) {
+            return ResponseEntity.ok(entity.get());
+        } else {
+            log.error("[shortTermExpectationData] Data not found: shortTermExpectationRepository.findById({})", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ShortTermExpectationEntity());
+        }
     }
 
 
     // ShortTermExpectation 데이터 수정
     @PatchMapping("/short-term/expectation/{id}")
-    public ResponseEntity<ShortTermExpectationEntity> shortTermExpectationPatch (
-            @PathVariable Long id,
+    public ResponseEntity<ShortTermExpectationEntity> patchShortTermExpectation (
+            @PathVariable("id") Long id,
             @RequestBody String data
     ) {
         try {
@@ -203,8 +206,8 @@ public class ShortTermExpectationController {
 
     // ShortTermExpectation 데이터 삭제
     @DeleteMapping("/short-term/expectation/{id}")
-    public ResponseEntity<String> shortTermExpectationDelete (
-            @PathVariable Long id
+    public ResponseEntity<String> deleteShortTermExpectation (
+            @PathVariable("id") Long id
     ) {
 
         Optional<ShortTermExpectationEntity> optionalEntity = shortTermExpectationRepository.findById(id);
